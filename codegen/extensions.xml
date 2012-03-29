@@ -1,0 +1,65 @@
+<?xml version = "1.0"?>
+<rabbitmq>
+    <!-- no wait is missing its definition in a few places -->
+    <field name="nowait" type="bit">
+        do not send a reply method
+        <doc>
+            If set, the server will not respond to the method. The client
+            should not wait for a reply method. If the server could not
+            complete the method it will raise a channel or connection exception.
+        </doc>
+    </field>
+    <!-- Deprecated fields aren't defined in xml except as comments but still show up in the json -->
+    <field name="ticket" type="short" label="Deprecated" requred="0">
+        <doc>
+            Deprecated value that must be zero.
+        </doc>
+    </field>
+    <field name="cluster-id" type="shortstr" label="Deprecated" requred="0">
+        <doc>
+            Deprecated value that must be empty.
+        </doc>
+    </field>
+    <field name="internal" type="bit" label="Deprecated" requred="0">
+        <doc>
+            Deprecated value that must be False.
+        </doc>
+    </field>
+    <field name="out-of-band" type="shortstr"
+           label="Protocol level field, do not use, must be zero." requred="0">
+        <doc>
+            Used when negotiating a connection on an out-of-band channel. Do
+            not use, must be zero.
+        </doc>
+    </field>
+    <field name="insist" type="bit" label="Deprecated" requred="0">
+        <doc>
+            Deprecated value that must be False.
+        </doc>
+    </field>
+    <field name="known-hosts" type="shortstr" label="Deprecated" requred="0">
+        <doc>
+            Deprecated value that must be zero.
+        </doc>
+    </field>
+    <field name="auto-delete" type="bit"
+           label="Automatically delete when not in use">
+        <doc>
+            If set, the queue is deleted when all consumers have finished using
+            it. The last consumer can be cancelled either explicitly or because
+            its channel is closed. If there was no consumer ever on the queue,
+            it won't be deleted. Applications can explicitly delete auto-delete
+            queues using the Delete method as normal.
+        </doc>
+    </field>
+    <field name="channel-id" type="short" label="Deprecated" requred="0">
+        <doc>
+            Deprecated value that must be zero.
+        </doc>
+    </field>
+    <field name="capabilities" type="shortstr" label="Deprecated" requred="0">
+        <doc>
+            Deprecated value that must be zero.
+        </doc>
+    </field>
+</rabbitmq>
