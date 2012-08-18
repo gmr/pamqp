@@ -48,6 +48,30 @@ class DemarshallingTests(unittest.TestCase):
                          ('Frame was of wrong type, expected Heartbeat, '
                           'received %s' % frame_obj.name))
 
+    def basic_ack_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\r\x00<\x00P\x00\x00\x00\x00\x00' \
+                     '\x00\x00\x01\x00\xce'
+        expectation = {'multiple': False, 'delivery_tag': 1}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 20,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 20))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Basic.Ack',
+                         ('Frame was of wrong type, expected Basic.Ack, '
+                          'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
     def basic_cancel_test(self):
         frame_data = '\x01\x00\x01\x00\x00\x00\r\x00<\x00\x1e\x07ctag1.0\x00\xce'
         expectation = {'consumer_tag': 'ctag1.0', 'nowait': False}
@@ -205,26 +229,24 @@ class DemarshallingTests(unittest.TestCase):
         # Validate the demarshalled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_publish_test(self):
-        frame_data = ('\x01\x00\x01\x00\x00\x00\r\x00<\x00(\x00\x00\x00\x04test'
-                      '\x00\xce')
-        expectation = {'ticket': 0, 'mandatory': False, 'routing_key': 'test',
-                       'immediate': False, 'exchange': ''}
+    def basic_getempty_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x05\x00<\x00H\x00\xce'
+        expectation = {'cluster_id': u''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
                          (channel, 1))
 
         # Validate the frame name
-        self.assertEqual(frame_obj.name, 'Basic.Publish',
-                         ('Frame was of wrong type, expected Basic.Publish, '
+        self.assertEqual(frame_obj.name, 'Basic.GetEmpty',
+                         ('Frame was of wrong type, expected Basic.GetEmpty, '
                           'received %s' % frame_obj.name))
 
         # Validate the demarshalled data matches the expectation
@@ -254,6 +276,55 @@ class DemarshallingTests(unittest.TestCase):
         self.assertEqual(frame_obj.name, 'Basic.GetOk',
             ('Frame was of wrong type, expected Basic.GetOk, '
              'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def basic_nack_test(self):
+        frame_data = ('\x01\x00\x01\x00\x00\x00\r\x00<\x00x\x00\x00\x00\x00'
+                      '\x00\x00\x00\x01\x00\xce')
+        expectation = {'requeue': False, 'multiple': False, 'delivery_tag': 1}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 20,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 20))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Basic.Nack',
+            ('Frame was of wrong type, expected Basic.Nack, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def basic_publish_test(self):
+        frame_data = ('\x01\x00\x01\x00\x00\x00\r\x00<\x00(\x00\x00\x00\x04test'
+                      '\x00\xce')
+        expectation = {'ticket': 0, 'mandatory': False, 'routing_key': 'test',
+                       'immediate': False, 'exchange': ''}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 20,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 20))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Basic.Publish',
+                         ('Frame was of wrong type, expected Basic.Publish, '
+                          'received %s' % frame_obj.name))
 
         # Validate the demarshalled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
@@ -330,6 +401,105 @@ class DemarshallingTests(unittest.TestCase):
         # Validate the demarshalled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
+    def basic_recover_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x05\x00<\x00n\x00\xce'
+        expectation = {'requeue': False}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 12,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 12))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Basic.Recover',
+                         ('Frame was of wrong type, expected Basic.Recover, '
+                          'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def basic_recoverasync_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x05\x00<\x00d\x00\xce'
+        self.assertRaises(DeprecationWarning, pamqp.frame.demarshal, frame_data)
+
+    def basic_recoverok_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x04\x00<\x00o\xce'
+        expectation = {}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 11,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 11))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Basic.RecoverOk',
+            ('Frame was of wrong type, expected Basic.RecoverOk, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def basic_reject_test(self):
+        frame_data = ('\x01\x00\x01\x00\x00\x00\r\x00<\x00Z\x00\x00\x00\x00\x00'
+                      '\x00\x00\x10\x01\xce')
+        expectation = {'requeue': True, 'delivery_tag': 16}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 20,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 20))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Basic.Reject',
+            ('Frame was of wrong type, expected Basic.Reject, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def basic_return_test(self):
+        frame_data = ('\x01\x00\x01\x00\x00\x00"\x00<\x002\x00\xc8\x0fNormal '
+                      'shutdown\x03foo\x07foo.bar\xce')
+        expectation = {'reply_code': 200, 'reply_text': 'Normal shutdown',
+                       'routing_key': 'foo.bar', 'exchange': 'foo'}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 41,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 41))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Basic.Return',
+            ('Frame was of wrong type, expected Basic.Return, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
     def channel_close_test(self):
         frame_data = ('\x01\x00\x01\x00\x00\x00\x1a\x00\x14\x00(\x00\xc8\x0f'
                       'Normal shutdown\x00\x00\x00\x00\xce')
@@ -373,6 +543,53 @@ class DemarshallingTests(unittest.TestCase):
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Channel.CloseOk',
             ('Frame was of wrong type, expected Channel.CloseOk, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def channel_flow_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x05\x00\x14\x00\x14\x01\xce'
+        expectation = {'active': True}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 12,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 12))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Channel.Flow',
+            ('Frame was of wrong type, expected Channel.Flow, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+
+    def channel_flowok_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x05\x00\x14\x00\x15\x01\xce'
+        expectation = {'active': True}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 12,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 12))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Channel.FlowOk',
+            ('Frame was of wrong type, expected Channel.FlowOk, '
              'received %s' % frame_obj.name))
 
         # Validate the demarshalled data matches the expectation
@@ -566,6 +783,54 @@ class DemarshallingTests(unittest.TestCase):
         # Validate the demarshalled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
+    def connection_secure_test(self):
+        frame_data = '\x01\x00\x00\x00\x00\x00\x08\x00\n\x00\x14\x00\x00\x00' \
+                     '\x00\xce'
+        expectation = {'challenge': ''}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 15,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 15))
+
+        self.assertEqual(channel, 0,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 0))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Connection.Secure',
+            ('Frame was of wrong type, expected Connection.Secure, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def connection_secureok_test(self):
+        frame_data = '\x01\x00\x00\x00\x00\x00\x08\x00\n\x00\x15\x00\x00\x00' \
+                     '\x00\xce'
+        expectation = {'response': ''}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 15,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 15))
+
+        self.assertEqual(channel, 0,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 0))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Connection.SecureOk',
+            ('Frame was of wrong type, expected Connection.SecureOk, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
     def connection_start_test(self):
         frame_data = ('\x01\x00\x00\x00\x00\x01G\x00\n\x00\n\x00\t\x00\x00\x01'
                       '"\x0ccapabilitiesF\x00\x00\x00X\x12publisher_confirmst'
@@ -719,6 +984,55 @@ class DemarshallingTests(unittest.TestCase):
         # Validate the demarshalled data matches the expectation
         self.assertEqual(data, expectation)
 
+    def exchange_bind_test(self):
+        frame_data = ('\x01\x00\x01\x00\x00\x00\x15\x00(\x00\x1e\x00\x00\x00'
+                      '\x00\x07foo.bar\x00\x00\x00\x00\x00\xce')
+        expectation = {'arguments': {}, 'source': u'', 'ticket': 0,
+                       'destination': u'', 'nowait': False,
+                       'routing_key': u'foo.bar'}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 28,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 28))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Exchange.Bind',
+            ('Frame was of wrong type, expected Exchange.Bind, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def exchange_bindok_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x04\x00(\x00\x1f\xce'
+        expectation = {}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 11,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 11))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Exchange.BindOk',
+            ('Frame was of wrong type, expected Exchange.BindOk, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
     def exchange_declare_test(self):
         frame_data = ('\x01\x00\x01\x00\x00\x00%\x00(\x00\n\x00\x00\x12'
                       'pika_test_exchange\x06direct\x00\x00\x00\x00\x00\xce')
@@ -820,6 +1134,55 @@ class DemarshallingTests(unittest.TestCase):
         self.assertEqual(frame_obj.name, 'Exchange.DeleteOk',
                          ('Frame was of wrong type, expected Exchange.DeleteOk, '
                           'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def exchange_unbind_test(self):
+        frame_data = ('\x01\x00\x01\x00\x00\x00\x15\x00(\x00(\x00\x00\x00\x00'
+                      '\x07foo.bar\x00\x00\x00\x00\x00\xce')
+        expectation = {'arguments': {}, 'source': u'', 'ticket': 0,
+                       'destination': u'', 'nowait': False,
+                       'routing_key': u'foo.bar'}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 28,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 28))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Exchange.Unbind',
+            ('Frame was of wrong type, expected Exchange.Unbind, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def exchange_unbindok_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x04\x00(\x003\xce'
+        expectation = {}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 11,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 11))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Exchange.UnbindOk',
+            ('Frame was of wrong type, expected Exchange.UnbindOk, '
+             'received %s' % frame_obj.name))
 
         # Validate the demarshalled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
@@ -1009,6 +1372,30 @@ class DemarshallingTests(unittest.TestCase):
         # Validate the demarshalled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
+    def queue_purgeok_test(self):
+        frame_data = ('\x01\x00\x01\x00\x00\x00\x08\x002\x00\x1f\x00\x00\x00'
+                      '\x01\xce')
+        expectation = {'message_count': 1}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 15,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 15))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Queue.PurgeOk',
+            ('Frame was of wrong type, expected Queue.PurgeOk, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
     def queue_unbind_test(self):
         frame_data = ('\x01\x00\x01\x00\x00\x00>\x002\x002\x00\x00\x0fpika_test'
                       '_queue\x12pika_test_exchange\x10test_routing_key\x00\x00'
@@ -1056,6 +1443,144 @@ class DemarshallingTests(unittest.TestCase):
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.UnbindOk',
                          ('Frame was of wrong type, expected Queue.UnbindOk, '
+                          'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def tx_commit_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\x14\xce'
+        expectation = {}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 11,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 11))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Tx.Commit',
+                         ('Frame was of wrong type, expected Tx.Commit, '
+                          'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def tx_commitok_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\x15\xce'
+        expectation = {}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 11,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 11))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Tx.CommitOk',
+                         ('Frame was of wrong type, expected Tx.CommitOk, '
+                          'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def tx_rollback_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\x1e\xce'
+        expectation = {}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 11,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 11))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Tx.Rollback',
+                         ('Frame was of wrong type, expected Tx.Rollback, '
+                          'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def tx_rollbackok_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\x1f\xce'
+        expectation = {}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 11,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 11))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Tx.RollbackOk',
+                         ('Frame was of wrong type, expected Tx.RollbackOk, '
+                          'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def tx_select_test(self):
+        frame_data =  '\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\n\xce'
+        expectation = {}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 11,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 11))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Tx.Select',
+                         ('Frame was of wrong type, expected Tx.Select, '
+                          'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), expectation)
+
+    def tx_selectok_test(self):
+        frame_data = '\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\x0b\xce'
+        expectation = {}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 11,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 11))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Tx.SelectOk',
+                         ('Frame was of wrong type, expected Tx.SelectOk, '
                           'received %s' % frame_obj.name))
 
         # Validate the demarshalled data matches the expectation
