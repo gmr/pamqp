@@ -4,9 +4,6 @@
 
 """
 
-__author__ = 'Gavin M. Roy'
-__email__ = 'gavinmroy@gmail.com'
-
 
 class ContentBody(object):
 

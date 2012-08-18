@@ -4,11 +4,6 @@ For encoding AMQP Header frames into binary AMQP stream data and decoding AMQP
 binary data into AMQP Header frames.
 
 """
-
-__author__ = 'Gavin M. Roy'
-__email__ = 'gmr@myyearbook.com'
-__since__ = '2011-09-24'
-
 import struct
 
 from pamqp import codec
@@ -17,6 +12,7 @@ from pamqp import specification
 
 class ProtocolHeader(object):
     """Class that represents the AMQP Protocol Header"""
+    name = 'ProtocolHeader'
 
     def __init__(self, major_version=None, minor_version=None, revision=None):
         """Construct a Protocol Header frame object for the specified AMQP
