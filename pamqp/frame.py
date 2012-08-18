@@ -7,24 +7,18 @@ marshal will take an object created from the specification file and turn it
 into a raw byte stream.
 
 """
-
-__author__ = 'Gavin M. Roy'
-__email__ = 'gavinmroy@gmail.com'
-__since__ = '2011-09-24'
-
 import logging
 import struct
 
 from pamqp import body
 from pamqp import codec
+from pamqp import heartbeat
 from pamqp import header
 from pamqp import specification
 
-_FRAME_HEADER_SIZE = 7
-_FRAME_END_SIZE = 1
-
-_DEMARSHALLING_FAILURE = 0, 0, None
-_LOGGER = logging.getLogger(__name__)
+DEMARSHALLING_FAILURE = 0, 0, None
+FRAME_HEADER_SIZE = 7
+LOGGER = logging.getLogger(__name__)
 
 
 def demarshal(data_in):
@@ -42,10 +36,10 @@ def demarshal(data_in):
         if frame:
             return 8, 0, frame
     except ValueError:
-        _LOGGER.warning('Demarshalling error processing a ProtocolHeader '
-                        'frame: %r', data_in)
+        LOGGER.warning('DemarshalLing error processing a ProtocolHeader frame: '
+                       '%r', data_in)
         # It was a protocol header but it didn't decode properly
-        return _DEMARSHALLING_FAILURE
+        return DEMARSHALLING_FAILURE
 
     # split the data into parts
     frame_data = data_in.split(chr(specification.FRAME_END))[0]
@@ -56,12 +50,12 @@ def demarshal(data_in):
     # Decode the low level frame and break it into parts
     try:
         frame_type, channel, frame_size = _frame_parts(frame_data)
-        last_byte = _FRAME_HEADER_SIZE + frame_size + 1
-        frame_data = frame_data[_FRAME_HEADER_SIZE:last_byte]
+        last_byte = FRAME_HEADER_SIZE + frame_size + 1
+        frame_data = frame_data[FRAME_HEADER_SIZE:last_byte]
     except ValueError:
-        _LOGGER.warning('Demarshalling error processing a content frame: %r',
+        LOGGER.warning('Demarshalling error processing a content frame: %r',
                         data_in)
-        return _DEMARSHALLING_FAILURE
+        return DEMARSHALLING_FAILURE
 
     # Decode a method frame
     if frame_type == specification.FRAME_METHOD:
@@ -76,8 +70,8 @@ def demarshal(data_in):
         return bytes_consumed, channel, frame_data
 
     # Decode a heartbeat frame
-    #elif frame_type == pamqp.FRAME_HEARTBEAT:
-    #    consumed, frame_obj = decode_heartbeat_frame(channel, data, frame_end)
+    elif frame_type == specification.FRAME_HEARTBEAT:
+        return bytes_consumed, channel, heartbeat.Heartbeat()
 
     raise specification.FrameError("Unknown frame type: %i" % frame_type)
 
@@ -99,6 +93,8 @@ def marshal(frame, channel):
         return _marshal_content_header_frame(frame, channel)
     elif isinstance(frame, body.ContentBody):
         return _marshal_content_body_frame(frame, channel)
+    elif isinstance(frame, heartbeat.Heartbeat):
+        return frame.marshal()
     raise ValueError('Could not determine frame type: %r', frame)
 
 
@@ -106,7 +102,7 @@ def _demarshal_protocol_header_frame(data_in):
     """Attempt to demarshal a protocol header frame
 
     The ProtocolHeader is abbreviated in size and functionality compared to
-    the rest of the frame types, so return _DEMARSHALLING_ERROR doesn't apply
+    the rest of the frame types, so return DEMARSHALLING_ERROR doesn't apply
     as cleanly since we don't have all of the attributes to return even
     regardless of success or failure.
 
@@ -115,17 +111,14 @@ def _demarshal_protocol_header_frame(data_in):
     :raises: ValueError
 
     """
-    # Do the first four bytes not match?
-    if data_in[0:4] != 'AMQP':
-        return None
-
-    try:
-        frame = header.ProtocolHeader()
-        frame.demarshal(data_in)
-        return frame
-    except IndexError:
-        # We didn't get a full frame
-        raise ValueError('Frame data did not meet minimum length requirements')
+    # Do the first four bytes match?
+    if data_in[0:4] == 'AMQP':
+        try:
+            frame = header.ProtocolHeader()
+            frame.demarshal(data_in)
+            return frame
+        except IndexError:
+            raise ValueError('Frame data did not meet minimum length')
 
 
 def _demarshal_method_frame(frame_data):
@@ -181,10 +174,10 @@ def _frame_parts(data_in):
     """
     # Get the Frame Type, Channel Number and Frame Size
     try:
-        return struct.unpack('>BHI', data_in[0:_FRAME_HEADER_SIZE])
+        return struct.unpack('>BHI', data_in[0:FRAME_HEADER_SIZE])
     except struct.error:
         # We didn't get a full frame
-        return _DEMARSHALLING_FAILURE
+        return DEMARSHALLING_FAILURE
 
 
 def _marshal_content_body_frame(frame, channel):
