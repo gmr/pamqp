@@ -1,7 +1,6 @@
 # coding=utf-8
 import unittest2 as unittest
 
-import test_support
 import pamqp
 
 

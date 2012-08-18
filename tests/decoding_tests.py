@@ -1,8 +1,4 @@
 # coding=utf-8
-"""Test the codec.decode module"""
-__author__ = 'Gavin M. Roy'
-__email__ = 'gmr@myyearbook.com'
-__date__ = '2011-03-29'
 
 import decimal
 import sys

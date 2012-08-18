@@ -1,12 +1,5 @@
 # coding=utf-8
 
-__author__ = 'Gavin M. Roy'
-__email__ = 'gmr@myyearbook.com'
-__date__ = '2011-09-23'
-
-import sys
-sys.path.insert(0, '..')
-
 from pamqp import codec
 
 from datetime import datetime
