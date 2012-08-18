@@ -3,7 +3,6 @@
 communication.
 
 """
-
 __author__ = 'Gavin M. Roy'
 __email__ = 'gmr@myyearbook.com'
 __since__ = '2011-03-31'
@@ -117,8 +116,6 @@ def get_documentation(search_path):
                          for line in
                              node[0].text.split('\n')]).strip()
 
-    #print 'Doc couldnt find %r' % search_path
-    #print '%s/doc' % '/'.join(search)
     # Not found, return None
     return None
 
@@ -665,15 +662,12 @@ for class_name in class_list:
             label = get_label({'class': class_name,
                                'field': argument['name']})
             if label:
-                line = ':param %s: %s' % (name, label)
+                line = ':param %s %s: %s' % (get_argument_type_doc(argument),
+                                             name, label or None)
                 new_line(line.strip(), indent)
-
-            new_line(':type %s: %s' % (name, get_argument_type_doc(argument)),
-                     indent)
 
         new_line()
         new_line('"""', indent)
-        new_line()
 
         # Create assignments from the arguments to attributes of the object
         for argument in definition['properties']:
