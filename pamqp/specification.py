@@ -8,7 +8,7 @@ WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 
 __author__ = 'Gavin M. Roy'
 __email__ = 'gavinmroy@gmail.com'
-__since__ = '2012-03-28'
+__since__ = '2012-08-18'
 
 from pamqp import codec
 
@@ -85,6 +85,42 @@ class Frame(object):
     index = 0
     name = 'Frame'
 
+    def __iter__(self):
+        """Iterate the attributes and values as key, value pairs.
+
+        :rtype: tuple
+
+        """
+        for attribute in self.attributes:
+            yield (attribute, getattr(self, attribute))
+
+    def __contains__(self, item):
+        """Return if the item is in the attribute list.
+
+        :rtype: bool
+
+        """
+        return item in self.attributes
+
+    def __getitem__(self, item):
+        """Return an attribute as if it were a dict.
+
+        :param str item: The item to look for
+        :rtype: any
+
+        """
+        if item not in self.attributes:
+            return None
+        return getattr(self, item)
+
+    def __len__(self):
+        """Return the length of the attribute list.
+
+        :rtype: int
+
+        """
+        return int(self.attributes)
+
     def __repr__(self):
         """Return the representation of the frame object
 
@@ -132,10 +168,10 @@ class Frame(object):
         encode them item by item getting the value form the object attribute
         and the data type from the class attribute.
 
-        :returns: str
+        :rtype: str
 
         """
-        output = []
+        output = list()
         processing_bitset = False
         byte = None
         offset = 0
@@ -2645,37 +2681,22 @@ class Basic(object):
                      app_id=None, cluster_id=None):
             """Initialize the Basic.Properties class
 
-            :param content_type: MIME content type
-            :type content_type: str
-            :param content_encoding: MIME content encoding
-            :type content_encoding: str
-            :param headers: Message header field table
-            :type headers: dict
-            :param delivery_mode: Non-persistent (1) or persistent (2)
-            :type delivery_mode: int
-            :param priority: Message priority, 0 to 9
-            :type priority: int
-            :param correlation_id: Application correlation identifier
-            :type correlation_id: str
-            :param reply_to: Address to reply to
-            :type reply_to: str
-            :param expiration: Message expiration specification
-            :type expiration: str
-            :param message_id: Application message identifier
-            :type message_id: str
-            :param timestamp: Message timestamp
-            :type timestamp: struct_time
-            :param type: Message type name
-            :type type: str
-            :param user_id: Creating user id
-            :type user_id: str
-            :param app_id: Creating application id
-            :type app_id: str
-            :param cluster_id: Deprecated
-            :type cluster_id: str
+            :param str content_type: MIME content type
+            :param str content_encoding: MIME content encoding
+            :param dict headers: Message header field table
+            :param int delivery_mode: Non-persistent (1) or persistent (2)
+            :param int priority: Message priority, 0 to 9
+            :param str correlation_id: Application correlation identifier
+            :param str reply_to: Address to reply to
+            :param str expiration: Message expiration specification
+            :param str message_id: Application message identifier
+            :param struct_time timestamp: Message timestamp
+            :param str type: Message type name
+            :param str user_id: Creating user id
+            :param str app_id: Creating application id
+            :param str cluster_id: Deprecated
 
             """
-
             # MIME content type
             self.content_type = content_type
 
