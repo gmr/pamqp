@@ -1147,7 +1147,7 @@ class Exchange(object):
 
         def __init__(self, ticket=0, exchange=None, type=u'direct',
                      passive=False, durable=False, auto_delete=False,
-                     internal=False, nowait=False, arguments={}):
+                     internal=False, nowait=False, arguments=None):
             """Initialize the Exchange.Declare class
 
             :param int ticket: Deprecated
@@ -1191,7 +1191,7 @@ class Exchange(object):
             self.nowait = nowait
 
             # Arguments for declaration
-            self.arguments = arguments
+            self.arguments = arguments or dict()
 
     class DeclareOk(Frame):
         """Confirm exchange declaration
@@ -1310,7 +1310,7 @@ class Exchange(object):
         arguments = "table"
 
         def __init__(self, ticket=0, destination=None, source=None,
-                     routing_key=None, nowait=False, arguments={}):
+                     routing_key=None, nowait=False, arguments=None):
             """Initialize the Exchange.Bind class
 
             :param int ticket: Deprecated
@@ -1336,7 +1336,7 @@ class Exchange(object):
             # Do not send a reply method
             self.nowait = nowait
 
-            self.arguments = arguments
+            self.arguments = arguments or dict()
 
     class BindOk(Frame):
         # AMQP Method Number and Mapping Index
@@ -1377,7 +1377,7 @@ class Exchange(object):
         arguments = "table"
 
         def __init__(self, ticket=0, destination=None, source=None,
-                     routing_key=None, nowait=False, arguments={}):
+                     routing_key=None, nowait=False, arguments=None):
             """Initialize the Exchange.Unbind class
 
             :param int ticket: Deprecated
@@ -1403,7 +1403,7 @@ class Exchange(object):
             # Do not send a reply method
             self.nowait = nowait
 
-            self.arguments = arguments
+            self.arguments = arguments or dict()
 
     class UnbindOk(Frame):
         # AMQP Method Number and Mapping Index
@@ -1469,7 +1469,7 @@ class Queue(object):
 
         def __init__(self, ticket=0, queue=None, passive=False, durable=False,
                      exclusive=False, auto_delete=False, nowait=False,
-                     arguments={}):
+                     arguments=None):
             """Initialize the Queue.Declare class
 
             :param int ticket: Deprecated
@@ -1509,7 +1509,7 @@ class Queue(object):
             self.nowait = nowait
 
             # Arguments for declaration
-            self.arguments = arguments
+            self.arguments = arguments or dict()
 
     class DeclareOk(Frame):
         """Confirms a queue definition
@@ -1584,7 +1584,7 @@ class Queue(object):
         arguments = "table"
 
         def __init__(self, ticket=0, queue=None, exchange=None,
-                     routing_key=None, nowait=False, arguments={}):
+                     routing_key=None, nowait=False, arguments=None):
             """Initialize the Queue.Bind class
 
             :param int ticket: Deprecated
@@ -1616,7 +1616,7 @@ class Queue(object):
             self.nowait = nowait
 
             # Arguments for binding
-            self.arguments = arguments
+            self.arguments = arguments or dict()
 
     class BindOk(Frame):
         """Confirm bind successful
@@ -1823,7 +1823,7 @@ class Queue(object):
         arguments = "table"
 
         def __init__(self, ticket=0, queue=None, exchange=None,
-                     routing_key=None, arguments={}):
+                     routing_key=None, arguments=None):
             """Initialize the Queue.Unbind class
 
             :param int ticket: Deprecated
@@ -1850,7 +1850,7 @@ class Queue(object):
             self.routing_key = routing_key
 
             # Arguments of binding
-            self.arguments = arguments
+            self.arguments = arguments or dict()
 
     class UnbindOk(Frame):
         """Confirm unbind successful
@@ -1992,7 +1992,7 @@ class Basic(object):
 
         def __init__(self, ticket=0, queue=None, consumer_tag=None,
                      no_local=False, no_ack=False, exclusive=False,
-                     nowait=False, arguments={}):
+                     nowait=False, arguments=None):
             """Initialize the Basic.Consume class
 
             :param int ticket: Deprecated
@@ -2031,7 +2031,7 @@ class Basic(object):
             self.nowait = nowait
 
             # Arguments for declaration
-            self.arguments = arguments
+            self.arguments = arguments or dict()
 
     class ConsumeOk(Frame):
         """Confirm a new consumer

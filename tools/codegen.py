@@ -231,6 +231,9 @@ def new_function(function_name, arguments, indent=0):
                 value = '%r' % argument['default-value']
         else:
             value = 'None'
+        if value == '{}':
+            value = 'None'
+
         args.append('%s=%s' % (name, value))
 
     # Get the definition line built
@@ -598,7 +601,11 @@ for class_name in class_list:
             if doc:
                 comment(doc, indent)
 
-            new_line('self.%s = %s' % (name, name), indent)
+            if (isinstance(argument.get('default-value'), dict) and
+                not argument.get('default-value')):
+                new_line('self.%s = %s or dict()' % (name, name), indent)
+            else:
+                new_line('self.%s = %s' % (name, name), indent)
             new_line()
 
         # Check if we're deprecated and warn if so
