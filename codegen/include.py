@@ -9,6 +9,42 @@ class Frame(object):
     index = 0
     name = 'Frame'
 
+    def __iter__(self):
+        """Iterate the attributes and values as key, value pairs.
+
+        :rtype: tuple
+
+        """
+        for attribute in self.attributes:
+            yield (attribute, getattr(self, attribute))
+
+    def __contains__(self, item):
+        """Return if the item is in the attribute list.
+
+        :rtype: bool
+
+        """
+        return item in self.attributes
+
+    def __getitem__(self, item):
+        """Return an attribute as if it were a dict.
+
+        :param str item: The item to look for
+        :rtype: any
+
+        """
+        if item not in self.attributes:
+            return None
+        return getattr(self, item)
+
+    def __len__(self):
+        """Return the length of the attribute list.
+
+        :rtype: int
+
+        """
+        return int(self.attributes)
+
     def __repr__(self):
         """Return the representation of the frame object
 
@@ -56,10 +92,10 @@ class Frame(object):
         encode them item by item getting the value form the object attribute
         and the data type from the class attribute.
 
-        :returns: str
+        :rtype: str
 
         """
-        output = []
+        output = list()
         processing_bitset = False
         byte = None
         offset = 0
