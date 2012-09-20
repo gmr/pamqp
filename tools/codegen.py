@@ -500,8 +500,8 @@ for class_name in class_list:
 
         comment("AMQP Method Number and Mapping Index", indent)
         new_line('id = %i' % method['id'], indent)
-        new_line('index = 0x%08X' % (definition['id'] << 16 | method['id']),
-                 indent)
+        index_value = definition['id'] << 16 | method['id']
+        new_line('index = 0x%08X' % index_value, indent)
         new_line('name = \'%s.%s\'' % (pep8_class_name(class_name),
                                        pep8_class_name(method['name'])), indent)
         new_line()
@@ -554,9 +554,12 @@ for class_name in class_list:
                                    'method': method['name'],
                                    'field': argument['name']})
                 if label:
-                    new_line(':param %s %s: %s' % (get_argument_type_doc(argument), name, label), indent)
+                    new_line(':param %s %s: %s' %
+                             (get_argument_type_doc(argument), name, label),
+                             indent)
                 else:
-                    new_line(':param %s %s:' % (get_argument_type_doc(argument), name), indent)
+                    new_line(':param %s %s:' % (get_argument_type_doc(argument),
+                                                name), indent)
 
         # Note the deprecation warning in the docblock
         if method_xml and 'deprecated' in method_xml[0].attrib and \

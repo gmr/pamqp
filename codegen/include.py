@@ -15,6 +15,7 @@ class Frame(object):
         :rtype: tuple
 
         """
+        self.supported = True
         for attribute in self.attributes:
             yield (attribute, getattr(self, attribute))
 
@@ -43,7 +44,7 @@ class Frame(object):
         :rtype: int
 
         """
-        return int(self.attributes)
+        return len(self.attributes)
 
     def __repr__(self):
         """Return the representation of the frame object

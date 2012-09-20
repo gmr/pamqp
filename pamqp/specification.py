@@ -8,7 +8,7 @@ WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 
 __author__ = 'Gavin M. Roy'
 __email__ = 'gavinmroy@gmail.com'
-__since__ = '2012-08-18'
+__since__ = '2012-09-20'
 
 from pamqp import codec
 
@@ -91,6 +91,7 @@ class Frame(object):
         :rtype: tuple
 
         """
+        self.supported = True
         for attribute in self.attributes:
             yield (attribute, getattr(self, attribute))
 
@@ -119,7 +120,7 @@ class Frame(object):
         :rtype: int
 
         """
-        return int(self.attributes)
+        return len(self.attributes)
 
     def __repr__(self):
         """Return the representation of the frame object
