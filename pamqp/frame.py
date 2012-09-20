@@ -18,6 +18,7 @@ from pamqp import specification
 
 DEMARSHALLING_FAILURE = 0, 0, None
 FRAME_HEADER_SIZE = 7
+FRAME_END_STR = '\xce'
 LOGGER = logging.getLogger(__name__)
 
 
@@ -36,13 +37,17 @@ def demarshal(data_in):
         if frame:
             return 8, 0, frame
     except ValueError:
-        LOGGER.warning('DemarshalLing error processing a ProtocolHeader frame: '
+        LOGGER.warning('Demarshalling error processing a ProtocolHeader frame: '
                        '%r', data_in)
         # It was a protocol header but it didn't decode properly
         return DEMARSHALLING_FAILURE
 
+    if FRAME_END_STR not in data_in:
+        LOGGER.debug('Frame-end delimiter missing')
+        return DEMARSHALLING_FAILURE
+
     # split the data into parts
-    frame_data = data_in.split(chr(specification.FRAME_END))[0]
+    frame_data = data_in.split(FRAME_END_STR)[0]
 
     # How much data we should consume
     bytes_consumed = len(frame_data)
@@ -192,7 +197,7 @@ def _marshal_content_body_frame(frame, channel):
     return struct.pack('>BHI',
                        specification.FRAME_BODY,
                        channel,
-                       len(data)) + data + chr(specification.FRAME_END)
+                       len(data)) + data + FRAME_END_STR
 
 
 def _marshal_content_header_frame(frame, channel):
@@ -207,7 +212,7 @@ def _marshal_content_header_frame(frame, channel):
     return struct.pack('>BHI',
                        specification.FRAME_HEADER,
                        channel,
-                       len(data)) + data + chr(specification.FRAME_END)
+                       len(data)) + data + FRAME_END_STR
 
 
 def _marshal_method_frame(frame, channel):
@@ -219,9 +224,9 @@ def _marshal_method_frame(frame, channel):
 
     """
     data = frame.marshal()
-    frame_type = struct.pack('>I', frame.index)
     header = struct.pack('>BHI',
-                         specification.FRAME_METHOD,
-                         channel,
-                         len(data) + 4)  # Extra 4 bytes are for frame type
-    return header + frame_type + data + chr(specification.FRAME_END)
+                                 specification.FRAME_METHOD,
+                                 channel,
+                                 len(data) + 4)  # Extra 4 bytes for frame type
+    frame_type = struct.pack('>I', frame.index)
+    return header + frame_type + data + FRAME_END_STR
