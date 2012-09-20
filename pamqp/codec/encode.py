@@ -105,9 +105,11 @@ def long_string(value):
     :rtype: str
 
     """
-    if not isinstance(value, basestring):
-        raise ValueError("str or unicode type required")
-    return struct.pack('>I', len(value)) + value
+    if isinstance(value, str):
+        return struct.pack('>I', len(value)) + value
+    elif isinstance(value, unicode):
+        return struct.pack('>I', len(value)) + value.encode('UTF-8')
+    raise ValueError("str or unicode type required")
 
 
 def octet(value):
@@ -143,9 +145,11 @@ def short_string(value):
     :rtype: str
 
     """
-    if not isinstance(value, basestring):
-        raise ValueError("str or unicode type required")
-    return struct.pack('>B', len(value)) + value
+    if isinstance(value, str):
+        return struct.pack('B', len(value)) + value
+    elif isinstance(value, unicode):
+        return struct.pack('B', len(value)) + value.encode('UTF-8')
+    raise ValueError("str or unicode type required")
 
 
 def timestamp(value):
@@ -198,7 +202,8 @@ def field_table(value):
     data = list()
     for key in value:
         # Append the field header / delimiter
-        data.append(short_string(key))
+        data.append(struct.pack('B', len(key)))
+        data.append(key)
         try:
             data.append(encode_table_value(value[key]))
         except ValueError as err:
@@ -245,10 +250,7 @@ def encode_table_value(value):
     elif isinstance(value, float):
         result = 'f' + floating_point(value)
     elif isinstance(value, basestring):
-        if len(value) < 255:
-            result = 's' + short_string(value)
-        else:
-            result = 'S' + long_string(value)
+        result = 'S' + long_string(value)
     elif (isinstance(value, datetime.datetime) or
          isinstance(value, time.struct_time)):
         result = 'T' + timestamp(value)
