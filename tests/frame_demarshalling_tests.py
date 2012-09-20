@@ -304,6 +304,51 @@ class DemarshallingTests(unittest.TestCase):
         # Validate the demarshalled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
+
+    def basic_properties_test(self):
+        frame_data = ('\x02\x00\x00\x00\x00\x00\xd8\x00<\x00\x00\x00\x00\x00'
+                      '\x00\x00\x00\x00d\xff\xf8\x10application/json\x04gzip'
+                      '\x00\x00\x00\x15\x03fooS\x00\x00\x00\x03bar\x03bazI'
+                      '\x00\x00\x00\x01\x01\x00$a53045ef-f174-4621-9ff2-ac0b'
+                      '8fbe6e4a\x13demarshalling_tests\n1345274026$746a1902-'
+                      '39dc-47cf-9471-9feecda35660\x00\x00\x00\x00P/8\xda\x08'
+                      'unittest\x04pika\x19frame_demarshalling_tests\xce')
+        channel = 0
+        byte_count = 100
+        properties = {'content_type': 'application/json',
+                       'content_encoding': 'gzip',
+                       'headers': {'foo': 'bar', 'baz': 1},
+                       'delivery_mode': 1,
+                       'priority': 0,
+                       'correlation_id': 'a53045ef-f174-4621-9ff2-ac0b8fbe6e4a',
+                       'reply_to':  'demarshalling_tests',
+                       'expiration':  1345274026,
+                       'message_id':  '746a1902-39dc-47cf-9471-9feecda35660',
+                       'timestamp':  1345272026,
+                       'type':  'unittest',
+                       'user_id':  'pika',
+                       'app_id':  'frame_demarshalling_tests',
+                       'cluster_id':  None}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+
+        self.assertEqual(consumed, 20,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 20))
+
+        self.assertEqual(channel, 0,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 0))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Basic.Properties',
+            ('Frame was of wrong type, expected Basic.Properties, '
+             'received %s' % frame_obj.name))
+
+        # Validate the demarshalled data matches the expectation
+        self.assertDictEqual(dict(frame_obj), properties)
+
     def basic_publish_test(self):
         frame_data = ('\x01\x00\x01\x00\x00\x00\r\x00<\x00(\x00\x00\x00\x04test'
                       '\x00\xce')
@@ -372,30 +417,6 @@ class DemarshallingTests(unittest.TestCase):
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.QosOk',
             ('Frame was of wrong type, expected Basic.QosOk, '
-             'received %s' % frame_obj.name))
-
-        # Validate the demarshalled data matches the expectation
-        self.assertDictEqual(dict(frame_obj), expectation)
-
-    def basic_reject_test(self):
-        frame_data = ('\x01\x00\x01\x00\x00\x00\r\x00<\x00Z\x00\x00\x00\x00\x00'
-                      '\x00\x00\x10\x01\xce')
-        expectation = {'requeue': True, 'delivery_tag': 16}
-
-        # Decode the frame and validate lengths
-        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
-
-        self.assertEqual(consumed, 20,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
-
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
-
-        # Validate the frame name
-        self.assertEqual(frame_obj.name, 'Basic.Reject',
-            ('Frame was of wrong type, expected Basic.Reject, '
              'received %s' % frame_obj.name))
 
         # Validate the demarshalled data matches the expectation
