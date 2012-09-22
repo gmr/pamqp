@@ -81,8 +81,7 @@ def pep8_class_name(value):
 
 
 def get_class_definition(name, class_list):
-    """
-    Iterates through class_list trying to match the name against what was
+    """Iterates through class_list trying to match the name against what was
     passed in.
 
     """
@@ -162,8 +161,10 @@ def get_label(search_path):
 
 
 def argument_name(name):
-    """
-    Returns a valid python argument name for the AMQP argument passed in
+    """Returns a valid python argument name for the AMQP argument passed in
+
+    :param str name: The argument name
+
     """
     output = name.replace('-', '_')
     if output in kwlist:
@@ -179,26 +180,24 @@ def get_argument_type_doc(argument):
                 break
 
     if 'type' in argument:
-
-        if argument['type'] == "bit":
+        if argument['type'] == 'bit':
             return 'bool'
-        elif argument['type'] == "long":
+        elif argument['type'] == 'long':
             return 'int/long'
-        elif argument['type'] == "longlong":
+        elif argument['type'] == 'longlong':
             return 'int/long'
-        elif argument['type'] == "longstr":
+        elif argument['type'] == 'longstr':
             return 'str'
-        elif argument['type'] == "octet":
+        elif argument['type'] == 'octet':
             return 'int'
-        elif argument['type'] == "short":
+        elif argument['type'] == 'short':
             return 'int'
-        elif argument['type'] == "shortstr":
+        elif argument['type'] == 'shortstr':
             return 'str'
-        elif argument['type'] == "table":
+        elif argument['type'] == 'table':
             return 'dict'
-        elif argument['type'] == "timestamp":
+        elif argument['type'] == 'timestamp':
             return 'struct_time'
-
     return 'Unknown'
 
 
@@ -230,9 +229,19 @@ def new_function(function_name, arguments, indent=0):
             else:
                 value = '%r' % argument['default-value']
         else:
-            value = 'None'
+            if argument['type'][-3:] == 'str':
+                value = "''"
+            elif argument['type'] in ['short', 'long']:
+                value = 0
+            else:
+                value = 'None'
         if value == '{}':
-            value = 'None'
+            if argument['type'][-3:] == 'str':
+                value = "''"
+            elif argument['type'] in ['short', 'long']:
+                value = 0
+            else:
+                value = 'None'
 
         args.append('%s=%s' % (name, value))
 
@@ -385,7 +394,7 @@ DEPRECATION_WARNING = 'This command is deprecated in AMQP %s' % \
                         ('-'.join([str(amqp['major-version']),
                                    str(amqp['minor-version']),
                                    str(amqp['revision'])]))
-new_line('DEPRECATION_WARNING = "%s"' % DEPRECATION_WARNING)
+new_line('DEPRECATION_WARNING = \'%s\'' % DEPRECATION_WARNING)
 new_line()
 
 
@@ -422,7 +431,7 @@ for constant in amqp['constants']:
                 new_line('    Undocumented AMQP Hard Error')
         new_line()
         new_line('    """')
-        new_line('    name = "%s"' % constant['name'])
+        new_line('    name = \'%s\'' % constant['name'])
         new_line('    value = %i' % constant['value'])
         new_line()
         new_line()
@@ -498,18 +507,44 @@ for class_name in class_list:
                 new_line()
                 new_line('"""', indent)
 
+        # Get the method's XML node
+        if class_xml:
+            method_xml = class_xml[0].xpath('method[@name="%s"]' %\
+                                            method['name'])
+        else:
+            method_xml = None
+
         comment("AMQP Method Number and Mapping Index", indent)
         new_line('id = %i' % method['id'], indent)
         index_value = definition['id'] << 16 | method['id']
         new_line('index = 0x%08X' % index_value, indent)
         new_line('name = \'%s.%s\'' % (pep8_class_name(class_name),
                                        pep8_class_name(method['name'])), indent)
+        # Add an attribute that signifies if it's a sync command
+        new_line()
+        comment("Specifies if this is a synchronous AMQP method", indent)
+        new_line('synchronous = %s' % method.get('synchronous', False), indent)
+
+        # Add an attribute that signifies if it's a sync command
+        if method.get('synchronous') and method_xml:
+                responses = list()
+                for response in method_xml[0].iter('response'):
+
+                    response_name = '\'%s.%s\'' %\
+                                    (pep8_class_name(class_name),
+                                     pep8_class_name(response.attrib['name']))
+                    responses.append(response_name)
+                if responses:
+                    new_line()
+                    comment('Valid responses to this method', indent)
+                    new_line('valid_responses = [%s]' % ', '.join(responses),
+                             indent)
         new_line()
 
         comment("AMQP Method Attributes", indent)
         arguments = list()
         for argument in method['arguments']:
-            arguments.append('"%s",' % argument_name(argument['name']))
+            arguments.append('\'%s\',' % argument_name(argument['name']))
 
         if arguments:
             arguments[-1] = arguments[-1].replace(',', ']')
@@ -523,19 +558,10 @@ for class_name in class_list:
         if method['arguments']:
             comment("Class Attribute Types", indent)
             for argument in method['arguments']:
-                new_line('%s = "%s"' % (argument_name(argument['name']),
-                                        get_argument_type(argument)),
+                new_line('%s = \'%s\'' % (argument_name(argument['name']),
+                                          get_argument_type(argument)),
                          indent)
             new_line()
-
-
-        # Get the method's XML node
-        if class_xml:
-            method_xml = class_xml[0].xpath('method[@name="%s"]' % \
-                                            method['name'])
-        else:
-            method_xml = None
-
 
         # Function definition
         new_function("__init__",  method['arguments'], indent)
@@ -573,28 +599,6 @@ for class_name in class_list:
         new_line()
         new_line('"""', indent)
 
-        # Add an attribute that signifies if it's a sync command
-        comment("Specifies if this is a synchronous AMQP method", indent)
-        if 'synchronous' in method and method['synchronous']:
-            new_line('self.synchronous = True', indent)
-
-            if method_xml:
-                responses = list()
-                for response in method_xml[0].iter('response'):
-
-                    response_name = '%s.%s' % \
-                                    (pep8_class_name(class_name),
-                                     pep8_class_name(response.attrib['name']))
-                    responses.append(response_name)
-                if responses:
-                    new_line()
-                    comment('Valid responses to this method', indent)
-                    new_line('self.valid_responses = [%s]' % \
-                             ', '.join(responses), indent)
-        else:
-            new_line('self.synchronous = False', indent)
-        new_line()
-
         # Create assignments from the arguments to attributes of the object
         for argument in method['arguments']:
             name = argument_name(argument['name'])
@@ -631,7 +635,7 @@ for class_name in class_list:
         new_line()
 
         comment("Attributes", indent)
-        new_line('attributes = ["%s",' % definition['properties'][0]['name'],
+        new_line('attributes = [\'%s\',' % definition['properties'][0]['name'],
                  indent)
         for argument in definition['properties'][1:-1]:
             new_line('"%s",' % argument['name'], indent + 14)
@@ -640,21 +644,21 @@ for class_name in class_list:
 
         comment("Flag Values", indent)
         flag_value = 15
-        new_line('flags = {"%s": %i,' %
+        new_line('flags = {\'%s\': %i,' %
                  (definition['properties'][0]['name'], 1 << flag_value), indent)
         for argument in definition['properties'][1:-1]:
             flag_value -= 1
-            new_line('"%s": %i,' %
+            new_line('\'%s\': %i,' %
                      (argument['name'], 1 << flag_value), indent + 9),
         flag_value -= 1
-        new_line('"%s": %i}' % (definition['properties'][-1]['name'],
-                                1 << flag_value), indent + 9)
+        new_line('\'%s\': %i}' % (definition['properties'][-1]['name'],
+                                  1 << flag_value), indent + 9)
         new_line()
 
         comment("Class Attribute Types", indent)
         for argument in definition['properties']:
-            new_line('%s = "%s"' % (argument_name(argument['name']),
-                                    get_argument_type(argument)),
+            new_line('%s = \'%s\'' % (argument_name(argument['name']),
+                                      get_argument_type(argument)),
                      indent)
         new_line()
 
