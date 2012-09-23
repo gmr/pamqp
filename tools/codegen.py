@@ -319,10 +319,9 @@ Auto-generated AMQP Support Module
 WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 
 """
-
-__author__ = 'Gavin M. Roy'
-__email__ = 'gavinmroy@gmail.com'
 __since__ = '%s'
+
+import struct
 
 from pamqp import codec
 ''' % (CODEGEN_OUTPUT.split('/')[-1], date.today().isoformat())

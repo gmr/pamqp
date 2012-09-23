@@ -172,3 +172,40 @@ class PropertiesBase(object):
                 consumed, value = codec.decode.by_type(data, data_type)
                 setattr(self, attribute, value)
                 data = data[consumed:]
+
+    def encode_property(self, property_name, property_value):
+        """Encode a single property value
+
+        :param str property_name: The property name to encode
+        :param any property_value: The value to encode
+
+        """
+        return codec.encode.by_type(property_value,
+                                    getattr(self, property_name))
+
+    def marshal(self):
+        """Take the Basic.Properties data structure and marshal it into the data
+        structure needed for the ContentHeader.
+
+        :rtype: str
+
+        """
+        flags = 0
+        parts = list()
+        for property_name in self.attributes:
+            property_value = getattr(self, property_name)
+            if property_value is not None and property_value != '':
+                flags = flags | self.flags[property_name]
+                parts.append(self.encode_property(property_name,
+                                                  property_value))
+        flag_pieces = list()
+        while True:
+            remainder = flags >> 16
+            partial_flags = flags & 0xFFFE
+            if remainder != 0:
+                partial_flags |= 1
+            flag_pieces.append(struct.pack('>H', partial_flags))
+            flags = remainder
+            if not flags:
+                break
+        return ''.join(flag_pieces + parts)
