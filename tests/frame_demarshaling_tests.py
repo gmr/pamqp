@@ -4,7 +4,7 @@ import unittest2 as unittest
 import pamqp
 
 
-class DemarshallingTests(unittest.TestCase):
+class DemarshalingTests(unittest.TestCase):
 
     def protocol_header_test(self):
 
@@ -310,9 +310,9 @@ class DemarshallingTests(unittest.TestCase):
                       '\x00\x00\x00\x00d\xff\xf8\x10application/json\x04gzip'
                       '\x00\x00\x00\x15\x03fooS\x00\x00\x00\x03bar\x03bazI'
                       '\x00\x00\x00\x01\x01\x00$a53045ef-f174-4621-9ff2-ac0b'
-                      '8fbe6e4a\x13demarshalling_tests\n1345274026$746a1902-'
+                      '8fbe6e4a\x13demarshaling_tests\n1345274026$746a1902-'
                       '39dc-47cf-9471-9feecda35660\x00\x00\x00\x00P/8\xda\x08'
-                      'unittest\x04pika\x19frame_demarshalling_tests\xce')
+                      'unittest\x04pika\x19frame_demarshaling_tests\xce')
         channel = 0
         byte_count = 100
         properties = {'content_type': 'application/json',
@@ -321,13 +321,13 @@ class DemarshallingTests(unittest.TestCase):
                        'delivery_mode': 1,
                        'priority': 0,
                        'correlation_id': 'a53045ef-f174-4621-9ff2-ac0b8fbe6e4a',
-                       'reply_to':  'demarshalling_tests',
+                       'reply_to':  'demarshaling_tests',
                        'expiration':  1345274026,
                        'message_id':  '746a1902-39dc-47cf-9471-9feecda35660',
                        'timestamp':  1345272026,
                        'type':  'unittest',
                        'user_id':  'pika',
-                       'app_id':  'frame_demarshalling_tests',
+                       'app_id':  'frame_demarshaling_tests',
                        'cluster_id':  None}
 
         # Decode the frame and validate lengths

@@ -1,4 +1,4 @@
-"""Manage the marshalling and demarshalling of AMQP frames
+"""Manage the marshaling and demarshaling of AMQP frames
 
 demarshal will turn a raw AMQP byte stream into the appropriate AMQP objects
 from the specification file.
@@ -37,7 +37,7 @@ def demarshal(data_in):
         if frame_value:
             return 8, 0, frame_value
     except ValueError:
-        LOGGER.warning('Demarshalling error processing a ProtocolHeader frame: '
+        LOGGER.warning('Demarshaling error processing a ProtocolHeader frame: '
                        '%r', data_in)
         # It was a protocol header but it didn't decode properly
         return DEMARSHALLING_FAILURE
@@ -58,7 +58,7 @@ def demarshal(data_in):
         last_byte = FRAME_HEADER_SIZE + frame_size + 1
         frame_data = frame_data[FRAME_HEADER_SIZE:last_byte]
     except ValueError:
-        LOGGER.warning('Demarshalling error processing a content frame: %r',
+        LOGGER.warning('Demarshaling error processing a content frame: %r',
                         data_in)
         return DEMARSHALLING_FAILURE
 

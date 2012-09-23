@@ -6,7 +6,7 @@ from pamqp import header
 from pamqp import heartbeat
 from pamqp import specification
 
-class MarshallingTests(unittest.TestCase):
+class MarshalingTests(unittest.TestCase):
 
     def protocol_header_test(self):
         expectation = 'AMQP\x00\x00\t\x01'
