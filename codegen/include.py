@@ -181,7 +181,7 @@ class PropertiesBase(object):
 
         """
         return codec.encode.by_type(property_value,
-                                    getattr(self, property_name))
+                                    getattr(self.__class__, property_name))
 
     def marshal(self):
         """Take the Basic.Properties data structure and marshal it into the data
