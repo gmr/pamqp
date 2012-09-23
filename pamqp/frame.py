@@ -33,9 +33,9 @@ def demarshal(data_in):
     """
     # Look to see if it's a protocol header frame
     try:
-        frame = _demarshal_protocol_header_frame(data_in)
-        if frame:
-            return 8, 0, frame
+        frame_value = _demarshal_protocol_header_frame(data_in)
+        if frame_value:
+            return 8, 0, frame_value
     except ValueError:
         LOGGER.warning('Demarshalling error processing a ProtocolHeader frame: '
                        '%r', data_in)
@@ -54,7 +54,7 @@ def demarshal(data_in):
 
     # Decode the low level frame and break it into parts
     try:
-        frame_type, channel, frame_size = _frame_parts(frame_data)
+        frame_type, channel_id, frame_size = _frame_parts(frame_data)
         last_byte = FRAME_HEADER_SIZE + frame_size + 1
         frame_data = frame_data[FRAME_HEADER_SIZE:last_byte]
     except ValueError:
@@ -64,43 +64,43 @@ def demarshal(data_in):
 
     # Decode a method frame
     if frame_type == specification.FRAME_METHOD:
-        return bytes_consumed, channel, _demarshal_method_frame(frame_data)
+        return bytes_consumed, channel_id, _demarshal_method_frame(frame_data)
 
     # Decode a header frame
     elif frame_type == specification.FRAME_HEADER:
-        return bytes_consumed, channel, _demarshal_header_frame(frame_data)
+        return bytes_consumed, channel_id, _demarshal_header_frame(frame_data)
 
     # Decode a body frame
     elif frame_type == specification.FRAME_BODY:
-        return bytes_consumed, channel, frame_data
+        return bytes_consumed, channel_id, frame_data
 
     # Decode a heartbeat frame
     elif frame_type == specification.FRAME_HEARTBEAT:
-        return bytes_consumed, channel, heartbeat.Heartbeat()
+        return bytes_consumed, channel_id, heartbeat.Heartbeat()
 
     raise specification.FrameError("Unknown frame type: %i" % frame_type)
 
 
-def marshal(frame, channel):
+def marshal(frame_value, channel_id):
     """Marshal a frame to be sent over the wire.
 
-    :param object frame: The frame object to marshal
-    :param int channel: The channel number to send the frame on
+    :param pamqp.specification.Frame frame_value: The frame object to marshal
+    :param int channel_id: The channel number to send the frame on
     :rtype: str
     :raises: ValueError
 
     """
-    if isinstance(frame, header.ProtocolHeader):
-        return frame.marshal()
-    elif isinstance(frame, specification.Frame):
-        return _marshal_method_frame(frame, channel)
-    elif isinstance(frame, header.ContentHeader):
-        return _marshal_content_header_frame(frame, channel)
-    elif isinstance(frame, body.ContentBody):
-        return _marshal_content_body_frame(frame, channel)
-    elif isinstance(frame, heartbeat.Heartbeat):
-        return frame.marshal()
-    raise ValueError('Could not determine frame type: %r', frame)
+    if isinstance(frame_value, header.ProtocolHeader):
+        return frame_value.marshal()
+    elif isinstance(frame_value, specification.Frame):
+        return _marshal_method_frame(frame_value, channel_id)
+    elif isinstance(frame_value, header.ContentHeader):
+        return _marshal_content_header_frame(frame_value, channel_id)
+    elif isinstance(frame_value, body.ContentBody):
+        return _marshal_content_body_frame(frame_value, channel_id)
+    elif isinstance(frame_value, heartbeat.Heartbeat):
+        return frame_value.marshal()
+    raise ValueError('Could not determine frame type: %r', frame_value)
 
 
 def _demarshal_protocol_header_frame(data_in):
@@ -185,48 +185,51 @@ def _frame_parts(data_in):
         return DEMARSHALLING_FAILURE
 
 
-def _marshal_content_body_frame(frame, channel):
+def _marshal(frame_type, channel_id, payload):
+    """Marshal the low-level AMQ frame.
+
+    :param int frame_type: The frame type to marshal
+    :param int channel_id: The channel it will be sent on
+    :param str payload: The frame payload
+    :rtype: str
+
+    """
+    return (struct.pack('>BHI', frame_type, channel_id, len(payload)) +
+            payload + FRAME_END_STR)
+
+
+def _marshal_content_body_frame(frame_value, channel_id):
     """Marshal as many content body frames as needed to transmit the content
 
-    :param body.ContentBody: Frame object to marshal
-    :param int channel: The channel number for the frame(s)
+    :param body.ContentBody frame_value: Frame object to marshal
+    :param int channel_id: The channel number for the frame(s)
     :rtype: str
 
     """
-    data = frame.marshal()
-    return struct.pack('>BHI',
-                       specification.FRAME_BODY,
-                       channel,
-                       len(data)) + data + FRAME_END_STR
+    return _marshal(specification.FRAME_BODY, channel_id, frame_value.marshal())
 
 
-def _marshal_content_header_frame(frame, channel):
+def _marshal_content_header_frame(frame_value, channel_id):
     """Marshal a content header frame
 
-    :param header.ContentHeader: Frame object to marshal
-    :param int channel: The channel number for the frame
+    :param header.ContentHeader frame_value: Frame object to marshal
+    :param int channel_id: The channel number for the frame
     :rtype: str
 
     """
-    data = frame.marshal()
-    return struct.pack('>BHI',
-                       specification.FRAME_HEADER,
-                       channel,
-                       len(data)) + data + FRAME_END_STR
+    return _marshal(specification.FRAME_HEADER, channel_id,
+                    frame_value.marshal())
 
 
-def _marshal_method_frame(frame, channel):
+def _marshal_method_frame(frame_value, channel_id):
     """Marshal a method frame
 
-    :param specification.Frame: Frame object to marshal
-    :param int channel: The channel number for the frame
+    :param specification.Frame frame_value: Frame object to marshal
+    :param int channel_id: The channel number for the frame
     :rtype: str
 
     """
-    data = frame.marshal()
-    header = struct.pack('>BHI',
-                                 specification.FRAME_METHOD,
-                                 channel,
-                                 len(data) + 4)  # Extra 4 bytes for frame type
-    frame_type = struct.pack('>I', frame.index)
-    return header + frame_type + data + FRAME_END_STR
+    return _marshal(specification.FRAME_METHOD,
+                    channel_id,
+                    struct.pack('>I', frame_value.index) +
+                    frame_value.marshal())

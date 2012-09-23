@@ -635,24 +635,28 @@ for class_name in class_list:
         new_line()
 
         comment("Attributes", indent)
-        new_line('attributes = [\'%s\',' % definition['properties'][0]['name'],
+        new_line('attributes = [\'%s\',' %
+                 argument_name(definition['properties'][0]['name']),
                  indent)
         for argument in definition['properties'][1:-1]:
-            new_line('"%s",' % argument['name'], indent + 14)
-        new_line('"%s"]' % definition['properties'][-1]['name'], indent + 14)
+            new_line('"%s",' % argument_name(argument['name']), indent + 14)
+        new_line('"%s"]' % argument_name(definition['properties'][-1]['name']),
+                 indent + 14)
         new_line()
 
         comment("Flag Values", indent)
         flag_value = 15
         new_line('flags = {\'%s\': %i,' %
-                 (definition['properties'][0]['name'], 1 << flag_value), indent)
+                 (argument_name(definition['properties'][0]['name']),
+                  1 << flag_value), indent)
         for argument in definition['properties'][1:-1]:
             flag_value -= 1
-            new_line('\'%s\': %i,' %
-                     (argument['name'], 1 << flag_value), indent + 9),
+            new_line('\'%s\': %i,' % (argument_name(argument['name']),
+                                      1 << flag_value), indent + 9),
         flag_value -= 1
-        new_line('\'%s\': %i}' % (definition['properties'][-1]['name'],
-                                  1 << flag_value), indent + 9)
+        new_line('\'%s\': %i}' %
+                 (argument_name(definition['properties'][-1]['name']),
+                  1 << flag_value), indent + 9)
         new_line()
 
         comment("Class Attribute Types", indent)
@@ -660,6 +664,11 @@ for class_name in class_list:
             new_line('%s = \'%s\'' % (argument_name(argument['name']),
                                       get_argument_type(argument)),
                      indent)
+        new_line()
+        new_line('id = %i' % definition['id'], indent)
+        new_line('index = 0x%04X' % definition['id'], indent)
+        new_line('name = \'%s.%s\'' % (pep8_class_name(class_name),
+                                       pep8_class_name(method['name'])), indent)
         new_line()
 
         # Function definition

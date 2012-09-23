@@ -1,27 +1,19 @@
-"""AMQP Body Class Handler
-
-@TODO
+"""
+ContentBody carries the value for an AMQP message body frame
 
 """
 
 
 class ContentBody(object):
 
-    def __init__(self):
-        self._fragments = list()
-        self._size = 0
+    name = 'ContentBody'
 
-    def marshal(self):
-        pass
+    def __init__(self, value):
+        self.value = value
 
     def demarshal(self, data):
-        self._size += len(data)
-        self._fragments.append(data)
+        self.value = data
+        return len(data)
 
-    @property
-    def content(self):
-        return u''.join(self._fragments)
-
-    @property
-    def length(self):
-        return self._size
+    def marshal(self):
+        return self.value

@@ -8,7 +8,7 @@ WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 
 __author__ = 'Gavin M. Roy'
 __email__ = 'gavinmroy@gmail.com'
-__since__ = '2012-09-21'
+__since__ = '2012-09-23'
 
 from pamqp import codec
 
@@ -2627,36 +2627,36 @@ class Basic(object):
         name = 'Basic.Properties'
 
         # Attributes
-        attributes = ['content-type',
-                      "content-encoding",
+        attributes = ['content_type',
+                      "content_encoding",
                       "headers",
-                      "delivery-mode",
+                      "delivery_mode",
                       "priority",
-                      "correlation-id",
-                      "reply-to",
+                      "correlation_id",
+                      "reply_to",
                       "expiration",
-                      "message-id",
+                      "message_id",
                       "timestamp",
                       "type",
-                      "user-id",
-                      "app-id",
-                      "cluster-id"]
+                      "user_id",
+                      "app_id",
+                      "cluster_id"]
 
         # Flag Values
-        flags = {'content-type': 32768,
-                 'content-encoding': 16384,
+        flags = {'content_type': 32768,
+                 'content_encoding': 16384,
                  'headers': 8192,
-                 'delivery-mode': 4096,
+                 'delivery_mode': 4096,
                  'priority': 2048,
-                 'correlation-id': 1024,
-                 'reply-to': 512,
+                 'correlation_id': 1024,
+                 'reply_to': 512,
                  'expiration': 256,
-                 'message-id': 128,
+                 'message_id': 128,
                  'timestamp': 64,
                  'type': 32,
-                 'user-id': 16,
-                 'app-id': 8,
-                 'cluster-id': 4}
+                 'user_id': 16,
+                 'app_id': 8,
+                 'cluster_id': 4}
 
         # Class Attribute Types
         content_type = 'shortstr'
@@ -2673,6 +2673,10 @@ class Basic(object):
         user_id = 'shortstr'
         app_id = 'shortstr'
         cluster_id = 'shortstr'
+
+        id = 60
+        index = 0x003C
+        name = 'Basic.Nack'
 
         def __init__(self, content_type='', content_encoding='', headers=None,
                      delivery_mode=None, priority=None, correlation_id='',

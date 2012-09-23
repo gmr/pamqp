@@ -75,17 +75,15 @@ class ContentHeader(object):
     """
     name = 'ContentHeader'
 
-    def __init__(self, class_id=0, weight=0, body_size=0, properties=None):
+    def __init__(self, weight=0, body_size=0, properties=None):
         """Initialize the Exchange.DeleteOk class
 
-        :param int class_id: The class ID for the method frame
         :param int weight: Unused, must be 0
         :param long body_size: The size of the body for the message across all
                                received AMQP frames
         :param specification.Basic.Properties properties: Message properties
 
         """
-        self.class_id = class_id
         self.weight = weight
         self.body_size = body_size
         self.properties = properties or specification.Basic.Properties()
@@ -112,6 +110,23 @@ class ContentHeader(object):
         # Demarshal the properties
         self.properties.demarshal(flags, data[offset:])
 
+    def marshal(self):
+        """Return the AMQP binary encoded value of the frame
+
+        """
+        return (struct.pack('>HHQ', specification.Basic.id, 0, self.body_size) +
+                self._marshal_basic_properties())
+
+    def _encoded_property(self, property_name, property_value):
+        """Encode a single property value
+
+        :param str property_name: The property name to encode
+        :param any property_value: The value to encode
+
+        """
+        return codec.encode.by_type(property_value,
+                                    self._property_type(property_name))
+
     def _get_flags(self, data):
         """Decode the flags from the data returning the bytes consumed and flags
 
@@ -133,3 +148,40 @@ class ContentHeader(object):
 
         # Return the bytes consumed and the flags
         return bytes_consumed, flags
+
+    def _marshal_basic_properties(self):
+        """Take the Basic.Properties data structure and marshal it into the data
+        structure needed for the ContentHeader.
+
+        :rtype: str
+
+        """
+        flags = 0
+        parts = list()
+        for property_name in self.properties.attributes:
+            property_value = getattr(self.properties, property_name)
+            if property_value is not None and property_value != '':
+                flags = flags | self.properties.flags[property_name]
+                parts.append(self._encoded_property(property_name,
+                                                    property_value))
+
+        flag_pieces = list()
+        while True:
+            remainder = flags >> 16
+            partial_flags = flags & 0xFFFE
+            if remainder != 0:
+                partial_flags |= 1
+            flag_pieces.append(struct.pack('>H', partial_flags))
+            flags = remainder
+            if not flags:
+                break
+        return ''.join(flag_pieces + parts)
+
+    def _property_type(self, property_name):
+        """Return the property type for the specified property_name.
+
+        :param str property_name: The property type to return the type of
+        :rtype: str
+
+        """
+        return getattr(specification.Basic.Properties, property_name)
