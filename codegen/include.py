@@ -8,6 +8,8 @@ class Frame(object):
     id = 0
     index = 0
     name = 'Frame'
+    synchronous = False
+    valid_responses = []
 
     def __iter__(self):
         """Iterate the attributes and values as key, value pairs.

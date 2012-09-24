@@ -37,38 +37,38 @@ REPLY_SUCCESS = 200
 FRAME_MAX_SIZE = 131072
 
 # AMQP data types
-DATA_TYPES = ["bit",
-              "long",
-              "longlong",
-              "longstr",
-              "octet",
-              "short",
-              "shortstr",
-              "table",
-              "timestamp"]
+DATA_TYPES = [     "bit",
+                   "long",
+                   "longlong",
+                   "longstr",
+                   "octet",
+                   "short",
+                   "shortstr",
+                   "table",
+                   "timestamp"]
 
 # AMQP domains
-DOMAINS = {"channel-id": "longstr",
-           "class-id": "short",
-           "consumer-tag": "shortstr",
-           "delivery-tag": "longlong",
-           "destination": "shortstr",
-           "duration": "longlong",
-           "exchange-name": "shortstr",
-           "method-id": "short",
-           "no-ack": "bit",
-           "no-local": "bit",
-           "offset": "longlong",
-           "path": "shortstr",
-           "peer-properties": "table",
-           "queue-name": "shortstr",
-           "redelivered": "bit",
-           "reference": "longstr",
-           "reject-code": "short",
-           "reject-text": "shortstr",
-           "reply-code": "short",
-           "reply-text": "shortstr",
-           "security-token": "longstr"}
+DOMAINS = {     "channel-id": "longstr",
+                "class-id": "short",
+                "consumer-tag": "shortstr",
+                "delivery-tag": "longlong",
+                "destination": "shortstr",
+                "duration": "longlong",
+                "exchange-name": "shortstr",
+                "method-id": "short",
+                "no-ack": "bit",
+                "no-local": "bit",
+                "offset": "longlong",
+                "path": "shortstr",
+                "peer-properties": "table",
+                "queue-name": "shortstr",
+                "redelivered": "bit",
+                "reference": "longstr",
+                "reject-code": "short",
+                "reject-text": "shortstr",
+                "reply-code": "short",
+                "reply-text": "shortstr",
+                "security-token": "longstr"}
 
 # Other constants
 DEPRECATION_WARNING = 'This command is deprecated in AMQP 0-9-1'
@@ -83,6 +83,8 @@ class Frame(object):
     id = 0
     index = 0
     name = 'Frame'
+    synchronous = False
+    valid_responses = []
 
     def __iter__(self):
         """Iterate the attributes and values as key, value pairs.
