@@ -102,19 +102,17 @@ class ContentHeader(object):
          self.weight,
          self.body_size) = struct.unpack('>HHQ', data[0:12])
 
-        data = data[13:]
-
         # Get the flags for what properties we have available
-        offset, flags = self._get_flags(data)
+        offset, flags = self._get_flags(data[12:])
 
         # Demarshal the properties
-        self.properties.demarshal(flags, data[offset:])
+        self.properties.demarshal(flags, data[12 + offset:])
 
     def marshal(self):
         """Return the AMQP binary encoded value of the frame
 
         """
-        return struct.pack('>HHQ', specification.Basic.id, 0,
+        return struct.pack('>HxxQ', specification.Basic.id,
                             self.body_size) + self.properties.marshal()
 
     def _get_flags(self, data):

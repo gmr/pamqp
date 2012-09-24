@@ -12,13 +12,14 @@ import struct
 
 from pamqp import body
 from pamqp import codec
+from pamqp import exceptions
 from pamqp import heartbeat
 from pamqp import header
 from pamqp import specification
 
 DEMARSHALLING_FAILURE = 0, 0, None
 FRAME_HEADER_SIZE = 7
-FRAME_END_STR = '\xce'
+FRAME_END_CHAR = chr(specification.FRAME_END)
 LOGGER = logging.getLogger(__name__)
 
 
@@ -36,49 +37,38 @@ def demarshal(data_in):
         frame_value = _demarshal_protocol_header_frame(data_in)
         if frame_value:
             return 8, 0, frame_value
-    except ValueError:
-        LOGGER.warning('Demarshaling error processing a ProtocolHeader frame: '
-                       '%r', data_in)
-        # It was a protocol header but it didn't decode properly
-        return DEMARSHALLING_FAILURE
-
-    if FRAME_END_STR not in data_in:
-        LOGGER.debug('Frame-end delimiter missing')
-        return DEMARSHALLING_FAILURE
-
-    # split the data into parts
-    frame_data = data_in.split(FRAME_END_STR)[0]
-
-    # How much data we should consume
-    bytes_consumed = len(frame_data)
+    except ValueError as error:
+        raise exceptions.DemarshalingException(header.ProtocolHeader, error)
 
     # Decode the low level frame and break it into parts
     try:
-        frame_type, channel_id, frame_size = _frame_parts(frame_data)
-        last_byte = FRAME_HEADER_SIZE + frame_size + 1
-        frame_data = frame_data[FRAME_HEADER_SIZE:last_byte]
-    except ValueError:
-        LOGGER.warning('Demarshaling error processing a content frame: %r',
-                        data_in)
-        return DEMARSHALLING_FAILURE
+        frame_type, channel_id, frame_size = _frame_parts(data_in)
+        byte_count = FRAME_HEADER_SIZE + frame_size + 1
+
+        if data_in[byte_count - 1] != FRAME_END_CHAR:
+            raise exceptions.DemarshalingException('Unknown', 'Last byte error')
+        frame_data = data_in[FRAME_HEADER_SIZE:byte_count - 1]
+    except ValueError, error:
+        raise exceptions.DemarshalingException('Unknown', error)
 
     # Decode a method frame
     if frame_type == specification.FRAME_METHOD:
-        return bytes_consumed, channel_id, _demarshal_method_frame(frame_data)
+        return byte_count, channel_id, _demarshal_method_frame(frame_data)
 
     # Decode a header frame
     elif frame_type == specification.FRAME_HEADER:
-        return bytes_consumed, channel_id, _demarshal_header_frame(frame_data)
+        return byte_count, channel_id, _demarshal_header_frame(frame_data)
 
     # Decode a body frame
     elif frame_type == specification.FRAME_BODY:
-        return bytes_consumed, channel_id, frame_data
+        return byte_count, channel_id, _demarshal_body_frame(frame_data)
 
     # Decode a heartbeat frame
     elif frame_type == specification.FRAME_HEARTBEAT:
-        return bytes_consumed, channel_id, heartbeat.Heartbeat()
+        return byte_count, channel_id, heartbeat.Heartbeat()
 
-    raise specification.FrameError("Unknown frame type: %i" % frame_type)
+    exceptions.DemarshalingException('Unknown',
+                                     'Unknown frame type: %i' % frame_type)
 
 
 def marshal(frame_value, channel_id):
@@ -137,10 +127,16 @@ def _demarshal_method_frame(frame_data):
     bytes_used, method_index = codec.decode.long_int(frame_data[0:4])
 
     # Create an instance of the method object we're going to demarshal
-    method = specification.INDEX_MAPPING[method_index]()
+    try:
+        method = specification.INDEX_MAPPING[method_index]()
+    except KeyError as error:
+        raise exceptions.DemarshalingException('Unknown', error)
 
     # Demarshal the data
-    method.demarshal(frame_data[bytes_used:])
+    try:
+        method.demarshal(frame_data[bytes_used:])
+    except struct.error as error:
+        raise exceptions.DemarshalingException(method, error)
 
     #  Demarshal the data in the object and return it
     return method
@@ -154,7 +150,10 @@ def _demarshal_header_frame(frame_data):
 
     """
     content_header = header.ContentHeader()
-    content_header.demarshal(frame_data)
+    try:
+        content_header.demarshal(frame_data)
+    except struct.error as error:
+        raise exceptions.DemarshalingException('ContentHeader', error)
     return content_header
 
 
@@ -165,9 +164,9 @@ def _demarshal_body_frame(frame_data):
     :return tuple: Amount of data consumed and the frame object
 
     """
-    content_header = header.ContentHeader()
-    content_header.demarshal(frame_data)
-    return content_header
+    content_body = body.ContentBody()
+    content_body.demarshal(frame_data)
+    return content_body
 
 
 def _frame_parts(data_in):
@@ -195,7 +194,7 @@ def _marshal(frame_type, channel_id, payload):
 
     """
     return (struct.pack('>BHI', frame_type, channel_id, len(payload)) +
-            payload + FRAME_END_STR)
+            payload + FRAME_END_CHAR)
 
 
 def _marshal_content_body_frame(frame_value, channel_id):

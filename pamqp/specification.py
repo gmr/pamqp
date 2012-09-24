@@ -37,38 +37,38 @@ REPLY_SUCCESS = 200
 FRAME_MAX_SIZE = 131072
 
 # AMQP data types
-DATA_TYPES = [     "bit",
-                   "long",
-                   "longlong",
-                   "longstr",
-                   "octet",
-                   "short",
-                   "shortstr",
-                   "table",
-                   "timestamp"]
+DATA_TYPES = ["bit",
+              "long",
+              "longlong",
+              "longstr",
+              "octet",
+              "short",
+              "shortstr",
+              "table",
+              "timestamp"]
 
 # AMQP domains
-DOMAINS = {     "channel-id": "longstr",
-                "class-id": "short",
-                "consumer-tag": "shortstr",
-                "delivery-tag": "longlong",
-                "destination": "shortstr",
-                "duration": "longlong",
-                "exchange-name": "shortstr",
-                "method-id": "short",
-                "no-ack": "bit",
-                "no-local": "bit",
-                "offset": "longlong",
-                "path": "shortstr",
-                "peer-properties": "table",
-                "queue-name": "shortstr",
-                "redelivered": "bit",
-                "reference": "longstr",
-                "reject-code": "short",
-                "reject-text": "shortstr",
-                "reply-code": "short",
-                "reply-text": "shortstr",
-                "security-token": "longstr"}
+DOMAINS = {"channel-id": "longstr",
+           "class-id": "short",
+           "consumer-tag": "shortstr",
+           "delivery-tag": "longlong",
+           "destination": "shortstr",
+           "duration": "longlong",
+           "exchange-name": "shortstr",
+           "method-id": "short",
+           "no-ack": "bit",
+           "no-local": "bit",
+           "offset": "longlong",
+           "path": "shortstr",
+           "peer-properties": "table",
+           "queue-name": "shortstr",
+           "redelivered": "bit",
+           "reference": "longstr",
+           "reject-code": "short",
+           "reject-text": "shortstr",
+           "reply-code": "short",
+           "reply-text": "shortstr",
+           "security-token": "longstr"}
 
 # Other constants
 DEPRECATION_WARNING = 'This command is deprecated in AMQP 0-9-1'
@@ -230,6 +230,17 @@ class PropertiesBase(object):
     flags = dict()
     name = 'PropertiesBase'
 
+    def __contains__(self, item):
+        return item in self.attributes and getattr(self, item, None)
+
+    def __iter__(self):
+        for attribute in self.attributes:
+            yield attribute
+
+    def __delattr__(self, item):
+        if item in self.attributes:
+            setattr(self, item, None)
+
     def demarshal(self, flags, data):
         """
         Dynamically decode the frame data applying the values to the method
@@ -239,13 +250,11 @@ class PropertiesBase(object):
         :param str data: The binary encoded method data
 
         """
-        flag_values = getattr(self.__class__, 'flags')
-        for attribute in self.attributes:
-            if flags & flag_values[attribute]:
-                attribute = attribute.replace('-', '_')
-                data_type = getattr(self.__class__, attribute)
+        for property_name in self.attributes:
+            if flags & self.flags[property_name]:
+                data_type = getattr(self.__class__, property_name)
                 consumed, value = codec.decode.by_type(data, data_type)
-                setattr(self, attribute, value)
+                setattr(self, property_name, value)
                 data = data[consumed:]
 
     def encode_property(self, property_name, property_value):
@@ -284,6 +293,12 @@ class PropertiesBase(object):
             if not flags:
                 break
         return ''.join(flag_pieces + parts)
+
+    def to_dict(self):
+        output = dict()
+        for attribute in self.attributes:
+            output[attribute] = getattr(self, attribute, None)
+        return output
 
 
 # AMQP Errors
@@ -2712,7 +2727,6 @@ class Basic(object):
 
         id = 60
         index = 0x003C
-        name = 'Basic.Nack'
 
         def __init__(self, content_type='', content_encoding='', headers=None,
                      delivery_mode=None, priority=None, correlation_id='',

@@ -155,6 +155,17 @@ class PropertiesBase(object):
     flags = dict()
     name = 'PropertiesBase'
 
+    def __contains__(self, item):
+        return item in self.attributes and getattr(self, item, None)
+
+    def __iter__(self):
+        for attribute in self.attributes:
+            yield attribute
+
+    def __delattr__(self, item):
+        if item in self.attributes:
+            setattr(self, item, None)
+
     def demarshal(self, flags, data):
         """
         Dynamically decode the frame data applying the values to the method
@@ -164,13 +175,11 @@ class PropertiesBase(object):
         :param str data: The binary encoded method data
 
         """
-        flag_values = getattr(self.__class__, 'flags')
-        for attribute in self.attributes:
-            if flags & flag_values[attribute]:
-                attribute = attribute.replace('-', '_')
-                data_type = getattr(self.__class__, attribute)
+        for property_name in self.attributes:
+            if flags & self.flags[property_name]:
+                data_type = getattr(self.__class__, property_name)
                 consumed, value = codec.decode.by_type(data, data_type)
-                setattr(self, attribute, value)
+                setattr(self, property_name, value)
                 data = data[consumed:]
 
     def encode_property(self, property_name, property_value):
@@ -209,3 +218,9 @@ class PropertiesBase(object):
             if not flags:
                 break
         return ''.join(flag_pieces + parts)
+
+    def to_dict(self):
+        output = dict()
+        for attribute in self.attributes:
+            output[attribute] = getattr(self, attribute, None)
+        return output

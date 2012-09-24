@@ -666,8 +666,6 @@ for class_name in class_list:
         new_line()
         new_line('id = %i' % definition['id'], indent)
         new_line('index = 0x%04X' % definition['id'], indent)
-        new_line('name = \'%s.%s\'' % (pep8_class_name(class_name),
-                                       pep8_class_name(method['name'])), indent)
         new_line()
 
         # Function definition
