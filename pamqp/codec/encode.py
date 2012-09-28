@@ -258,6 +258,8 @@ def encode_table_value(value):
         result = 'F' + field_table(value)
     elif isinstance(value, list):
         result = 'A' + field_array(value)
+    elif isinstance(value, None):
+        result = 'V'
     else:
         raise ValueError("Unknown type: %s (%r)", type(value), value)
 
@@ -293,5 +295,7 @@ def by_type(value, data_type):
         return field_table(value)
     elif data_type == 'timestamp':
         return timestamp(value)
+    elif data_type == 'void':
+        return None
     else:
         raise ValueError("Unknown type: %s", value)

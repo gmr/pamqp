@@ -253,6 +253,8 @@ def _embedded_value(value):
         bytes_consumed, value = long_str(value[1:])
     elif value[0] == 'U':
         bytes_consumed, value = short_int(value[1:])
+    elif value[0] == 'V':
+        return 0, None
     elif value[0] == '\x00':
         return 0, None
     else:
@@ -295,6 +297,8 @@ def by_type(value, data_type, offset=0):
         return field_table(value)
     elif data_type == 'timestamp':
         return timestamp(value)
+    elif data_type == 'void':
+        return None
 
     raise ValueError('Unknown type "%s"' % value)
 
