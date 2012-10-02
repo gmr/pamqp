@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pamqp',
-      version='1.0.0',
+      version='1.0.1',
       description='RabbitMQ Focused AMQP low-level library',
       long_description="AMQP Frame Encoding and Decoding Library",
       author='Gavin M. Roy',
