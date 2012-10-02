@@ -103,13 +103,18 @@ def long_str(value):
     """Decode a string value
 
     :param str value: Value to decode
-    :return tuple: bytes used, unicode
+    :return tuple: bytes used, unicode|str
     :raises: ValueError
 
     """
     try:
         length = struct.unpack('>I', value[0:4])[0]
-        return length + 4, unicode(value[4:length + 4])
+        value = value[4:length + 4].decode('utf-8')
+        try:
+            value = str(value)
+        except UnicodeEncodeError:
+            pass
+        return length + 4, value
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -146,13 +151,18 @@ def short_str(value):
     """Decode a string value
 
     :param str value: Value to decode
-    :return tuple: bytes used, unicode
+    :return tuple: bytes used, unicode|str
     :raises: ValueError
 
     """
     try:
         length = struct.unpack('B', value[0])[0]
-        return length + 1, unicode(value[1:length + 1])
+        value = value[1:length + 1].decode('utf-8')
+        try:
+            value = str(value)
+        except UnicodeEncodeError:
+            pass
+        return length + 1, value
     except TypeError:
         raise ValueError('Could not unpack data')
 

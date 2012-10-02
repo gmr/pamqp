@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- encoding: utf-8 -*-
 
 import decimal
 import sys
@@ -145,7 +145,13 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_long_str_data_type(self):
         self.assertIsInstance(
-            codec.decode.long_str('\x00\x00\x00\n0123456789')[1], unicode)
+            codec.decode.long_str('\x00\x00\x00\n0123456789')[1], str)
+
+    def test_decode_long_str_data_type_unicode(self):
+        self.assertIsInstance(codec.decode.long_str('\x00\x00\x00\x0c\xd8\xa7'
+                                                    '\xd8\xae\xd8\xaa\xd8\xa8'
+                                                    '\xd8\xa7\xd8\xb1')[1],
+                              unicode)
 
     def test_decode_long_str_invalid_value(self):
         self.assertRaises(ValueError, codec.decode.long_str, None)
@@ -183,6 +189,12 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_short_str_data_type(self):
         self.assertIsInstance(codec.decode.short_str('\n0123456789')[1],
+                              str)
+
+    def test_decode_short_str_data_type_unicode(self):
+        self.assertIsInstance(codec.decode.short_str('\n\xd8\xa7\xd8\xae'
+                                                     '\xd8\xaa\xd8\xa8\xd8'
+                                                     '\xa7\xd8\xb1')[1],
                               unicode)
 
     def test_decode_short_str_invalid_value(self):
@@ -354,6 +366,12 @@ class CodecDecodeTests(unittest.TestCase):
             codec.decode.by_type('\x00\x00\x00\n0123456789', 'longstr')[1],
             unicode)
 
+    def test_decode_by_type_longstr_data_type(self):
+        self.assertIsInstance(
+            codec.decode.by_type('\x00\x00\x00\n0123456789', 'longstr')[1],
+            str)
+
+
     def test_decode_by_type_longstr_invalid_value(self):
         self.assertRaises(ValueError, codec.decode.by_type, None, 'longstr')
 
@@ -394,6 +412,11 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_by_type_shortstr_data_type(self):
         self.assertIsInstance(codec.decode.by_type('\n0123456789',
+                                                   'shortstr')[1], str)
+
+    def test_decode_by_type_shortstr_data_type_unicode(self):
+        self.assertIsInstance(codec.decode.by_type('\n\xd8\xa7\xd8\xae\xd8\xaa'
+                                                   '\xd8\xa8\xd8\xa7\xd8\xb1',
                                                    'shortstr')[1], unicode)
 
     def test_decode_by_type_shortstr_invalid_value(self):
@@ -519,7 +542,15 @@ class CodecDecodeTests(unittest.TestCase):
     def test_decode_embeded_value_longstr_data_type(self):
         self.assertIsInstance(
             codec.decode._embedded_value('S\x00\x00\x00\n0123456789')[1],
+            str)
+
+    def test_decode_embeded_value_longstr_data_type_unicode(self):
+        self.assertIsInstance(
+            codec.decode._embedded_value('S\x00\x00\x00\x0c\xd8\xa7\xd8\xae'
+                                         '\xd8\xaa\xd8\xa8\xd8\xa7\xd8\xb1')[1],
             unicode)
+
+
 
     def test_decode_embeded_value_longstr_value(self):
         self.assertEqual(
@@ -542,6 +573,13 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_embeded_value_shortstr_data_type(self):
         self.assertIsInstance(codec.decode._embedded_value('s\n0123456789')[1],
+                             str)
+
+
+    def test_decode_embeded_value_shortstr_data_type_unicode(self):
+        self.assertIsInstance(codec.decode.short_str('s\n\xd8\xa7\xd8\xae'
+                                                     '\xd8\xaa\xd8\xa8\xd8'
+                                                     '\xa7\xd8\xb1')[1],
                               unicode)
 
     def test_decode_embeded_value_shortstr_value(self):

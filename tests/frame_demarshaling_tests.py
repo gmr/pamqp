@@ -1,5 +1,9 @@
-# coding=utf-8
-import unittest2 as unittest
+# -*- encoding: utf-8 -*-
+import time
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 import pamqp
 
@@ -35,9 +39,9 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = '\x08\x00\x00\x00\x00\x00\x00\xce'
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 7,
+        self.assertEqual(consumed, 8,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 7))
+                         (consumed, 8))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -56,9 +60,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
+        self.assertEqual(consumed, 21,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+                         (consumed, 21))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -79,9 +83,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
+        self.assertEqual(consumed, 21,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+                         (consumed, 21))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -103,9 +107,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 19,
+        self.assertEqual(consumed, 20,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 19))
+                         (consumed, 20))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -135,9 +139,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 31,
+        self.assertEqual(consumed, 32,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 31))
+                         (consumed, 32))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -159,9 +163,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 19,
+        self.assertEqual(consumed, 20,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 19))
+                         (consumed, 20))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -189,9 +193,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 34,
+        self.assertEqual(consumed, 35,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 34))
+                         (consumed, 35))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -213,9 +217,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 19,
+        self.assertEqual(consumed, 20,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 19))
+                         (consumed, 20))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -236,9 +240,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
+        self.assertEqual(consumed, 13,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+                         (consumed, 13))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -264,9 +268,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 30,
+        self.assertEqual(consumed, 31,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 30))
+                         (consumed, 31))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -288,9 +292,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
+        self.assertEqual(consumed, 21,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+                         (consumed, 21))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -306,15 +310,13 @@ class DemarshalingTests(unittest.TestCase):
 
 
     def basic_properties_test(self):
-        frame_data = ('\x02\x00\x00\x00\x00\x00\xd8\x00<\x00\x00\x00\x00\x00'
-                      '\x00\x00\x00\x00d\xff\xf8\x10application/json\x04gzip'
-                      '\x00\x00\x00\x15\x03fooS\x00\x00\x00\x03bar\x03bazI'
-                      '\x00\x00\x00\x01\x01\x00$a53045ef-f174-4621-9ff2-ac0b'
-                      '8fbe6e4a\x13demarshaling_tests\n1345274026$746a1902-'
-                      '39dc-47cf-9471-9feecda35660\x00\x00\x00\x00P/8\xda\x08'
-                      'unittest\x04pika\x19frame_demarshaling_tests\xce')
-        channel = 0
-        byte_count = 100
+        encoded_properties = ('\xff\xf8\x10application/json\x04gzip\x00\x00'
+                              '\x00\x13\x03fooS\x00\x00\x00\x03bar\x03bazU'
+                              '\x00\x01\x01\x00$a53045ef-f174-4621-9ff2-ac'
+                              '0b8fbe6e4a\x12demarshaling_tests\n134527402'
+                              '6$746a1902-39dc-47cf-9471-9feecda35660\x00\x00'
+                              '\x00\x00Pj\xb9\x07\x08unittest\x04pika\x18'
+                              'frame_demarshaling_tests\xce')
         properties = {'content_type': 'application/json',
                        'content_encoding': 'gzip',
                        'headers': {'foo': 'bar', 'baz': 1},
@@ -322,32 +324,25 @@ class DemarshalingTests(unittest.TestCase):
                        'priority': 0,
                        'correlation_id': 'a53045ef-f174-4621-9ff2-ac0b8fbe6e4a',
                        'reply_to':  'demarshaling_tests',
-                       'expiration':  1345274026,
+                       'expiration':  '1345274026',
                        'message_id':  '746a1902-39dc-47cf-9471-9feecda35660',
-                       'timestamp':  1345272026,
+                       'timestamp':  time.struct_time((2012, 10, 2, 9, 51, 3,
+                                                       1, 276, 0)),
                        'type':  'unittest',
                        'user_id':  'pika',
                        'app_id':  'frame_demarshaling_tests',
-                       'cluster_id':  None}
+                       'cluster_id':  ''}
 
         # Decode the frame and validate lengths
-        consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
+        obj = pamqp.specification.Basic.Properties()
+        header = pamqp.header.ContentHeader()
+        bytes_consumed, flags = header._get_flags(encoded_properties)
+        obj.demarshal(flags, encoded_properties[bytes_consumed:])
 
-        self.assertEqual(consumed, 20,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
-
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
-
-        # Validate the frame name
-        self.assertEqual(frame_obj.name, 'Basic.Properties',
-            ('Frame was of wrong type, expected Basic.Properties, '
-             'received %s' % frame_obj.name))
-
-        # Validate the demarshalled data matches the expectation
-        self.assertDictEqual(dict(frame_obj), properties)
+        for key in properties:
+            self.assertEqual(getattr(obj, key), properties[key],
+                             '%s value of %r did not match expectation of %r' %
+                             (key, getattr(obj, key), properties[key]))
 
     def basic_publish_test(self):
         frame_data = ('\x01\x00\x01\x00\x00\x00\r\x00<\x00(\x00\x00\x00\x04test'
@@ -358,9 +353,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
+        self.assertEqual(consumed, 21,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+                         (consumed, 21))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -383,9 +378,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 18,
+        self.assertEqual(consumed, 19,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 18))
+                         (consumed, 19))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -406,9 +401,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -429,9 +424,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
+        self.assertEqual(consumed, 13,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+                         (consumed, 13))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -456,9 +451,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -480,9 +475,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
+        self.assertEqual(consumed, 21,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+                         (consumed, 21))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -505,9 +500,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 41,
+        self.assertEqual(consumed, 42,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 41))
+                         (consumed, 42))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -530,9 +525,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 33,
+        self.assertEqual(consumed, 34,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 33))
+                         (consumed, 34))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -553,9 +548,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -576,9 +571,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
+        self.assertEqual(consumed, 13,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+                         (consumed, 13))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -600,9 +595,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
+        self.assertEqual(consumed, 13,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+                         (consumed, 13))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -623,9 +618,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
+        self.assertEqual(consumed, 13,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+                         (consumed, 13))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -648,9 +643,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 15,
+        self.assertEqual(consumed, 16,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 15))
+                         (consumed, 16))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -671,9 +666,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
+        self.assertEqual(consumed, 13,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+                         (consumed, 13))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -694,9 +689,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -719,9 +714,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 33,
+        self.assertEqual(consumed, 34,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 33))
+                         (consumed, 34))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -742,9 +737,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -765,9 +760,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 15,
+        self.assertEqual(consumed, 16,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 15))
+                         (consumed, 16))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -788,9 +783,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
+        self.assertEqual(consumed, 13,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+                         (consumed, 13))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -812,9 +807,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 15,
+        self.assertEqual(consumed, 16,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 15))
+                         (consumed, 16))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -836,9 +831,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 15,
+        self.assertEqual(consumed, 16,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 15))
+                         (consumed, 16))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -881,9 +876,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 334,
+        self.assertEqual(consumed, 335,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 334))
+                         (consumed, 335))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -921,9 +916,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 251,
+        self.assertEqual(consumed, 252,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 251))
+                         (consumed, 252))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -945,9 +940,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 19,
+        self.assertEqual(consumed, 20,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 19))
+                         (consumed, 20))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -969,9 +964,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 19,
+        self.assertEqual(consumed, 20,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 19))
+                         (consumed, 20))
 
         self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
@@ -986,24 +981,24 @@ class DemarshalingTests(unittest.TestCase):
         self.assertDictEqual(dict(frame_obj), expectation)
 
     def content_body_frame_test(self):
-        frame_data = ('\x03\x00\x01\x00\x00\x00#Hello World #0:'
-                      '1316899165.75516605\xce')
+        frame_data = ('\x03\x00\x00\x00\x00\x00"Hello World #0:1316899165.'
+                      '75516605\xce')
 
         expectation = "Hello World #0:1316899165.75516605"
 
         # Decode the frame and validate lengths
         consumed, channel, data = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 41,
+        self.assertEqual(consumed, 42,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 41))
+                         (consumed, 42))
 
-        self.assertEqual(channel, 1,
+        self.assertEqual(channel, 0,
                          'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+                         (channel, 0))
 
         # Validate the demarshalled data matches the expectation
-        self.assertEqual(data, expectation)
+        self.assertEqual(data.value, expectation)
 
     def exchange_bind_test(self):
         frame_data = ('\x01\x00\x01\x00\x00\x00\x15\x00(\x00\x1e\x00\x00\x00'
@@ -1015,9 +1010,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 28,
+        self.assertEqual(consumed, 29,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 28))
+                         (consumed, 29))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1038,9 +1033,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1070,9 +1065,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 44,
+        self.assertEqual(consumed, 45,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 44))
+                         (consumed, 45))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1093,9 +1088,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1120,9 +1115,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 33,
+        self.assertEqual(consumed, 34,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 33))
+                         (consumed, 34))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1143,9 +1138,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1169,9 +1164,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 28,
+        self.assertEqual(consumed, 29,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 28))
+                         (consumed, 29))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1192,9 +1187,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1222,9 +1217,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 70,
+        self.assertEqual(consumed, 71,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 70))
+                         (consumed, 71))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1245,9 +1240,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1276,9 +1271,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 23,
+        self.assertEqual(consumed, 24,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 23))
+                         (consumed, 24))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1301,9 +1296,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 24,
+        self.assertEqual(consumed, 25,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 24))
+                         (consumed, 25))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1329,9 +1324,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 30,
+        self.assertEqual(consumed, 31,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 30))
+                         (consumed, 31))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1353,9 +1348,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 15,
+        self.assertEqual(consumed, 16,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 15))
+                         (consumed, 16))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1377,9 +1372,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 19,
+        self.assertEqual(consumed, 20,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 19))
+                         (consumed, 20))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1401,9 +1396,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 15,
+        self.assertEqual(consumed, 16,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 15))
+                         (consumed, 16))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1430,9 +1425,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 69,
+        self.assertEqual(consumed, 70,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 69))
+                         (consumed, 70))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1453,9 +1448,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1476,9 +1471,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1499,9 +1494,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1522,9 +1517,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1545,9 +1540,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1568,9 +1563,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %
@@ -1591,9 +1586,9 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.demarshal(frame_data)
 
-        self.assertEqual(consumed, 11,
+        self.assertEqual(consumed, 12,
                          'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 11))
+                         (consumed, 12))
 
         self.assertEqual(channel, 1,
                          'Channel number did not match expectation: %i, %i' %

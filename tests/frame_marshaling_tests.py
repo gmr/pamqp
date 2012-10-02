@@ -1,6 +1,8 @@
-# coding=utf-8
-import unittest2 as unittest
-
+# -*- encoding: utf-8 -*-
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 from pamqp import frame
 from pamqp import header
 from pamqp import heartbeat

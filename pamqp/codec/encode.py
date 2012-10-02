@@ -105,11 +105,11 @@ def long_string(value):
     :rtype: str
 
     """
-    if isinstance(value, str):
-        return struct.pack('>I', len(value)) + value
-    elif isinstance(value, unicode):
-        return struct.pack('>I', len(value)) + value.encode('UTF-8')
-    raise ValueError("str or unicode type required")
+    if not isinstance(value, basestring):
+        raise ValueError("str or unicode type required")
+    if isinstance(value, unicode):
+        value = value.encode('utf-8')
+    return struct.pack('>I', len(value)) + value
 
 
 def octet(value):
@@ -145,11 +145,11 @@ def short_string(value):
     :rtype: str
 
     """
-    if isinstance(value, str):
-        return struct.pack('B', len(value)) + value
-    elif isinstance(value, unicode):
-        return struct.pack('B', len(value)) + value.encode('UTF-8')
-    raise ValueError("str or unicode type required")
+    if not isinstance(value, basestring):
+        raise ValueError("str or unicode type required, received %s:%r", type(value), value)
+    if isinstance(value, unicode):
+        value = value.encode('utf-8')
+    return struct.pack('B', len(value)) + value
 
 
 def timestamp(value):
@@ -258,7 +258,7 @@ def encode_table_value(value):
         result = 'F' + field_table(value)
     elif isinstance(value, list):
         result = 'A' + field_array(value)
-    elif isinstance(value, None):
+    elif value is None:
         result = 'V'
     else:
         raise ValueError("Unknown type: %s (%r)", type(value), value)
