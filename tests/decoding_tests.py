@@ -1,15 +1,18 @@
 # -*- encoding: utf-8 -*-
 
 import decimal
-import sys
 import time
 try:
     import unittest2 as unittest
 except ImportError:
     import unittest
 
-sys.path.insert(0, '..')
 from pamqp import codec
+from pamqp import PYTHON3
+
+if PYTHON3:
+    long = int
+
 
 class CodecDecodeTests(unittest.TestCase):
 

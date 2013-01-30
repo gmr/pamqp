@@ -328,7 +328,7 @@ class DemarshalingTests(unittest.TestCase):
                        'message_id':  '746a1902-39dc-47cf-9471-9feecda35660',
                        'timestamp':  time.struct_time((2012, 10, 2, 9, 51, 3,
                                                        1, 276, 0)),
-                       'type':  'unittest',
+                       'message_type':  'unittest',
                        'user_id':  'pika',
                        'app_id':  'frame_demarshaling_tests',
                        'cluster_id':  ''}
@@ -1059,7 +1059,7 @@ class DemarshalingTests(unittest.TestCase):
                        'internal': False,
                        'arguments': {},
                        'ticket': 0,
-                       'type': 'direct',
+                       'exchange_type': 'direct',
                        'auto_delete': False}
 
         # Decode the frame and validate lengths
