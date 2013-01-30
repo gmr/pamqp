@@ -19,6 +19,7 @@ CODEGEN_XML_URL = 'http://www.rabbitmq.com/resources/specs/amqp0-9-1.xml'
 XPATH_ORDER = ['class', 'constant', 'method', 'field']
 PREPEND = [CODEGEN_DIR + 'include.py']
 
+import copy
 from datetime import date
 from json import load
 from keyword import kwlist
@@ -37,6 +38,8 @@ output = []
 def new_line(text='', indent=0):
     """Append a new line to the output buffer"""
     global output
+    if text:
+        text = text.rstrip()
     output.append(''.join([' ' for x in range(indent)]) + text)
 
 
@@ -420,7 +423,7 @@ for constant in amqp['constants']:
             extends = 'Exception'
         else:
             raise ValueError('Unexpected class: %s', constant['class'])
-        new_line('class %s(%s):' % (class_name, extends))
+        new_line('class AMQP%s(%s):' % (class_name, extends))
         new_line('    """')
         # Look to see if documented & if so, provide the doc as a comment
         doc = get_documentation({'constant': constant['name'].lower()})
@@ -442,7 +445,7 @@ for constant in amqp['constants']:
 # Error mapping to class
 error_lines = []
 for error_code in errors.keys():
-    error_lines.append('          %i: %s,' % (error_code, errors[error_code]))
+    error_lines.append('          %i: AMQP%s,' % (error_code, errors[error_code]))
 comment("AMQP Error code to class mapping")
 error_lines[0] = error_lines[0].replace('          ', 'ERRORS = {')
 error_lines[-1] = error_lines[-1].replace(',', '}')
@@ -480,7 +483,7 @@ for class_name in class_list:
         new_line('"""', indent)
 
     comment("AMQP Class Number and Mapping Index", indent)
-    new_line('id = %i' % definition['id'], indent)
+    new_line('frame_id = %i' % definition['id'], indent)
     new_line('index = 0x%08X' % (definition['id'] << 16), indent)
     new_line()
 
@@ -517,7 +520,7 @@ for class_name in class_list:
             method_xml = None
 
         comment("AMQP Method Number and Mapping Index", indent)
-        new_line('id = %i' % method['id'], indent)
+        new_line('frame_id = %i' % method['id'], indent)
         index_value = definition['id'] << 16 | method['id']
         new_line('index = 0x%08X' % index_value, indent)
         new_line('name = \'%s.%s\'' % (pep8_class_name(class_name),
@@ -545,8 +548,13 @@ for class_name in class_list:
 
         comment("AMQP Method Attributes", indent)
         arguments = list()
+        type_keyword = False
         for argument in method['arguments']:
-            arguments.append('\'%s\',' % argument_name(argument['name']))
+            name = argument_name(argument['name'])
+            if name == 'type' and class_name == 'exchange':
+                name = 'exchange_type'
+                type_keyword = True
+            arguments.append('\'%s\',' % name)
 
         if arguments:
             arguments[-1] = arguments[-1].replace(',', ']')
@@ -560,24 +568,41 @@ for class_name in class_list:
         if method['arguments']:
             comment("Class Attribute Types", indent)
             for argument in method['arguments']:
-                new_line('%s = \'%s\'' % (argument_name(argument['name']),
-                                          get_argument_type(argument)),
+                name = argument_name(argument['name'])
+                if name == 'type' and class_name == 'exchange':
+                    name = 'exchange_type'
+                new_line('%s = \'%s\'' % (name, get_argument_type(argument)),
                          indent)
             new_line()
 
         # Function definition
-        new_function("__init__",  method['arguments'], indent)
+        arguments = copy.deepcopy(method['arguments'])
+        for offset in xrange(0, len(arguments)):
+            if arguments[offset]['name'] == 'type' and class_name == 'exchange':
+                arguments[offset]['name'] = 'exchange_type'
+
+        new_function("__init__",  arguments, indent)
         indent += 4
         new_line('"""Initialize the %s.%s class' % \
                  (pep8_class_name(class_name),
                   pep8_class_name(method['name'])),
                  indent)
 
+        if type_keyword:
+            new_line()
+            new_line('Note that the AMQP type argument is referred to as '
+                     '"%s_type" '% class_name, indent)
+            new_line('to not conflict with the Python type keyword.', indent)
+
         # List the arguments in the docblock
         if method['arguments']:
             new_line()
             for argument in method['arguments']:
                 name = argument_name(argument['name'])
+
+                if name == 'type' and class_name == 'exchange':
+                    name = 'exchange_type'
+
                 label = get_label({'class': class_name,
                                    'method': method['name'],
                                    'field': argument['name']})
@@ -587,7 +612,7 @@ for class_name in class_list:
                              indent)
                 else:
                     new_line(':param %s %s:' % (get_argument_type_doc(argument),
-                                                name), indent)
+                                                argument['name']), indent)
 
         # Note the deprecation warning in the docblock
         if method_xml and 'deprecated' in method_xml[0].attrib and \
@@ -604,6 +629,11 @@ for class_name in class_list:
         # Create assignments from the arguments to attributes of the object
         for argument in method['arguments']:
             name = argument_name(argument['name'])
+
+            if name == 'type' and class_name == 'exchange':
+                name = 'exchange_type'
+
+
             doc = get_label({'class': class_name,
                              'method': method['name'],
                              'field': argument['name']})
@@ -641,7 +671,10 @@ for class_name in class_list:
                  argument_name(definition['properties'][0]['name']),
                  indent)
         for argument in definition['properties'][1:-1]:
-            new_line('"%s",' % argument_name(argument['name']), indent + 14)
+            name = argument_name(argument['name'])
+            if name == 'type':
+                name = 'message_type'
+            new_line('"%s",' % name, indent + 14)
         new_line('"%s"]' % argument_name(definition['properties'][-1]['name']),
                  indent + 14)
         new_line()
@@ -652,9 +685,11 @@ for class_name in class_list:
                  (argument_name(definition['properties'][0]['name']),
                   1 << flag_value), indent)
         for argument in definition['properties'][1:-1]:
+            name = argument_name(argument['name'])
+            if name == 'type':
+                name = 'message_type'
             flag_value -= 1
-            new_line('\'%s\': %i,' % (argument_name(argument['name']),
-                                      1 << flag_value), indent + 9),
+            new_line('\'%s\': %i,' % (name, 1 << flag_value), indent + 9),
         flag_value -= 1
         new_line('\'%s\': %i}' %
                  (argument_name(definition['properties'][-1]['name']),
@@ -663,25 +698,37 @@ for class_name in class_list:
 
         comment("Class Attribute Types", indent)
         for argument in definition['properties']:
-            new_line('%s = \'%s\'' % (argument_name(argument['name']),
-                                      get_argument_type(argument)),
+            name = argument_name(argument['name'])
+            if name == 'type':
+                name = 'message_type'
+            new_line('%s = \'%s\'' % (name, get_argument_type(argument)),
                      indent)
         new_line()
-        new_line('id = %i' % definition['id'], indent)
+        new_line('frame_id = %i' % definition['id'], indent)
         new_line('index = 0x%04X' % definition['id'], indent)
         new_line()
 
         # Function definition
-        new_function("__init__",  definition['properties'], indent)
+        properties = copy.deepcopy(definition['properties'])
+        for offset in xrange(0, len(properties)):
+            if properties[offset]['name'] == 'type':
+                properties[offset]['name'] = 'message_type'
+
+        new_function("__init__",  properties, indent)
         indent += 4
         new_line('"""Initialize the %s.Properties class' % \
                  pep8_class_name(class_name),
                  indent)
-
+        new_line()
+        new_line('Note that the AMQP property type is named message_type as '
+                 'to ', indent)
+        new_line('not conflict with the Python type keyword', indent)
         # List the arguments in the docblock
         new_line()
         for argument in definition['properties']:
             name = argument_name(argument['name'])
+            if name == 'type':
+                name = 'message_type'
             label = get_label({'class': class_name,
                                'field': argument['name']})
             if label:
@@ -695,6 +742,8 @@ for class_name in class_list:
         # Create assignments from the arguments to attributes of the object
         for argument in definition['properties']:
             name = argument_name(argument['name'])
+            if name == 'type':
+                name = 'message_type'
             doc = get_label({'class': class_name,
                              'field': argument['name']})
             if doc:

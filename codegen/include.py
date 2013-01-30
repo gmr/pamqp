@@ -5,7 +5,7 @@ class Frame(object):
 
     """
     attributes = list()
-    id = 0
+    frame_id = 0
     index = 0
     name = 'Frame'
     synchronous = False

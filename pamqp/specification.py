@@ -5,12 +5,11 @@ Auto-generated AMQP Support Module
 WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 
 """
-__since__ = '2013-01-29'
+__since__ = '2013-01-30'
 
 import struct
 
 from pamqp import codec
-
 # AMQP Protocol Version
 VERSION = (0, 9, 1)
 
@@ -80,7 +79,7 @@ class Frame(object):
 
     """
     attributes = list()
-    id = 0
+    frame_id = 0
     index = 0
     name = 'Frame'
     synchronous = False
@@ -304,7 +303,7 @@ class PropertiesBase(object):
 
 
 # AMQP Errors
-class ContentTooLarge(Warning):
+class AMQPContentTooLarge(Warning):
     """
     The client attempted to transfer content larger than the server could
     accept at the present time. The client may retry at a later time.
@@ -314,7 +313,7 @@ class ContentTooLarge(Warning):
     value = 311
 
 
-class NoRoute(Warning):
+class AMQPNoRoute(Warning):
     """
     Undocumented AMQP Soft Error
 
@@ -323,7 +322,7 @@ class NoRoute(Warning):
     value = 312
 
 
-class NoConsumers(Warning):
+class AMQPNoConsumers(Warning):
     """
     When the exchange cannot deliver to a consumer when the immediate flag is
     set. As a result of pending data on the queue or the absence of any
@@ -334,7 +333,7 @@ class NoConsumers(Warning):
     value = 313
 
 
-class AccessRefused(Warning):
+class AMQPAccessRefused(Warning):
     """
     The client attempted to work with a server entity to which it has no access
     due to security settings.
@@ -344,7 +343,7 @@ class AccessRefused(Warning):
     value = 403
 
 
-class NotFound(Warning):
+class AMQPNotFound(Warning):
     """
     The client attempted to work with a server entity that does not exist.
 
@@ -353,7 +352,7 @@ class NotFound(Warning):
     value = 404
 
 
-class ResourceLocked(Warning):
+class AMQPResourceLocked(Warning):
     """
     The client attempted to work with a server entity to which it has no access
     because another client is working with it.
@@ -363,7 +362,7 @@ class ResourceLocked(Warning):
     value = 405
 
 
-class PreconditionFailed(Warning):
+class AMQPPreconditionFailed(Warning):
     """
     The client requested a method that was not allowed because some
     precondition failed.
@@ -373,7 +372,7 @@ class PreconditionFailed(Warning):
     value = 406
 
 
-class ConnectionForced(Exception):
+class AMQPConnectionForced(Exception):
     """
     An operator intervened to close the connection for some reason. The client
     may retry at some later date.
@@ -383,7 +382,7 @@ class ConnectionForced(Exception):
     value = 320
 
 
-class InvalidPath(Exception):
+class AMQPInvalidPath(Exception):
     """
     The client tried to work with an unknown virtual host.
 
@@ -392,7 +391,7 @@ class InvalidPath(Exception):
     value = 402
 
 
-class FrameError(Exception):
+class AMQPFrameError(Exception):
     """
     The sender sent a malformed frame that the recipient could not decode. This
     strongly implies a programming error in the sending peer.
@@ -402,7 +401,7 @@ class FrameError(Exception):
     value = 501
 
 
-class SyntaxError(Exception):
+class AMQPSyntaxError(Exception):
     """
     The sender sent a frame that contained illegal values for one or more
     fields. This strongly implies a programming error in the sending peer.
@@ -412,7 +411,7 @@ class SyntaxError(Exception):
     value = 502
 
 
-class CommandInvalid(Exception):
+class AMQPCommandInvalid(Exception):
     """
     The client sent an invalid sequence of frames, attempting to perform an
     operation that was considered invalid by the server. This usually implies a
@@ -423,7 +422,7 @@ class CommandInvalid(Exception):
     value = 503
 
 
-class ChannelError(Exception):
+class AMQPChannelError(Exception):
     """
     The client attempted to work with a channel that had not been correctly
     opened. This most likely indicates a fault in the client layer.
@@ -433,7 +432,7 @@ class ChannelError(Exception):
     value = 504
 
 
-class UnexpectedFrame(Exception):
+class AMQPUnexpectedFrame(Exception):
     """
     The peer sent a frame that was not expected, usually in the context of a
     content header and body.  This strongly indicates a fault in the peer's
@@ -444,7 +443,7 @@ class UnexpectedFrame(Exception):
     value = 505
 
 
-class ResourceError(Exception):
+class AMQPResourceError(Exception):
     """
     The server could not complete the method because it lacked sufficient
     resources. This may be due to the client creating too many of some type of
@@ -455,7 +454,7 @@ class ResourceError(Exception):
     value = 506
 
 
-class NotAllowed(Exception):
+class AMQPNotAllowed(Exception):
     """
     The client tried to work with some entity in a manner that is prohibited by
     the server, due to security settings or by some other criteria.
@@ -465,7 +464,7 @@ class NotAllowed(Exception):
     value = 530
 
 
-class NotImplemented(Exception):
+class AMQPNotImplemented(Exception):
     """
     The client tried to use functionality that is not implemented in the
     server.
@@ -475,7 +474,7 @@ class NotImplemented(Exception):
     value = 540
 
 
-class InternalError(Exception):
+class AMQPInternalError(Exception):
     """
     The server could not complete the method because of an internal error. The
     server may require intervention by an operator in order to resume normal
@@ -487,24 +486,24 @@ class InternalError(Exception):
 
 
 # AMQP Error code to class mapping
-ERRORS = {320: ConnectionForced,
-          505: UnexpectedFrame,
-          502: SyntaxError,
-          503: CommandInvalid,
-          530: NotAllowed,
-          504: ChannelError,
-          402: InvalidPath,
-          403: AccessRefused,
-          404: NotFound,
-          405: ResourceLocked,
-          406: PreconditionFailed,
-          311: ContentTooLarge,
-          312: NoRoute,
-          313: NoConsumers,
-          506: ResourceError,
-          540: NotImplemented,
-          541: InternalError,
-          501: FrameError}
+ERRORS = {320: AMQPConnectionForced,
+          505: AMQPUnexpectedFrame,
+          502: AMQPSyntaxError,
+          503: AMQPCommandInvalid,
+          530: AMQPNotAllowed,
+          504: AMQPChannelError,
+          402: AMQPInvalidPath,
+          403: AMQPAccessRefused,
+          404: AMQPNotFound,
+          405: AMQPResourceLocked,
+          406: AMQPPreconditionFailed,
+          311: AMQPContentTooLarge,
+          312: AMQPNoRoute,
+          313: AMQPNoConsumers,
+          506: AMQPResourceError,
+          540: AMQPNotImplemented,
+          541: AMQPInternalError,
+          501: AMQPFrameError}
 
 # AMQP Classes and Methods
 
@@ -518,7 +517,7 @@ class Connection(object):
 
     """
     # AMQP Class Number and Mapping Index
-    id = 10
+    frame_id = 10
     index = 0x000A0000
 
     class Start(Frame):
@@ -530,7 +529,7 @@ class Connection(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 10
+        frame_id = 10
         index = 0x000A000A
         name = 'Connection.Start'
 
@@ -588,7 +587,7 @@ class Connection(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 11
+        frame_id = 11
         index = 0x000A000B
         name = 'Connection.StartOk'
 
@@ -638,7 +637,7 @@ class Connection(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 20
+        frame_id = 20
         index = 0x000A0014
         name = 'Connection.Secure'
 
@@ -671,7 +670,7 @@ class Connection(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 21
+        frame_id = 21
         index = 0x000A0015
         name = 'Connection.SecureOk'
 
@@ -701,7 +700,7 @@ class Connection(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 30
+        frame_id = 30
         index = 0x000A001E
         name = 'Connection.Tune'
 
@@ -747,7 +746,7 @@ class Connection(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 31
+        frame_id = 31
         index = 0x000A001F
         name = 'Connection.TuneOk'
 
@@ -792,7 +791,7 @@ class Connection(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 40
+        frame_id = 40
         index = 0x000A0028
         name = 'Connection.Open'
 
@@ -836,7 +835,7 @@ class Connection(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 41
+        frame_id = 41
         index = 0x000A0029
         name = 'Connection.OpenOk'
 
@@ -869,7 +868,7 @@ class Connection(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 50
+        frame_id = 50
         index = 0x000A0032
         name = 'Connection.Close'
 
@@ -922,7 +921,7 @@ class Connection(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 51
+        frame_id = 51
         index = 0x000A0033
         name = 'Connection.CloseOk'
 
@@ -945,7 +944,7 @@ class Channel(object):
 
     """
     # AMQP Class Number and Mapping Index
-    id = 20
+    frame_id = 20
     index = 0x00140000
 
     class Open(Frame):
@@ -955,7 +954,7 @@ class Channel(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 10
+        frame_id = 10
         index = 0x0014000A
         name = 'Channel.Open'
 
@@ -987,7 +986,7 @@ class Channel(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 11
+        frame_id = 11
         index = 0x0014000B
         name = 'Channel.OpenOk'
 
@@ -1021,7 +1020,7 @@ class Channel(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 20
+        frame_id = 20
         index = 0x00140014
         name = 'Channel.Flow'
 
@@ -1053,7 +1052,7 @@ class Channel(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 21
+        frame_id = 21
         index = 0x00140015
         name = 'Channel.FlowOk'
 
@@ -1086,7 +1085,7 @@ class Channel(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 40
+        frame_id = 40
         index = 0x00140028
         name = 'Channel.Close'
 
@@ -1138,7 +1137,7 @@ class Channel(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 41
+        frame_id = 41
         index = 0x00140029
         name = 'Channel.CloseOk'
 
@@ -1161,7 +1160,7 @@ class Exchange(object):
 
     """
     # AMQP Class Number and Mapping Index
-    id = 40
+    frame_id = 40
     index = 0x00280000
 
     class Declare(Frame):
@@ -1173,7 +1172,7 @@ class Exchange(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 10
+        frame_id = 10
         index = 0x0028000A
         name = 'Exchange.Declare'
 
@@ -1186,7 +1185,7 @@ class Exchange(object):
         # AMQP Method Attributes
         attributes = ['ticket',
                       'exchange',
-                      'type',
+                      'exchange_type',
                       'passive',
                       'durable',
                       'auto_delete',
@@ -1197,7 +1196,7 @@ class Exchange(object):
         # Class Attribute Types
         ticket = 'short'
         exchange = 'shortstr'
-        type = 'shortstr'
+        exchange_type = 'shortstr'
         passive = 'bit'
         durable = 'bit'
         auto_delete = 'bit'
@@ -1205,14 +1204,17 @@ class Exchange(object):
         nowait = 'bit'
         arguments = 'table'
 
-        def __init__(self, ticket=0, exchange='', type='direct', passive=False,
-                     durable=False, auto_delete=False, internal=False,
-                     nowait=False, arguments=None):
+        def __init__(self, ticket=0, exchange='', exchange_type='direct',
+                     passive=False, durable=False, auto_delete=False,
+                     internal=False, nowait=False, arguments=None):
             """Initialize the Exchange.Declare class
+
+            Note that the AMQP type argument is referred to as "exchange_type"
+            to not conflict with the Python type keyword.
 
             :param int ticket: Deprecated
             :param str exchange:
-            :param str type: Exchange type
+            :param str exchange_type: Exchange type
             :param bool passive: Do not create exchange
             :param bool durable: Request a durable exchange
             :param bool auto_delete: Automatically delete when not in use
@@ -1227,7 +1229,7 @@ class Exchange(object):
             self.exchange = exchange
 
             # Exchange type
-            self.type = type
+            self.exchange_type = exchange_type
 
             # Do not create exchange
             self.passive = passive
@@ -1255,7 +1257,7 @@ class Exchange(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 11
+        frame_id = 11
         index = 0x0028000B
         name = 'Exchange.DeclareOk'
 
@@ -1277,7 +1279,7 @@ class Exchange(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 20
+        frame_id = 20
         index = 0x00280014
         name = 'Exchange.Delete'
 
@@ -1327,7 +1329,7 @@ class Exchange(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 21
+        frame_id = 21
         index = 0x00280015
         name = 'Exchange.DeleteOk'
 
@@ -1343,7 +1345,7 @@ class Exchange(object):
             """
     class Bind(Frame):
         # AMQP Method Number and Mapping Index
-        id = 30
+        frame_id = 30
         index = 0x0028001E
         name = 'Exchange.Bind'
 
@@ -1373,7 +1375,7 @@ class Exchange(object):
             :param int ticket: Deprecated
             :param str destination:
             :param str source:
-            :param str routing_key:
+            :param str routing-key:
             :param bool nowait: Do not send a reply method
             :param dict arguments:
 
@@ -1394,7 +1396,7 @@ class Exchange(object):
 
     class BindOk(Frame):
         # AMQP Method Number and Mapping Index
-        id = 31
+        frame_id = 31
         index = 0x0028001F
         name = 'Exchange.BindOk'
 
@@ -1410,7 +1412,7 @@ class Exchange(object):
             """
     class Unbind(Frame):
         # AMQP Method Number and Mapping Index
-        id = 40
+        frame_id = 40
         index = 0x00280028
         name = 'Exchange.Unbind'
 
@@ -1440,7 +1442,7 @@ class Exchange(object):
             :param int ticket: Deprecated
             :param str destination:
             :param str source:
-            :param str routing_key:
+            :param str routing-key:
             :param bool nowait: Do not send a reply method
             :param dict arguments:
 
@@ -1461,7 +1463,7 @@ class Exchange(object):
 
     class UnbindOk(Frame):
         # AMQP Method Number and Mapping Index
-        id = 51
+        frame_id = 51
         index = 0x00280033
         name = 'Exchange.UnbindOk'
 
@@ -1485,7 +1487,7 @@ class Queue(object):
 
     """
     # AMQP Class Number and Mapping Index
-    id = 50
+    frame_id = 50
     index = 0x00320000
 
     class Declare(Frame):
@@ -1497,7 +1499,7 @@ class Queue(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 10
+        frame_id = 10
         index = 0x0032000A
         name = 'Queue.Declare'
 
@@ -1573,7 +1575,7 @@ class Queue(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 11
+        frame_id = 11
         index = 0x0032000B
         name = 'Queue.DeclareOk'
 
@@ -1616,7 +1618,7 @@ class Queue(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 20
+        frame_id = 20
         index = 0x00320014
         name = 'Queue.Bind'
 
@@ -1678,7 +1680,7 @@ class Queue(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 21
+        frame_id = 21
         index = 0x00320015
         name = 'Queue.BindOk'
 
@@ -1700,7 +1702,7 @@ class Queue(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 30
+        frame_id = 30
         index = 0x0032001E
         name = 'Queue.Purge'
 
@@ -1743,7 +1745,7 @@ class Queue(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 31
+        frame_id = 31
         index = 0x0032001F
         name = 'Queue.PurgeOk'
 
@@ -1759,7 +1761,7 @@ class Queue(object):
         def __init__(self, message_count=0):
             """Initialize the Queue.PurgeOk class
 
-            :param int/long message_count:
+            :param int/long message-count:
 
             """
             self.message_count = message_count
@@ -1773,7 +1775,7 @@ class Queue(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 40
+        frame_id = 40
         index = 0x00320028
         name = 'Queue.Delete'
 
@@ -1829,7 +1831,7 @@ class Queue(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 41
+        frame_id = 41
         index = 0x00320029
         name = 'Queue.DeleteOk'
 
@@ -1845,7 +1847,7 @@ class Queue(object):
         def __init__(self, message_count=0):
             """Initialize the Queue.DeleteOk class
 
-            :param int/long message_count:
+            :param int/long message-count:
 
             """
             self.message_count = message_count
@@ -1857,7 +1859,7 @@ class Queue(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 50
+        frame_id = 50
         index = 0x00320032
         name = 'Queue.Unbind'
 
@@ -1912,7 +1914,7 @@ class Queue(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 51
+        frame_id = 51
         index = 0x00320033
         name = 'Queue.UnbindOk'
 
@@ -1935,7 +1937,7 @@ class Basic(object):
 
     """
     # AMQP Class Number and Mapping Index
-    id = 60
+    frame_id = 60
     index = 0x003C0000
 
     class Qos(Frame):
@@ -1950,7 +1952,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 10
+        frame_id = 10
         index = 0x003C000A
         name = 'Basic.Qos'
 
@@ -1996,7 +1998,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 11
+        frame_id = 11
         index = 0x003C000B
         name = 'Basic.QosOk'
 
@@ -2019,7 +2021,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 20
+        frame_id = 20
         index = 0x003C0014
         name = 'Basic.Consume'
 
@@ -2056,7 +2058,7 @@ class Basic(object):
 
             :param int ticket: Deprecated
             :param str queue:
-            :param str consumer_tag:
+            :param str consumer-tag:
             :param bool no_local: Do not deliver own messages
             :param bool no_ack: No acknowledgement needed
             :param bool exclusive: Request exclusive access
@@ -2094,7 +2096,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 21
+        frame_id = 21
         index = 0x003C0015
         name = 'Basic.ConsumeOk'
 
@@ -2110,7 +2112,7 @@ class Basic(object):
         def __init__(self, consumer_tag=''):
             """Initialize the Basic.ConsumeOk class
 
-            :param str consumer_tag:
+            :param str consumer-tag:
 
             """
             self.consumer_tag = consumer_tag
@@ -2126,7 +2128,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 30
+        frame_id = 30
         index = 0x003C001E
         name = 'Basic.Cancel'
 
@@ -2164,7 +2166,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 31
+        frame_id = 31
         index = 0x003C001F
         name = 'Basic.CancelOk'
 
@@ -2196,7 +2198,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 40
+        frame_id = 40
         index = 0x003C0028
         name = 'Basic.Publish'
 
@@ -2252,7 +2254,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 50
+        frame_id = 50
         index = 0x003C0032
         name = 'Basic.Return'
 
@@ -2302,7 +2304,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 60
+        frame_id = 60
         index = 0x003C003C
         name = 'Basic.Deliver'
 
@@ -2357,7 +2359,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 70
+        frame_id = 70
         index = 0x003C0046
         name = 'Basic.Get'
 
@@ -2402,7 +2404,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 71
+        frame_id = 71
         index = 0x003C0047
         name = 'Basic.GetOk'
 
@@ -2456,7 +2458,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 72
+        frame_id = 72
         index = 0x003C0048
         name = 'Basic.GetEmpty'
 
@@ -2487,7 +2489,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 80
+        frame_id = 80
         index = 0x003C0050
         name = 'Basic.Ack'
 
@@ -2524,7 +2526,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 90
+        frame_id = 90
         index = 0x003C005A
         name = 'Basic.Reject'
 
@@ -2561,7 +2563,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 100
+        frame_id = 100
         index = 0x003C0064
         name = 'Basic.RecoverAsync'
 
@@ -2597,7 +2599,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 110
+        frame_id = 110
         index = 0x003C006E
         name = 'Basic.Recover'
 
@@ -2626,7 +2628,7 @@ class Basic(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 111
+        frame_id = 111
         index = 0x003C006F
         name = 'Basic.RecoverOk'
 
@@ -2642,7 +2644,7 @@ class Basic(object):
             """
     class Nack(Frame):
         # AMQP Method Number and Mapping Index
-        id = 120
+        frame_id = 120
         index = 0x003C0078
         name = 'Basic.Nack'
 
@@ -2690,7 +2692,7 @@ class Basic(object):
                       "expiration",
                       "message_id",
                       "timestamp",
-                      "type",
+                      "message_type",
                       "user_id",
                       "app_id",
                       "cluster_id"]
@@ -2706,7 +2708,7 @@ class Basic(object):
                  'expiration': 256,
                  'message_id': 128,
                  'timestamp': 64,
-                 'type': 32,
+                 'message_type': 32,
                  'user_id': 16,
                  'app_id': 8,
                  'cluster_id': 4}
@@ -2722,19 +2724,22 @@ class Basic(object):
         expiration = 'shortstr'
         message_id = 'shortstr'
         timestamp = 'timestamp'
-        type = 'shortstr'
+        message_type = 'shortstr'
         user_id = 'shortstr'
         app_id = 'shortstr'
         cluster_id = 'shortstr'
 
-        id = 60
+        frame_id = 60
         index = 0x003C
 
         def __init__(self, content_type='', content_encoding='', headers=None,
                      delivery_mode=None, priority=None, correlation_id='',
                      reply_to='', expiration='', message_id='', timestamp=None,
-                     type='', user_id='', app_id='', cluster_id=''):
+                     message_type='', user_id='', app_id='', cluster_id=''):
             """Initialize the Basic.Properties class
+
+            Note that the AMQP property type is named message_type as to
+            not conflict with the Python type keyword
 
             :param str content_type: MIME content type
             :param str content_encoding: MIME content encoding
@@ -2746,7 +2751,7 @@ class Basic(object):
             :param str expiration: Message expiration specification
             :param str message_id: Application message identifier
             :param struct_time timestamp: Message timestamp
-            :param str type: Message type name
+            :param str message_type: Message type name
             :param str user_id: Creating user id
             :param str app_id: Creating application id
             :param str cluster_id: Deprecated
@@ -2783,7 +2788,7 @@ class Basic(object):
             self.timestamp = timestamp
 
             # Message type name
-            self.type = type
+            self.message_type = message_type
 
             # Creating user id
             self.user_id = user_id
@@ -2810,7 +2815,7 @@ class Tx(object):
 
     """
     # AMQP Class Number and Mapping Index
-    id = 90
+    frame_id = 90
     index = 0x005A0000
 
     class Select(Frame):
@@ -2822,7 +2827,7 @@ class Tx(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 10
+        frame_id = 10
         index = 0x005A000A
         name = 'Tx.Select'
 
@@ -2847,7 +2852,7 @@ class Tx(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 11
+        frame_id = 11
         index = 0x005A000B
         name = 'Tx.SelectOk'
 
@@ -2870,7 +2875,7 @@ class Tx(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 20
+        frame_id = 20
         index = 0x005A0014
         name = 'Tx.Commit'
 
@@ -2895,7 +2900,7 @@ class Tx(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 21
+        frame_id = 21
         index = 0x005A0015
         name = 'Tx.CommitOk'
 
@@ -2920,7 +2925,7 @@ class Tx(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 30
+        frame_id = 30
         index = 0x005A001E
         name = 'Tx.Rollback'
 
@@ -2945,7 +2950,7 @@ class Tx(object):
 
         """
         # AMQP Method Number and Mapping Index
-        id = 31
+        frame_id = 31
         index = 0x005A001F
         name = 'Tx.RollbackOk'
 
@@ -2962,12 +2967,12 @@ class Tx(object):
 
 class Confirm(object):
     # AMQP Class Number and Mapping Index
-    id = 85
+    frame_id = 85
     index = 0x00550000
 
     class Select(Frame):
         # AMQP Method Number and Mapping Index
-        id = 10
+        frame_id = 10
         index = 0x0055000A
         name = 'Confirm.Select'
 
@@ -2991,7 +2996,7 @@ class Confirm(object):
 
     class SelectOk(Frame):
         # AMQP Method Number and Mapping Index
-        id = 11
+        frame_id = 11
         index = 0x0055000B
         name = 'Confirm.SelectOk'
 
