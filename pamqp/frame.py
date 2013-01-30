@@ -43,6 +43,11 @@ def demarshal(data_in):
     # Decode the low level frame and break it into parts
     try:
         frame_type, channel_id, frame_size = _frame_parts(data_in)
+
+        # Heartbeats do not have frame length indicators
+        if frame_type == specification.FRAME_HEARTBEAT and frame_size == 0:
+            return 8, channel_id, heartbeat.Heartbeat()
+
         if not frame_size:
             raise exceptions.DemarshalingException('Unknown', 'No frame size')
 
@@ -70,10 +75,6 @@ def demarshal(data_in):
     # Decode a body frame
     elif frame_type == specification.FRAME_BODY:
         return byte_count, channel_id, _demarshal_body_frame(frame_data)
-
-    # Decode a heartbeat frame
-    elif frame_type == specification.FRAME_HEARTBEAT:
-        return byte_count, channel_id, heartbeat.Heartbeat()
 
     exceptions.DemarshalingException('Unknown',
                                      'Unknown frame type: %i' % frame_type)
