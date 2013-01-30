@@ -15,10 +15,12 @@ setup(name='pamqp',
       classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Topic :: Communications',
         'Topic :: Internet',
-        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries'
         ],
         zip_safe=True)
