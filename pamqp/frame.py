@@ -43,12 +43,20 @@ def demarshal(data_in):
     # Decode the low level frame and break it into parts
     try:
         frame_type, channel_id, frame_size = _frame_parts(data_in)
+        if not frame_size:
+            raise exceptions.DemarshalingException('Unknown', 'No frame size')
+
         byte_count = FRAME_HEADER_SIZE + frame_size + 1
+        if byte_count > len(data_in):
+            raise exceptions.DemarshalingException('Unknown',
+                                                   'Not all data received')
 
         if data_in[byte_count - 1] != FRAME_END_CHAR:
             raise exceptions.DemarshalingException('Unknown', 'Last byte error')
+
         frame_data = data_in[FRAME_HEADER_SIZE:byte_count - 1]
-    except ValueError, error:
+
+    except ValueError as error:
         raise exceptions.DemarshalingException('Unknown', error)
 
     # Decode a method frame
