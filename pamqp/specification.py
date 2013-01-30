@@ -5,7 +5,7 @@ Auto-generated AMQP Support Module
 WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 
 """
-__since__ = '2012-09-23'
+__since__ = '2013-01-29'
 
 import struct
 
@@ -555,8 +555,8 @@ class Connection(object):
         locales = 'longstr'
 
         def __init__(self, version_major=0, version_minor=9,
-                     server_properties=None, mechanisms=u'PLAIN',
-                     locales=u'en_US'):
+                     server_properties=None, mechanisms='PLAIN',
+                     locales='en_US'):
             """Initialize the Connection.Start class
 
             :param int version_major: Protocol major version
@@ -607,8 +607,8 @@ class Connection(object):
         response = 'longstr'
         locale = 'shortstr'
 
-        def __init__(self, client_properties=None, mechanism=u'PLAIN',
-                     response='', locale=u'en_US'):
+        def __init__(self, client_properties=None, mechanism='PLAIN',
+                     response='', locale='en_US'):
             """Initialize the Connection.StartOk class
 
             :param dict client_properties: Client properties
@@ -812,7 +812,7 @@ class Connection(object):
         capabilities = 'shortstr'
         insist = 'bit'
 
-        def __init__(self, virtual_host=u'/', capabilities='', insist=False):
+        def __init__(self, virtual_host='/', capabilities='', insist=False):
             """Initialize the Connection.Open class
 
             :param str virtual_host: Virtual host name
@@ -1205,9 +1205,9 @@ class Exchange(object):
         nowait = 'bit'
         arguments = 'table'
 
-        def __init__(self, ticket=0, exchange='', type=u'direct',
-                     passive=False, durable=False, auto_delete=False,
-                     internal=False, nowait=False, arguments=None):
+        def __init__(self, ticket=0, exchange='', type='direct', passive=False,
+                     durable=False, auto_delete=False, internal=False,
+                     nowait=False, arguments=None):
             """Initialize the Exchange.Declare class
 
             :param int ticket: Deprecated

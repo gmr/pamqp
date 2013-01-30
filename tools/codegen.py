@@ -27,7 +27,7 @@ from os import unlink
 from os.path import exists
 from tarfile import open as tarfile_open
 from tempfile import NamedTemporaryFile
-from textwrap import fill, wrap
+from textwrap import wrap
 from urllib import urlopen
 
 # Outut buffer list
@@ -111,9 +111,8 @@ def get_documentation(search_path):
 
     # if we found it, strip all the whitespace
     if node:
-        return ' '.join([line.strip() \
-                         for line in
-                             node[0].text.split('\n')]).strip()
+        return ' '.join([line.strip()
+                         for line in node[0].text.split('\n')]).strip()
 
     # Not found, return None
     return None
@@ -171,6 +170,7 @@ def argument_name(name):
         output += '_'
     return output
 
+
 def get_argument_type_doc(argument):
 
     if 'domain' in argument:
@@ -227,7 +227,10 @@ def new_function(function_name, arguments, indent=0):
                isinstance(argument['default-value'], int):
                 value = argument['default-value']
             else:
-                value = '%r' % argument['default-value']
+                if isinstance(argument['default-value'], basestring):
+                    value = '%r' % str(argument['default-value'])
+                else:
+                    value = '%r' % argument['default-value']
         else:
             if argument['type'][-3:] == 'str':
                 value = "''"
