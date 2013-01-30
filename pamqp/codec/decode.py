@@ -12,6 +12,8 @@ import decimal as _decimal
 import struct
 import time
 
+from pamqp import PYTHON3
+
 
 def bit(value, position):
     """Decode a bit value
@@ -109,7 +111,10 @@ def long_str(value):
     """
     try:
         length = struct.unpack('>I', value[0:4])[0]
-        value = value[4:length + 4].decode('utf-8')
+        if PYTHON3:
+            value = value[4:length + 4]
+        else:
+            value = value[4:length + 4].decode('utf-8')
         try:
             value = str(value)
         except UnicodeEncodeError:
@@ -157,7 +162,10 @@ def short_str(value):
     """
     try:
         length = struct.unpack('B', value[0])[0]
-        value = value[1:length + 1].decode('utf-8')
+        if PYTHON3:
+            value = value[1:length + 1]
+        else:
+            value = value[1:length + 1].decode('utf-8')
         try:
             value = str(value)
         except UnicodeEncodeError:

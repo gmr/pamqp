@@ -9,4 +9,9 @@ __email__ = 'gavinmroy@gmail.com'
 __since__ = '2011-03-29'
 
 from pamqp.codec import decode
-from pamqp.codec import encode
+from pamqp import PYTHON3
+
+if PYTHON3:
+    from pamqp.codec import encode3 as encode
+else:
+    from pamqp.codec import encode

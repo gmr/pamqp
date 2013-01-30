@@ -10,6 +10,7 @@ __since__ = '2013-01-30'
 import struct
 
 from pamqp import codec
+from pamqp import PYTHON3
 # AMQP Protocol Version
 VERSION = (0, 9, 1)
 
@@ -218,6 +219,8 @@ class Frame(object):
         if processing_bitset:
             output.append(codec.encode.octet(byte))
 
+        if PYTHON3:
+            return b''.join(output)
         return ''.join(output)
 
 
@@ -293,6 +296,8 @@ class PropertiesBase(object):
             flags = remainder
             if not flags:
                 break
+        if PYTHON3:
+            return b''.join(flag_pieces + parts)
         return ''.join(flag_pieces + parts)
 
     def to_dict(self):

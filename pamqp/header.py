@@ -8,6 +8,7 @@ import struct
 
 from pamqp import codec
 from pamqp import specification
+from pamqp import PYTHON3
 
 
 class ProtocolHeader(object):
@@ -56,13 +57,19 @@ class ProtocolHeader(object):
         """Return the full AMQP wire protocol frame data representation of the
         ProtocolHeader frame.
 
-        :rtype: str
+        :rtype: str or bytes
 
         """
-        return 'AMQP' + struct.pack('BBBB', 0,
-                                    self.major_version,
-                                    self.minor_version,
-                                    self.revision)
+        if PYTHON3:
+            return b'AMQP' + struct.pack('BBBB', 0,
+                                         self.major_version,
+                                         self.minor_version,
+                                         self.revision)
+        else:
+            return 'AMQP' + struct.pack('BBBB', 0,
+                                        self.major_version,
+                                        self.minor_version,
+                                        self.revision)
 
 
 class ContentHeader(object):
@@ -112,7 +119,7 @@ class ContentHeader(object):
         """Return the AMQP binary encoded value of the frame
 
         """
-        return struct.pack('>HxxQ', specification.Basic.id,
+        return struct.pack('>HxxQ', specification.Basic.frame_id,
                             self.body_size) + self.properties.marshal()
 
     def _get_flags(self, data):

@@ -16,6 +16,7 @@ from pamqp import exceptions
 from pamqp import heartbeat
 from pamqp import header
 from pamqp import specification
+from pamqp import PYTHON3
 
 DEMARSHALLING_FAILURE = 0, 0, None
 FRAME_HEADER_SIZE = 7
@@ -83,7 +84,8 @@ def demarshal(data_in):
 def marshal(frame_value, channel_id):
     """Marshal a frame to be sent over the wire.
 
-    :param pamqp.specification.Frame frame_value: The frame object to marshal
+    :param frame_value: The frame object to marshal
+    :type frame_value: pamqp.specification.Frame or pamqp.heartbeat.Heartbeat
     :param int channel_id: The channel number to send the frame on
     :rtype: str
     :raises: ValueError
@@ -198,12 +200,14 @@ def _marshal(frame_type, channel_id, payload):
 
     :param int frame_type: The frame type to marshal
     :param int channel_id: The channel it will be sent on
-    :param str payload: The frame payload
-    :rtype: str
+    :param str|bytes payload: The frame payload
+    :rtype: str or bytes
 
     """
-    return (struct.pack('>BHI', frame_type, channel_id, len(payload)) +
-            payload + FRAME_END_CHAR)
+    header = struct.pack('>BHI', frame_type, channel_id, len(payload))
+    if PYTHON3:
+        return b''.join([header, payload, bytes(FRAME_END_CHAR, 'latin1')])
+    return ''.join([header, payload, FRAME_END_CHAR])
 
 
 def _marshal_content_body_frame(frame_value, channel_id):

@@ -2,8 +2,10 @@
 AMQP Heartbeat Frame
 
 """
-from pamqp import specification
 import struct
+
+from pamqp import specification
+from pamqp import PYTHON3
 
 
 class Heartbeat(object):
@@ -16,9 +18,10 @@ class Heartbeat(object):
     def marshal(self):
         """Return the binary frame content
 
-        :rtype: str
+        :rtype: str or bytes
 
         """
-        return struct.pack('>BHI',
-                           specification.FRAME_HEARTBEAT,
-                           0, 0) + chr(specification.FRAME_END)
+        value = struct.pack('>BHI', specification.FRAME_HEARTBEAT, 0, 0)
+        if PYTHON3:
+            return value + bytes(chr(specification.FRAME_END), 'latin1')
+        return value + chr(specification.FRAME_END)

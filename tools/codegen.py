@@ -330,6 +330,8 @@ __since__ = '%s'
 import struct
 
 from pamqp import codec
+from pamqp import PYTHON3
+
 ''' % (CODEGEN_OUTPUT.split('/')[-1], date.today().isoformat())
 new_line(docblock)
 

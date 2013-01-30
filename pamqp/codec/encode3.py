@@ -1,4 +1,4 @@
-"""AMQP Data Encoder
+"""Python 3 compatible AMQP Data Encoder
 
 Functions for encoding data of various types including field tables and arrays
 
@@ -21,7 +21,7 @@ def bit(value, byte, position):
     :param int value: Value to decode
     :param int byte: The byte to apply the value to
     :param int position: The position in the byte to set the bit on
-    :rtype: byte
+    :rtype: tuple of bytes used and a bool value
 
     """
     return byte | (value << position)
@@ -31,7 +31,7 @@ def boolean(value):
     """Encode a boolean value.
 
     :param bool value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
     if not isinstance(value, bool):
@@ -43,25 +43,24 @@ def decimal(value):
     """Encode a decimal.Decimal value.
 
     :param decimal.Decimal value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
     if not isinstance(value, _decimal.Decimal):
         raise ValueError("decimal.Decimal type required")
-    value = value.normalize()
-    if value._exp < 0:
-        decimals = -value._exp
+    tmp = '%s' % value
+    if '.' in tmp:
+        decimals = len(tmp.split('.')[-1])
+        value = value.normalize()
         raw = int(value * (_decimal.Decimal(10) ** decimals))
         return struct.pack('>Bi', decimals, raw)
-    # per spec, the "decimal.Decimals" octet is unsigned (!)
     return struct.pack('>Bi', 0, int(value))
-
 
 def floating_point(value):
     """Encode a floating point value.
 
     :param float value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
     if not isinstance(value, float):
@@ -72,12 +71,12 @@ def floating_point(value):
 def long_int(value):
     """Encode a long integer.
 
-    :param long or int value: Value to encode
-    :rtype: str
+    :param int value: Value to encode
+    :rtype: bytes
 
     """
-    if not isinstance(value, long) and not isinstance(value, int):
-        raise ValueError("int or long type required")
+    if not isinstance(value, int):
+        raise ValueError("int type required")
     if value < -2147483648 or value > 2147483647:
         raise ValueError("Long integer range: -2147483648 to 2147483647")
     return struct.pack('>l', value)
@@ -87,11 +86,11 @@ def long_long_int(value):
     """Encode a long-long int.
 
     :param long or int value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
-    if not isinstance(value, long) and not isinstance(value, int):
-        raise ValueError("int or long type required")
+    if not isinstance(value, int):
+        raise ValueError("int type required")
     if value < -9223372036854775808 or value > 9223372036854775807:
         raise ValueError("long-long integer range: \
 -9223372036854775808 to 9223372036854775807")
@@ -102,21 +101,19 @@ def long_string(value):
     """Encode a string.
 
     :param str value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
-    if not isinstance(value, basestring):
-        raise ValueError("str or unicode type required")
-    if isinstance(value, unicode):
-        value = value.encode('utf-8')
-    return struct.pack('>I', len(value)) + value
+    if not isinstance(value, str):
+        raise ValueError("str type required")
+    return struct.pack('>I', len(value)) + bytes(value, 'utf-8')
 
 
 def octet(value):
     """Encode an octet value.
 
     :param value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
     if not isinstance(value, int):
@@ -128,7 +125,7 @@ def short_int(value):
     """Encode a short integer.
 
     :param int value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
     if not isinstance(value, int):
@@ -142,21 +139,20 @@ def short_string(value):
     """ Encode a string.
 
     :param str value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
-    if not isinstance(value, basestring):
-        raise ValueError("str or unicode type required, received %s:%r", type(value), value)
-    if isinstance(value, unicode):
-        value = value.encode('utf-8')
-    return struct.pack('B', len(value)) + value
+    if not isinstance(value, str):
+        raise ValueError("str type required, received %s:%r" % (type(value),
+                                                                value))
+    return struct.pack('B', len(value)) + bytes(value, 'utf-8')
 
 
 def timestamp(value):
     """Encode a datetime.datetime object or time.struct_time.
 
     :param datetime.datetime or time.struct_time value value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
     if isinstance(value, datetime.datetime):
@@ -170,7 +166,7 @@ def field_array(value):
     """Encode a field array from a dictionary.
 
     :param list value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
     if not isinstance(value, list):
@@ -180,7 +176,7 @@ def field_array(value):
     for item in value:
         data.append(encode_table_value(item))
 
-    output = ''.join(data)
+    output = b''.join(data)
     return struct.pack('>I', len(output)) + output
 
 
@@ -188,7 +184,7 @@ def field_table(value):
     """Encode a field table from a dictionary.
 
     :param dict value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
     # If there is no value, return a standard 4 null bytes
@@ -203,14 +199,14 @@ def field_table(value):
     for key in sorted(value.keys()):
         # Append the field header / delimiter
         data.append(struct.pack('B', len(key)))
-        data.append(key)
+        data.append(bytes(key, 'utf-8'))
         try:
             data.append(encode_table_value(value[key]))
         except ValueError as err:
             raise ValueError("%s error: %s", key, err)
 
     # Join all of the data together as a string
-    output = ''.join(data)
+    output = b''.join(data)
     return struct.pack('>I', len(output)) + output
 
 
@@ -218,17 +214,17 @@ def table_integer(value):
     """Determines the best type of numeric type to encode value as, preferring
     the smallest data size first.
 
-    :param int or long value: Value to encode
-    :rtype: str
+    :param int value: Value to encode
+    :rtype: bytes
 
     """
     # Send the appropriately sized data value
     if -32768 < value < 32767:
-        return 'U' + short_int(int(value))
+        return b'U' + short_int(value)
     elif -2147483648 < value < 2147483647:
-        return 'I' + long_int(long(value))
+        return b'I' + long_int(value)
     elif -9223372036854775808 < value < 9223372036854775807:
-        return 'L' + long_long_int(long(value))
+        return b'L' + long_long_int(value)
 
     raise ValueError("Numeric value exceeds long-long-int max: %r" % value)
 
@@ -237,29 +233,29 @@ def encode_table_value(value):
     """Takes a value of any type and tries to encode it with the proper encoder
 
     :param any value: Value to encode
-    :rtype: str
+    :rtype: bytes
 
     """
     # Determine the field type and encode it
     if isinstance(value, bool):
-        result = 't' + boolean(value)
-    elif isinstance(value, int) or isinstance(value, long):
+        result = b't' + boolean(value)
+    elif isinstance(value, int):
         result = table_integer(value)
     elif isinstance(value, _decimal.Decimal):
-        result = 'D' + decimal(value)
+        result = b'D' + decimal(value)
     elif isinstance(value, float):
-        result = 'f' + floating_point(value)
-    elif isinstance(value, basestring):
-        result = 'S' + long_string(value)
+        result = b'f' + floating_point(value)
+    elif isinstance(value, str):
+        result = b'S' + long_string(value)
     elif (isinstance(value, datetime.datetime) or
-         isinstance(value, time.struct_time)):
-        result = 'T' + timestamp(value)
+          isinstance(value, time.struct_time)):
+        result = b'T' + timestamp(value)
     elif isinstance(value, dict):
-        result = 'F' + field_table(value)
+        result = b'F' + field_table(value)
     elif isinstance(value, list):
-        result = 'A' + field_array(value)
+        result = b'A' + field_array(value)
     elif value is None:
-        result = 'V'
+        result = b'V'
     else:
         raise ValueError("Unknown type: %s (%r)", type(value), value)
 
@@ -273,7 +269,7 @@ def by_type(value, data_type):
 
     :param any value: Value to encode
     :param str data_type: type of data to encode
-    :rtype: str
+    :rtype: bytes
 
     """
     # Determine the field type and encode it
