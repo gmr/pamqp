@@ -5,7 +5,7 @@ Auto-generated AMQP Support Module
 WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 
 """
-__since__ = '2013-01-30'
+__since__ = '2013-03-21'
 
 import struct
 
@@ -131,39 +131,6 @@ class Frame(object):
         """
         return '<%s.%s object at %s>' % (__name__, self.name, hex(id(self)))
 
-    def demarshal(self, data):
-        """
-        Dynamically decode the frame data applying the values to the method
-        object by iterating through the attributes in order and decoding them.
-
-        :param str data: The binary encoded method data
-
-        """
-        offset = 0
-        processing_bitset = False
-        for argument in self.attributes:
-
-            data_type = getattr(self.__class__, argument)
-
-            if offset == 7 and processing_bitset:
-                data = data[1:]
-                offset = 0
-
-            if processing_bitset and data_type != 'bit':
-                offset = 0
-                processing_bitset = False
-                data = data[1:]
-
-            consumed, value = codec.decode.by_type(data, data_type, offset)
-
-            if data_type == 'bit':
-                offset += 1
-                processing_bitset = True
-
-            setattr(self, argument, value)
-            if consumed:
-                data = data[consumed:]
-
     def marshal(self):
         """
         Dynamically encode the frame by taking the list of attributes and
@@ -223,9 +190,42 @@ class Frame(object):
             return b''.join(output)
         return ''.join(output)
 
+    def unmarshal(self, data):
+        """
+        Dynamically decode the frame data applying the values to the method
+        object by iterating through the attributes in order and decoding them.
+
+        :param str data: The binary encoded method data
+
+        """
+        offset = 0
+        processing_bitset = False
+        for argument in self.attributes:
+
+            data_type = getattr(self.__class__, argument)
+
+            if offset == 7 and processing_bitset:
+                data = data[1:]
+                offset = 0
+
+            if processing_bitset and data_type != 'bit':
+                offset = 0
+                processing_bitset = False
+                data = data[1:]
+
+            consumed, value = codec.decode.by_type(data, data_type, offset)
+
+            if data_type == 'bit':
+                offset += 1
+                processing_bitset = True
+                consumed = 0
+
+            setattr(self, argument, value)
+            if consumed:
+                data = data[consumed:]
 
 class PropertiesBase(object):
-    """Provide a base object that marshals and demarshals the Basic.Properties
+    """Provide a base object that marshals and unmarshals the Basic.Properties
     object values.
 
     """
@@ -244,22 +244,6 @@ class PropertiesBase(object):
     def __delattr__(self, item):
         if item in self.attributes:
             setattr(self, item, None)
-
-    def demarshal(self, flags, data):
-        """
-        Dynamically decode the frame data applying the values to the method
-        object by iterating through the attributes in order and decoding them.
-
-        :param int flags: Flags that indicate if the data has the given property
-        :param str data: The binary encoded method data
-
-        """
-        for property_name in self.attributes:
-            if flags & self.flags[property_name]:
-                data_type = getattr(self.__class__, property_name)
-                consumed, value = codec.decode.by_type(data, data_type)
-                setattr(self, property_name, value)
-                data = data[consumed:]
 
     def encode_property(self, property_name, property_value):
         """Encode a single property value
@@ -305,6 +289,22 @@ class PropertiesBase(object):
         for attribute in self.attributes:
             output[attribute] = getattr(self, attribute, None)
         return output
+
+    def unmarshal(self, flags, data):
+        """
+        Dynamically decode the frame data applying the values to the method
+        object by iterating through the attributes in order and decoding them.
+
+        :param int flags: Flags that indicate if the data has the given property
+        :param str data: The binary encoded method data
+
+        """
+        for property_name in self.attributes:
+            if flags & self.flags[property_name]:
+                data_type = getattr(self.__class__, property_name)
+                consumed, value = codec.decode.by_type(data, data_type)
+                setattr(self, property_name, value)
+                data = data[consumed:]
 
 
 # AMQP Errors

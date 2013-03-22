@@ -14,8 +14,8 @@ class ContentBody(object):
     def __len__(self):
         return len(self.value)
 
-    def demarshal(self, data):
-        self.value = data
-
     def marshal(self):
         return self.value
+
+    def unmarshal(self, data):
+        self.value = data

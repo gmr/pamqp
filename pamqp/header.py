@@ -10,6 +10,8 @@ from pamqp import codec
 from pamqp import specification
 from pamqp import PYTHON3
 
+AMQP = b'AMQP' if PYTHON3 else 'AMQP'
+
 
 class ProtocolHeader(object):
     """Class that represents the AMQP Protocol Header"""
@@ -28,16 +30,28 @@ class ProtocolHeader(object):
         self.minor_version = minor_version or specification.VERSION[1]
         self.revision = revision or specification.VERSION[2]
 
-    def demarshal(self, data):
+    def marshal(self):
+        """Return the full AMQP wire protocol frame data representation of the
+        ProtocolHeader frame.
+
+        :rtype: str or bytes
+
+        """
+        return AMQP + struct.pack('BBBB', 0,
+                                  self.major_version,
+                                  self.minor_version,
+                                  self.revision)
+
+    def unmarshal(self, data):
         """Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 
         :param str data: The binary encoded method data
-        :rtype: int byte count of data used to demarshal the frame
+        :rtype: int byte count of data used to unmarshal the frame
         :raises: ValueError
 
         """
-        if data[0:4] == 'AMQP':
+        if data[0:4] == AMQP:
             try:
                 (self.major_version,
                  self.minor_version,
@@ -52,24 +66,6 @@ class ProtocolHeader(object):
         # The first four bytes did not match
         raise ValueError('Data did not match the ProtocolHeader format: %r',
                          data)
-
-    def marshal(self):
-        """Return the full AMQP wire protocol frame data representation of the
-        ProtocolHeader frame.
-
-        :rtype: str or bytes
-
-        """
-        if PYTHON3:
-            return b'AMQP' + struct.pack('BBBB', 0,
-                                         self.major_version,
-                                         self.minor_version,
-                                         self.revision)
-        else:
-            return 'AMQP' + struct.pack('BBBB', 0,
-                                        self.major_version,
-                                        self.minor_version,
-                                        self.revision)
 
 
 class ContentHeader(object):
@@ -95,12 +91,19 @@ class ContentHeader(object):
         self.body_size = body_size
         self.properties = properties or specification.Basic.Properties()
 
-    def demarshal(self, data):
+    def marshal(self):
+        """Return the AMQP binary encoded value of the frame
+
+        """
+        return struct.pack('>HxxQ', specification.Basic.frame_id,
+                           self.body_size) + self.properties.marshal()
+
+    def unmarshal(self, data):
         """Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 
         :param str data: The binary encoded method data
-        :rtype: int byte count of data used to demarshal the frame
+        :rtype: int byte count of data used to unmarshal the frame
         :raises: ValueError
 
         """
@@ -113,14 +116,7 @@ class ContentHeader(object):
         offset, flags = self._get_flags(data[12:])
 
         # Demarshal the properties
-        self.properties.demarshal(flags, data[12 + offset:])
-
-    def marshal(self):
-        """Return the AMQP binary encoded value of the frame
-
-        """
-        return struct.pack('>HxxQ', specification.Basic.frame_id,
-                            self.body_size) + self.properties.marshal()
+        self.properties.unmarshal(flags, data[12 + offset:])
 
     def _get_flags(self, data):
         """Decode the flags from the data returning the bytes consumed and flags

@@ -3,7 +3,7 @@ PAMQP Specific Exceptions
 
 """
 
-class DemarshalingException(Exception):
-    """Raised when a frame is not able to be demarshaled."""
+class UnmarshalingException(Exception):
+    """Raised when a frame is not able to be unmarshaled."""
     def __repr__(self):
-        return "Could not demarshal %s frame: %s" % (self.args[0], self.args[1])
+        return "Could not unmarshal %s frame: %s" % (self.args[0], self.args[1])

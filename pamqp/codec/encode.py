@@ -3,7 +3,6 @@
 Functions for encoding data of various types including field tables and arrays
 
 """
-
 __author__ = 'Gavin M. Roy'
 __email__ = 'gavinmroy@gmail.com'
 __since__ = '2011-03-29'
