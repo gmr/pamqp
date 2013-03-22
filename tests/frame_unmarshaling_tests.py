@@ -365,7 +365,6 @@ class DemarshalingTests(unittest.TestCase):
         header = pamqp.header.ContentHeader()
         bytes_consumed, flags = header._get_flags(encoded_properties)
         obj.unmarshal(flags, encoded_properties[bytes_consumed:])
-        print(obj.timestamp)
 
         for key in properties:
             self.assertEqual(getattr(obj, key), properties[key],
@@ -1497,7 +1496,6 @@ class DemarshalingTests(unittest.TestCase):
                        'ticket':  0,
                        'routing_key':  str_or_bytes('test_routing_key'),
                        'exchange':  str_or_bytes('pika_test_exchange')}
-        print(expectation)
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = pamqp.frame.unmarshal(frame_data)

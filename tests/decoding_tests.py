@@ -162,7 +162,6 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_long_long_int_value(self):
         value = str_or_bytes('\x7f\xff\xff\xff\xff\xff\xff\xf8')
-        print(codec.decode.long_long_int(value))
         self.assertEqual(codec.decode.long_long_int(value)[1],
                          9223372036854775800)
 

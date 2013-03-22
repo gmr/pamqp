@@ -142,10 +142,6 @@ def _unmarshal_method_frame(frame_data):
     # Get the Method Index from the class data
     bytes_used, method_index = codec.decode.long_int(frame_data[0:4])
 
-    print(bytes_used)
-    print(method_index)
-    print(specification.INDEX_MAPPING[method_index])
-
     # Create an instance of the method object we're going to unmarshal
     try:
         method = specification.INDEX_MAPPING[method_index]()
@@ -154,7 +150,6 @@ def _unmarshal_method_frame(frame_data):
 
     # Unmarshal the data
     try:
-        print(frame_data[bytes_used:])
         method.unmarshal(frame_data[bytes_used:])
     except struct.error as error:
         raise exceptions.UnmarshalingException(method, error)
