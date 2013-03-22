@@ -7,7 +7,7 @@ if sys.version_info < (2, 7, 0):
 
 
 setup(name='pamqp',
-      version='1.0.1',
+      version='1.1.0',
       description='RabbitMQ Focused AMQP low-level library',
       long_description="AMQP Frame Encoding and Decoding Library",
       author='Gavin M. Roy',
