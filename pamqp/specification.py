@@ -2984,6 +2984,9 @@ class Confirm(object):
         # Specifies if this is a synchronous AMQP method
         synchronous = True
 
+        # Valid responses to this method
+        valid_responses = ['Confirm.SelectOk']
+
         # AMQP Method Attributes
         attributes = ['nowait']
 
