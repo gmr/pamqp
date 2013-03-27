@@ -1,12 +1,10 @@
 """AMQP Data Encoder
 
-Functions for encoding data of various types including field tables and arrays
+This module contains all of the methods required to encode AMQP data types.
+There is a rmqid.codec.encode3 module but it is only a Python 3 support overlay
+that is transparent to the use of the library.
 
 """
-__author__ = 'Gavin M. Roy'
-__email__ = 'gavinmroy@gmail.com'
-__since__ = '2011-03-29'
-
 import calendar
 import decimal as _decimal
 import datetime
@@ -145,7 +143,8 @@ def short_string(value):
 
     """
     if not isinstance(value, basestring):
-        raise ValueError("str or unicode type required, received %s:%r", type(value), value)
+        raise ValueError("str or unicode type required, received %s:%r" %
+                         type(value), value)
     if isinstance(value, unicode):
         value = value.encode('utf-8')
     return struct.pack('B', len(value)) + value
@@ -251,7 +250,7 @@ def encode_table_value(value):
     elif isinstance(value, basestring):
         result = 'S' + long_string(value)
     elif (isinstance(value, datetime.datetime) or
-         isinstance(value, time.struct_time)):
+          isinstance(value, time.struct_time)):
         result = 'T' + timestamp(value)
     elif isinstance(value, dict):
         result = 'F' + field_table(value)

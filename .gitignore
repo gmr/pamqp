@@ -4,3 +4,8 @@ codegen/amqp0-9-1.xml
 *.pyc
 build
 dist
+.coverage
+docs/_build
+atlassian-ide-plugin.xml
+.DS_Store
+pamqp.egg-info

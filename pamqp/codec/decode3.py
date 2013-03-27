@@ -3,16 +3,10 @@
 Functions for decoding data of various types including field tables and arrays
 
 """
-
-__author__ = 'Gavin M. Roy'
-__email__ = 'gavinmroy@gmail.com'
-__since__ = '2011-03-29'
-
 import decimal as _decimal
 import struct
 import time
 
-from pamqp import PYTHON3
 
 class Struct(object):
 
@@ -81,6 +75,7 @@ def floating_point(value):
         return 4, Struct.float.unpack_from(value)[0]
     except TypeError:
         raise ValueError('Could not unpack data')
+
 
 def long_int(value):
     """Decode a long integer value

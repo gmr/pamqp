@@ -1,12 +1,11 @@
 """AMQP Data Decoder
 
-Functions for decoding data of various types including field tables and arrays
+The rmqid.codec.decode module contains all of the methods required to decode
+AMQP data types including field tables and arrays. There is a
+rmqid.codec.decode3 module but it is only a Python 3 support overlay that is
+transparent to the use of the library.
 
 """
-__author__ = 'Gavin M. Roy'
-__email__ = 'gavinmroy@gmail.com'
-__since__ = '2011-03-29'
-
 import decimal as _decimal
 import struct
 import time
@@ -69,6 +68,7 @@ def floating_point(value):
         return 4, struct.unpack_from('>f', value)[0]
     except TypeError:
         raise ValueError('Could not unpack data')
+
 
 def long_int(value):
     """Decode a long integer value
@@ -271,6 +271,7 @@ def _embedded_value(value):
         raise ValueError('Unknown type "%s"' % value[0])
 
     return bytes_consumed + 1, value
+
 
 def by_type(value, data_type, offset=0):
     """Decodes values using the specified type

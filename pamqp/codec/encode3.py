@@ -3,10 +3,6 @@
 Functions for encoding data of various types including field tables and arrays
 
 """
-__author__ = 'Gavin M. Roy'
-__email__ = 'gavinmroy@gmail.com'
-__since__ = '2011-03-29'
-
 import calendar
 import decimal as _decimal
 import datetime
@@ -54,6 +50,7 @@ def decimal(value):
         raw = int(value * (_decimal.Decimal(10) ** decimals))
         return struct.pack('>Bi', decimals, raw)
     return struct.pack('>Bi', 0, int(value))
+
 
 def floating_point(value):
     """Encode a floating point value.

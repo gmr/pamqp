@@ -1,13 +1,8 @@
 """AMQP Binary Data Encoding and Decoding
 
-For copyright and licensing please refer to the file COPYING
+For copyright and licensing please refer to the file LICENSE
 
 """
-
-__author__ = 'Gavin M. Roy'
-__email__ = 'gavinmroy@gmail.com'
-__since__ = '2011-03-29'
-
 from pamqp import PYTHON3
 
 if PYTHON3:

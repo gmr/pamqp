@@ -119,7 +119,8 @@ class ContentHeader(object):
         self.properties.unmarshal(flags, data[12 + offset:])
 
     def _get_flags(self, data):
-        """Decode the flags from the data returning the bytes consumed and flags
+        """Decode the flags from the data returning the bytes consumed and
+        flags
 
         :param str data: The data to pull flags out of
         :rtype: int, int

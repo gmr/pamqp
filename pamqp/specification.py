@@ -1,6 +1,4 @@
-"""specification.py
-
-Auto-generated AMQP Support Module
+"""Auto-generated AMQP Support Module
 
 WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 

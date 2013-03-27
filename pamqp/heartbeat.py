@@ -1,5 +1,5 @@
 """
-AMQP Heartbeat Frame
+AMQP Heartbeat Frame, used to create new Heartbeat frames for sending to a peer
 
 """
 import struct
@@ -9,9 +9,10 @@ from pamqp import PYTHON3
 
 
 class Heartbeat(object):
-    """
-    Heartbeat frame object mapping class. AMQP Heartbeat frames are mapped on
-    to this class for a common access structure to the attributes/data values.
+    """Heartbeat frame object mapping class. AMQP Heartbeat frames are mapped
+    on to this class for a common access structure to the attributes/data
+    values.
+
     """
     name = 'Heartbeat'
 

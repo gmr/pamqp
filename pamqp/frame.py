@@ -62,7 +62,8 @@ def unmarshal(data_in):
             raise exceptions.UnmarshalingException('Unknown',
                                                    'Not all data received')
         if data_in[byte_count - 1] != DECODE_FRAME_END_CHAR:
-            raise exceptions.UnmarshalingException('Unknown', 'Last byte error')
+            raise exceptions.UnmarshalingException('Unknown',
+                                                   'Last byte error')
 
         frame_data = data_in[FRAME_HEADER_SIZE:byte_count - 1]
 
@@ -223,7 +224,8 @@ def _marshal_content_body_frame(frame_value, channel_id):
     :rtype: str
 
     """
-    return _marshal(specification.FRAME_BODY, channel_id, frame_value.marshal())
+    return _marshal(specification.FRAME_BODY, channel_id,
+                    frame_value.marshal())
 
 
 def _marshal_content_header_frame(frame_value, channel_id):
