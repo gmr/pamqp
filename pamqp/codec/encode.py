@@ -144,7 +144,7 @@ def short_string(value):
     """
     if not isinstance(value, basestring):
         raise ValueError("str or unicode type required, received %s:%r" %
-                         type(value), value)
+                         (type(value), value))
     if isinstance(value, unicode):
         value = value.encode('utf-8')
     return struct.pack('B', len(value)) + value
