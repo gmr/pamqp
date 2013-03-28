@@ -205,7 +205,7 @@ def field_table(value):
         try:
             data.append(encode_table_value(value[key]))
         except ValueError as err:
-            raise ValueError("%s error: %s", key, err)
+            raise ValueError("%s error: %s" % (key, err))
 
     # Join all of the data together as a string
     output = ''.join(data)
@@ -259,7 +259,7 @@ def encode_table_value(value):
     elif value is None:
         result = 'V'
     else:
-        raise ValueError("Unknown type: %s (%r)" % type(value), value)
+        raise ValueError("Unknown type: %s (%r)" % (type(value), value))
 
     # Return the encoded value
     return result

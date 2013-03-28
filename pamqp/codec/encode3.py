@@ -88,8 +88,8 @@ def long_long_int(value):
     if not isinstance(value, int):
         raise ValueError("int type required")
     if value < -9223372036854775808 or value > 9223372036854775807:
-        raise ValueError("long-long integer range: \
--9223372036854775808 to 9223372036854775807")
+        raise ValueError("long-long integer range: "
+                         "-9223372036854775808 to 9223372036854775807")
     return struct.pack('>q', value)
 
 
@@ -188,7 +188,7 @@ def field_table(value):
         return struct.pack('>I', 0)
 
     if not isinstance(value, dict):
-        raise ValueError("dict type required, got %s", type(value))
+        raise ValueError("dict type required, got %s" % type(value))
 
     # Iterate through all of the keys and encode the data into a table
     data = list()
@@ -199,7 +199,7 @@ def field_table(value):
         try:
             data.append(encode_table_value(value[key]))
         except ValueError as err:
-            raise ValueError("%s error: %s", key, err)
+            raise ValueError("%s error: %s" % (key, err))
 
     # Join all of the data together as a string
     output = b''.join(data)
@@ -253,7 +253,7 @@ def encode_table_value(value):
     elif value is None:
         result = b'V'
     else:
-        raise ValueError("Unknown type: %s (%r)", type(value), value)
+        raise ValueError("Unknown type: %s (%r)"% (type(value), value))
 
     # Return the encoded value
     return result
@@ -290,4 +290,4 @@ def by_type(value, data_type):
     elif data_type == 'void':
         return None
     else:
-        raise ValueError("Unknown type: %s", value)
+        raise ValueError("Unknown type: %s" % value)
