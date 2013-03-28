@@ -194,7 +194,7 @@ def field_table(value):
         return struct.pack('>I', 0)
 
     if not isinstance(value, dict):
-        raise ValueError("dict type required, got %s", type(value))
+        raise ValueError("dict type required, got %s" % type(value))
 
     # Iterate through all of the keys and encode the data into a table
     data = list()
@@ -259,7 +259,7 @@ def encode_table_value(value):
     elif value is None:
         result = 'V'
     else:
-        raise ValueError("Unknown type: %s (%r)", type(value), value)
+        raise ValueError("Unknown type: %s (%r)" % type(value), value)
 
     # Return the encoded value
     return result
@@ -296,4 +296,4 @@ def by_type(value, data_type):
     elif data_type == 'void':
         return None
     else:
-        raise ValueError("Unknown type: %s", value)
+        raise ValueError("Unknown type: %s" % value)

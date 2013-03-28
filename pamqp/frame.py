@@ -82,8 +82,9 @@ def unmarshal(data_in):
     elif frame_type == specification.FRAME_BODY:
         return byte_count, channel_id, _unmarshal_body_frame(frame_data)
 
-    exceptions.UnmarshalingException('Unknown',
-                                     'Unknown frame type: %i' % frame_type)
+    raise exceptions.UnmarshalingException('Unknown',
+                                           'Unknown frame type: %i' %
+                                           frame_type)
 
 
 def marshal(frame_value, channel_id):
@@ -106,7 +107,7 @@ def marshal(frame_value, channel_id):
         return _marshal_content_body_frame(frame_value, channel_id)
     elif isinstance(frame_value, heartbeat.Heartbeat):
         return frame_value.marshal()
-    raise ValueError('Could not determine frame type: %r', frame_value)
+    raise ValueError('Could not determine frame type: %r' % frame_value)
 
 
 def _unmarshal_protocol_header_frame(data_in):

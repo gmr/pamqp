@@ -64,7 +64,7 @@ class ProtocolHeader(object):
             return 8
 
         # The first four bytes did not match
-        raise ValueError('Data did not match the ProtocolHeader format: %r',
+        raise ValueError('Data did not match the ProtocolHeader format: %r' %
                          data)
 
 
