@@ -2,7 +2,7 @@
 __author__ = 'Gavin M. Roy'
 __email__ = 'gavinmroy@gmail.com'
 __since__ = '2011-09-23'
-__version__ = '1.1.3'
+__version__ = '1.2.0'
 
 import sys
 
