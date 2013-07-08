@@ -1,5 +1,19 @@
 <?xml version = "1.0"?>
 <rabbitmq>
+    <class name = "connection" handler = "connection" index = "10" label = "work with socket connections">
+        <method name = "blocked" synchronous = "0" index = "60" label = "signal that connection is blocked">
+          <doc>
+            This method signals to the client that the connection is blocked by RabbitMQ.
+          </doc>
+          <field name = "reason" type = "shortstr" />
+        </method>
+        <method name = "unblocked" synchronous = "0" index = "61" label = "signal that connection is no longer blocked">
+          <doc>
+            This method signals to the client that the connection is no longer blocked by RabbitMQ.
+          </doc>
+        </method>
+    </class>
+
     <!-- no wait is missing its definition in a few places -->
     <field name="nowait" type="bit">
         do not send a reply method

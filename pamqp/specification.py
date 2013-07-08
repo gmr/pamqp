@@ -1,9 +1,11 @@
-"""Auto-generated AMQP Support Module
+"""specification.py
+
+Auto-generated AMQP Support Module
 
 WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 
 """
-__since__ = '2013-03-21'
+__since__ = '2013-07-08'
 
 import struct
 
@@ -936,6 +938,57 @@ class Connection(object):
 
         def __init__(self):
             """Initialize the Connection.CloseOk class
+
+            """
+    class Blocked(Frame):
+        """Signal that connection is blocked
+
+        This method signals to the client that the connection is blocked by
+        RabbitMQ.
+
+        """
+        # AMQP Method Number and Mapping Index
+        frame_id = 60
+        index = 0x000A003C
+        name = 'Connection.Blocked'
+
+        # Specifies if this is a synchronous AMQP method
+        synchronous = False
+
+        # AMQP Method Attributes
+        attributes = ['reason']
+
+        # Class Attribute Types
+        reason = 'shortstr'
+
+        def __init__(self, reason=''):
+            """Initialize the Connection.Blocked class
+
+            :param str reason:
+
+            """
+            self.reason = reason
+
+    class Unblocked(Frame):
+        """Signal that connection is no longer blocked
+
+        This method signals to the client that the connection is no longer
+        blocked by RabbitMQ.
+
+        """
+        # AMQP Method Number and Mapping Index
+        frame_id = 61
+        index = 0x000A003D
+        name = 'Connection.Unblocked'
+
+        # Specifies if this is a synchronous AMQP method
+        synchronous = False
+
+        # AMQP Method Attributes
+        attributes = []
+
+        def __init__(self):
+            """Initialize the Connection.Unblocked class
 
             """
 
@@ -2982,9 +3035,6 @@ class Confirm(object):
         # Specifies if this is a synchronous AMQP method
         synchronous = True
 
-        # Valid responses to this method
-        valid_responses = ['Confirm.SelectOk']
-
         # AMQP Method Attributes
         attributes = ['nowait']
 
@@ -3027,6 +3077,8 @@ INDEX_MAPPING = {0x000A000A: Connection.Start,
                  0x000A0029: Connection.OpenOk,
                  0x000A0032: Connection.Close,
                  0x000A0033: Connection.CloseOk,
+                 0x000A003C: Connection.Blocked,
+                 0x000A003D: Connection.Unblocked,
                  0x0014000A: Channel.Open,
                  0x0014000B: Channel.OpenOk,
                  0x00140014: Channel.Flow,
