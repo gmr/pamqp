@@ -108,6 +108,11 @@ def get_documentation(search_path):
     if not node:
         node = rabbitmq.xpath('%s/doc' % '/'.join(search))
 
+
+    # Look for RabbitMQ extensions of methods
+    if not node and 'field' in search_path:
+        node = rabbitmq.xpath('field[@name="%s"]/doc' % search_path['method'])
+
     # Look for RabbitMQ extensions of fields
     if not node and 'field' in search_path:
         node = rabbitmq.xpath('field[@name="%s"]/doc' % search_path['field'])
