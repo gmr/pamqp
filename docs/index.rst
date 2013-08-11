@@ -13,11 +13,11 @@ AMQP class/method command class mappings can be found in the :py:mod:`rmqid.spec
 
 Issues
 ------
-Please report any issues to the Github repo at `https://github.com/pika/pamqp/issues <https://github.com/pika/pamqp/issues>`_
+Please report any issues to the Github repo at `https://github.com/gmr/pamqp/issues <https://github.com/gmr/pamqp/issues>`_
 
 Source
 ------
-pamqp source is available on Github at  `https://github.com/pika/pamqp <https://github.com/pika/pamqp>`_
+pamqp source is available on Github at  `https://github.com/gmr/pamqp <https://github.com/gmr/pamqp>`_
 
 Installation
 ------------
