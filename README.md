@@ -16,7 +16,7 @@ BSD
 
 Python Versions Supported
 -------------------------
-2.6, 2.7, 3.3
+2.6, 2.7, 3.2, 3.3
 
 Requirements
 ------------
