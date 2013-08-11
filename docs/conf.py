@@ -50,6 +50,7 @@ copyright = u'2011 - 2013, Gavin M. Roy'
 # built documents.
 #
 # The short X.Y version.
+import pamqp
 
 release = pamqp.__version__
 version = '.'.join(release.split('.')[0:1])
