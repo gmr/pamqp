@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import sys
 import time
 try:
     import unittest2 as unittest
@@ -6,14 +7,15 @@ except ImportError:
     import unittest
 
 import pamqp
-from pamqp import PYTHON3
+
+PYTHON3 = True if sys.version_info > (3, 0, 0) else False
 
 if PYTHON3:
     long = int
     unicode = str
     unicode_test = b'Test'
 else:
-    unicode_test = u'Test'
+    unicode_test = unicode('Test')
 
 
 def str_or_bytes(value):

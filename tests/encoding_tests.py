@@ -106,7 +106,7 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_python2_unicode(self):
         if not PYTHON3:
-            self.assertEqual(codec.encode.short_string(u'0123456789'),
+            self.assertEqual(codec.encode.short_string(unicode('0123456789')),
                              '\n0123456789')
 
     def test_encode_string_error(self):

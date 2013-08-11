@@ -14,7 +14,7 @@ if PYTHON3:
     unicode = str
     unicode_test = b'Test'
 else:
-    unicode_test = u'Test'
+    unicode_test = unicode('Test')
 
 
 def str_or_bytes(value):

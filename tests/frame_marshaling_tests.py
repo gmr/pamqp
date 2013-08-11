@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import sys
 try:
     import unittest2 as unittest
 except ImportError:
@@ -7,7 +8,8 @@ from pamqp import frame
 from pamqp import header
 from pamqp import heartbeat
 from pamqp import specification
-from pamqp import PYTHON3
+
+PYTHON3 = True if sys.version_info > (3, 0, 0) else False
 
 def encode(value):
     if PYTHON3:
