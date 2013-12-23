@@ -52,6 +52,18 @@ def decimal(value):
     return struct.pack('>Bi', 0, int(value))
 
 
+def double(value):
+    """Encode a floating point value as a double
+
+    :param float value: Value to encode
+    :rtype: str
+
+    """
+    if not isinstance(value, float):
+        raise ValueError("float type required")
+    return struct.pack('>d', value)
+
+
 def floating_point(value):
     """Encode a floating point value.
 
@@ -271,6 +283,8 @@ def by_type(value, data_type):
     # Determine the field type and encode it
     if data_type == 'field_array':
         return field_array(value)
+    elif data_type == 'double':
+        return double(value)
     elif data_type == 'long':
         return long_int(value)
     elif data_type == 'longlong':

@@ -11,6 +11,7 @@ import time
 class Struct(object):
 
     byte = struct.Struct('B')
+    double = struct.Struct('>d')
     float = struct.Struct('>f')
     integer = struct.Struct('>I')
     long = struct.Struct('>l')
@@ -59,6 +60,20 @@ def decimal(value):
         decimals = Struct.byte.unpack(value[0:1])[0]
         raw = Struct.integer.unpack(value[1:5])[0]
         return 5, _decimal.Decimal(raw) * (_decimal.Decimal(10) ** -decimals)
+    except TypeError:
+        raise ValueError('Could not unpack data')
+
+
+def double(value):
+    """Decode a double value
+
+    :param str value: Value to decode
+    :return tuple: bytes used, float
+    :raises: ValueError
+
+    """
+    try:
+        return 8, Struct.double.unpack_from(value)[0]
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -240,6 +255,8 @@ def _embedded_value(value):
     # Determine the field type and encode it
     if value[0:1] == b'A':
         bytes_consumed, value = field_array(value[1:])
+    elif value[0:1] == b'd':
+        bytes_consumed, value = double(value[1:])
     elif value[0:1] == b'D':
         bytes_consumed, value = decimal(value[1:])
     elif value[0:1] == b'f':
@@ -288,6 +305,8 @@ def by_type(value, data_type, offset=0):
         return boolean(value)
     elif data_type == 'decimal':
         return decimal(value)
+    elif data_type == 'double':
+        return double(value)
     elif data_type == 'float':
         return floating_point(value)
     elif data_type == 'long':
@@ -317,6 +336,7 @@ METHODS = {'array': field_array,
            'bit': bit,
            'boolen': boolean,
            'decimal': decimal,
+           'double': double,
            'float': floating_point,
            'long': long_int,
            'longlong': long_long_int,
