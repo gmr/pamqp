@@ -16,6 +16,7 @@ class Struct(object):
     integer = struct.Struct('>I')
     long = struct.Struct('>l')
     short = struct.Struct('>H')
+    short_short = struct.Struct('>B')
     timestamp = struct.Struct('>Q')
 
 
@@ -163,6 +164,20 @@ def short_int(value):
         raise ValueError('Could not unpack data')
 
 
+def short_short_int(value):
+    """Decode a short, short integer value
+
+    :param bytes value: Value to decode
+    :return tuple: bytes used, int
+    :raises: ValueError
+
+    """
+    try:
+        return 1, Struct.short_short.unpack_from(value[0:1])[0]
+    except TypeError:
+        raise ValueError('Could not unpack data')
+
+
 def short_str(value):
     """Decode a string value
 
@@ -255,6 +270,8 @@ def _embedded_value(value):
     # Determine the field type and encode it
     if value[0:1] == b'A':
         bytes_consumed, value = field_array(value[1:])
+    elif value[0:1] == b'b':
+        bytes_consumed, value = short_short_int(value[1:])
     elif value[0:1] == b'd':
         bytes_consumed, value = double(value[1:])
     elif value[0:1] == b'D':

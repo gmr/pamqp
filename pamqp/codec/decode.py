@@ -160,6 +160,20 @@ def short_int(value):
         raise ValueError('Could not unpack data')
 
 
+def short_short_int(value):
+    """Decode a short-short integer value
+
+    :param str value: Value to decode
+    :return tuple: bytes used, int
+    :raises: ValueError
+
+    """
+    try:
+        return 1, struct.unpack_from('>B', value[0:1])[0]
+    except TypeError:
+        raise ValueError('Could not unpack data')
+
+
 def short_str(value):
     """Decode a string value
 
@@ -257,6 +271,8 @@ def _embedded_value(value):
     # Determine the field type and encode it
     if value[0] == 'A':
         bytes_consumed, value = field_array(value[1:])
+    elif value[0] == 'b':
+        bytes_consumed, value = short_short_int(value[1:])
     elif value[0] == 'd':
         bytes_consumed, value = double(value[1:])
     elif value[0] == 'D':
