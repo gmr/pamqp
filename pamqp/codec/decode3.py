@@ -289,7 +289,7 @@ def _embedded_value(value):
     elif value[0:1] == b'T':
         bytes_consumed, value = timestamp(value[1:])
     elif value[0:1] == b's':
-        bytes_consumed, value = short_str(value[1:])
+        bytes_consumed, value = short_int(value[1:])
     elif value[0:1] == b'S':
         bytes_consumed, value = long_str(value[1:])
     elif value[0:1] == b'U':

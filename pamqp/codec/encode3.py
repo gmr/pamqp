@@ -228,7 +228,7 @@ def table_integer(value):
     """
     # Send the appropriately sized data value
     if -32768 < value < 32767:
-        return b'U' + short_int(value)
+        return b's' + short_int(value)
     elif -2147483648 < value < 2147483647:
         return b'I' + long_int(value)
     elif -9223372036854775808 < value < 9223372036854775807:

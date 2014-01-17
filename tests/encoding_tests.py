@@ -100,18 +100,6 @@ class MarshalingTests(unittest.TestCase):
     def test_encode_long_string_error(self):
         self.assertRaises(ValueError, codec.encode.long_string, 100)
 
-    def test_encode_short_string(self):
-        self.assertEqual(codec.encode.short_string('0123456789'),
-                         str_or_bytes('\n0123456789'))
-
-    def test_encode_python2_unicode(self):
-        if not PYTHON3:
-            self.assertEqual(codec.encode.short_string(unicode('0123456789')),
-                             '\n0123456789')
-
-    def test_encode_string_error(self):
-        self.assertRaises(ValueError, codec.encode.short_string, 12345.12434)
-
     def test_encode_timestamp_from_datetime(self):
         self.assertEqual(codec.encode.timestamp(datetime(2006, 11, 21,
                                                          16, 30, 10)),
@@ -127,7 +115,7 @@ class MarshalingTests(unittest.TestCase):
 
 
     def test_encode_field_array(self):
-        expectation = str_or_bytes('\x00\x00\x00<U\x00\x01I\x00\x00\xaf\xc8S'
+        expectation = str_or_bytes('\x00\x00\x00<s\x00\x01I\x00\x00\xaf\xc8S'
                                    '\x00\x00\x00\x04TestT\x00\x00\x00\x00Ec)'
                                    '\x92I\xbb\x9a\xca\x00D\x02\x00\x00\x01:f@H'
                                    '\xf5\xc3L\x00\x00\x00\x00\xc4e5\xffL\x80'
@@ -148,10 +136,10 @@ class MarshalingTests(unittest.TestCase):
         self.assertRaises(ValueError, codec.encode.field_table, [1, 2, 3])
 
     def test_encode_field_table(self):
-        expectation = ('\x00\x00\x04\x13\x08arrayvalA\x00\x00\x00\tU\x00\x01U'
-                       '\x00\x02U\x00\x03\x07boolvalt\x01\x06decvalD\x02\x00'
+        expectation = ('\x00\x00\x04\x13\x08arrayvalA\x00\x00\x00\ts\x00\x01s'
+                       '\x00\x02s\x00\x03\x07boolvalt\x01\x06decvalD\x02\x00'
                        '\x00\x01:\x07dictvalF\x00\x00\x00\x0c\x03fooS\x00\x00'
-                       '\x00\x03bar\x08floatvlaf@H\xf5\xc3\x06intvalU\x00\x01'
+                       '\x00\x03bar\x08floatvlaf@H\xf5\xc3\x06intvals\x00\x01'
                        '\x07longstrS\x00\x00\x03t0000000000000000000000000000'
                        '00000000000000000000000011111111111111111111111111111'
                        '11111111111111111111111222222222222222222222222222222'
@@ -205,7 +193,7 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_by_type_field_array(self):
 
-        expectation = ('\x00\x00\x00<U\x00\x01I\x00\x00\xaf\xc8S\x00\x00\x00'
+        expectation = ('\x00\x00\x00<s\x00\x01I\x00\x00\xaf\xc8S\x00\x00\x00'
                        '\x04TestT\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02'
                        '\x00\x00\x01:f@H\xf5\xc3L\x00\x00\x00\x00\xc4e5\xffL'
                        '\x80\x00\x00\x00\x00\x00\x00\x08')
@@ -228,11 +216,6 @@ class MarshalingTests(unittest.TestCase):
         self.assertEqual(codec.encode.by_type('0123456789', 'longstr'),
                          str_or_bytes('\x00\x00\x00\n0123456789'))
 
-    def test_encode_by_type_short_str(self):
-        self.assertEqual(codec.encode.by_type('0123456789', 'shortstr'),
-                         str_or_bytes('\n0123456789'))
-
-
     def test_encode_by_type_octet(self):
         self.assertEqual(codec.encode.by_type(1, 'octet'), str_or_bytes('\x01'))
 
@@ -247,10 +230,10 @@ class MarshalingTests(unittest.TestCase):
                          str_or_bytes('\x00\x00\x00\x00Ec)\x92'))
 
     def test_encode_by_type_field_table(self):
-        expectation = ('\x00\x00\x04\x13\x08arrayvalA\x00\x00\x00\tU\x00\x01U'
-                       '\x00\x02U\x00\x03\x07boolvalt\x01\x06decvalD\x02\x00'
+        expectation = ('\x00\x00\x04\x13\x08arrayvalA\x00\x00\x00\ts\x00\x01s'
+                       '\x00\x02s\x00\x03\x07boolvalt\x01\x06decvalD\x02\x00'
                        '\x00\x01:\x07dictvalF\x00\x00\x00\x0c\x03fooS\x00\x00'
-                       '\x00\x03bar\x08floatvlaf@H\xf5\xc3\x06intvalU\x00\x01'
+                       '\x00\x03bar\x08floatvlaf@H\xf5\xc3\x06intvals\x00\x01'
                        '\x07longstrS\x00\x00\x03t0000000000000000000000000000'
                        '00000000000000000000000011111111111111111111111111111'
                        '11111111111111111111111222222222222222222222222222222'

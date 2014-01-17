@@ -110,7 +110,7 @@ def long_long_int(value):
 def long_string(value):
     """Encode a string.
 
-    :param str value: Value to encode
+    :param str|unicode value: Value to encode
     :rtype: str
 
     """
@@ -210,7 +210,7 @@ def field_table(value):
 
     # Iterate through all of the keys and encode the data into a table
     data = list()
-    for key in sorted(value.keys()):
+    for key, item in sorted(value.items()):
         # Append the field header / delimiter
         data.append(struct.pack('B', len(key)))
         data.append(key)
@@ -234,7 +234,7 @@ def table_integer(value):
     """
     # Send the appropriately sized data value
     if -32768 < value < 32767:
-        return 'U' + short_int(int(value))
+        return 's' + short_int(int(value))
     elif -2147483648 < value < 2147483647:
         return 'I' + long_int(long(value))
     elif -9223372036854775808 < value < 9223372036854775807:
@@ -259,7 +259,7 @@ def encode_table_value(value):
         result = 'D' + decimal(value)
     elif isinstance(value, float):
         result = 'f' + floating_point(value)
-    elif isinstance(value, basestring):
+    elif isinstance(value, bytes) or isinstance(value, unicode):
         result = 'S' + long_string(value)
     elif (isinstance(value, datetime.datetime) or
           isinstance(value, time.struct_time)):

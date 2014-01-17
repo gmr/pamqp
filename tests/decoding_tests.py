@@ -453,30 +453,6 @@ class CodecDecodeTests(unittest.TestCase):
         value = str_or_bytes('\x7f\xff')
         self.assertEqual(codec.decode.by_type(value, 'short')[1], 32767)
 
-    def test_decode_by_type_shortstr_bytes_consumed(self):
-        value = str_or_bytes('\n0123456789')
-        self.assertEqual(codec.decode.by_type(value, 'shortstr')[0], 11)
-
-    def test_decode_by_type_shortstr_data_type(self):
-        value = str_or_bytes('\n0123456789')
-        expectation = bytes if PYTHON3 else str
-        self.assertIsInstance(codec.decode.by_type(value, 'shortstr')[1],
-                              expectation)
-
-    @unittest.skipIf(PYTHON3, 'No unicode in Python3 obj')
-    def test_decode_by_type_shortstr_data_type_unicode(self):
-        self.assertIsInstance(codec.decode.by_type('\n\xd8\xa7\xd8\xae\xd8\xaa'
-                                                   '\xd8\xa8\xd8\xa7\xd8\xb1',
-                                                   'shortstr')[1], unicode)
-
-    def test_decode_by_type_shortstr_invalid_value(self):
-        self.assertRaises(ValueError, codec.decode.by_type, None, 'shortstr')
-
-    def test_decode_by_type_shortstr_value(self):
-        value = str_or_bytes('\n0123456789')
-        self.assertEqual(codec.decode.by_type(value, 'shortstr')[1],
-                         str_or_bytes('0123456789'))
-
     def test_decode_by_type_timestamp_bytes_consumed(self):
         value = str_or_bytes('\x00\x00\x00\x00Ec)\x92')
         self.assertEqual(codec.decode.by_type(value, 'timestamp')[0], 8)
@@ -618,29 +594,6 @@ class CodecDecodeTests(unittest.TestCase):
     def test_decode_embeded_value_short_value(self):
         self.assertEqual(codec.decode._embedded_value('U\x7f\xff')[1],
                          32767)
-
-    def test_decode_embeded_value_shortstr_bytes_consumed(self):
-        value = str_or_bytes('s\n0123456789')
-        self.assertEqual(codec.decode._embedded_value(value)[0],
-                         12)
-
-    def test_decode_embeded_value_shortstr_data_type(self):
-        value = str_or_bytes('s\n0123456789')
-        expectation = bytes if PYTHON3 else str
-        self.assertIsInstance(codec.decode._embedded_value(value)[1],
-                              expectation)
-
-    @unittest.skipIf(PYTHON3, 'No unicode in Python3 obj')
-    def test_decode_embeded_value_shortstr_data_type_unicode(self):
-        self.assertIsInstance(codec.decode.short_str('s\n\xd8\xa7\xd8\xae'
-                                                     '\xd8\xaa\xd8\xa8\xd8'
-                                                     '\xa7\xd8\xb1')[1],
-                              unicode)
-
-    def test_decode_embeded_value_shortstr_value(self):
-        value = str_or_bytes('s\n0123456789')
-        self.assertEqual(codec.decode._embedded_value(value)[1],
-                         str_or_bytes('0123456789'))
 
     def test_decode_embeded_value_timestamp_bytes_consumed(self):
         value = str_or_bytes('T\x00\x00\x00\x00Ec)\x92')
