@@ -280,6 +280,8 @@ def _embedded_value(value):
         bytes_consumed, value = floating_point(value[1:])
     elif value[0:1] == b'F':
         bytes_consumed, value = field_table(value[1:])
+    elif value[0:1] == b'i':
+        bytes_consumed, value = long_int(value[1:])
     elif value[0:1] == b'I':
         bytes_consumed, value = long_int(value[1:])
     elif value[0:1] == b'L':

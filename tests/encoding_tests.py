@@ -118,7 +118,7 @@ class MarshalingTests(unittest.TestCase):
         expectation = str_or_bytes('\x00\x00\x00<s\x00\x01I\x00\x00\xaf\xc8S'
                                    '\x00\x00\x00\x04TestT\x00\x00\x00\x00Ec)'
                                    '\x92I\xbb\x9a\xca\x00D\x02\x00\x00\x01:f@H'
-                                   '\xf5\xc3L\x00\x00\x00\x00\xc4e5\xffL\x80'
+                                   '\xf5\xc3l\x00\x00\x00\x00\xc4e5\xffl\x80'
                                    '\x00\x00\x00\x00\x00\x00\x08')
         data = [1, 45000, 'Test', datetime(2006, 11, 21, 16, 30, 10),
                 -1147483648, Decimal('3.14'), 3.14, long(3294967295),
@@ -195,7 +195,7 @@ class MarshalingTests(unittest.TestCase):
 
         expectation = ('\x00\x00\x00<s\x00\x01I\x00\x00\xaf\xc8S\x00\x00\x00'
                        '\x04TestT\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02'
-                       '\x00\x00\x01:f@H\xf5\xc3L\x00\x00\x00\x00\xc4e5\xffL'
+                       '\x00\x00\x01:f@H\xf5\xc3l\x00\x00\x00\x00\xc4e5\xffl'
                        '\x80\x00\x00\x00\x00\x00\x00\x08')
         data = [1, 45000, 'Test', datetime(2006, 11, 21, 16, 30, 10),
                 -1147483648, Decimal('3.14'), 3.14, long(3294967295),

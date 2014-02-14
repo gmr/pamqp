@@ -238,7 +238,7 @@ def table_integer(value):
     elif -2147483648 < value < 2147483647:
         return 'I' + long_int(long(value))
     elif -9223372036854775808 < value < 9223372036854775807:
-        return 'L' + long_long_int(long(value))
+        return 'l' + long_long_int(long(value))
 
     raise ValueError("Numeric value exceeds long-long-int max: %r" % value)
 
