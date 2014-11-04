@@ -235,8 +235,8 @@ def new_function(function_name, arguments, indent=0):
                isinstance(argument['default-value'], int):
                 value = argument['default-value']
             else:
-                if isinstance(argument['default-value'], str):
-                    value = '%r' % str(argument['default-value'])
+                if isinstance(argument['default-value'], basestring):
+                    value = "'%s'" % str(argument['default-value'])
                 else:
                     value = '%r' % argument['default-value']
         else:
@@ -365,8 +365,7 @@ for constant in amqp['constants']:
         doc = get_documentation({'constant': constant['name'].lower()})
         if doc:
             comment(doc)
-        new_line('%s = %i' % \
-                (dashify(constant['name']), constant['value']))
+        new_line('%s = %i' % (dashify(constant['name']), constant['value']))
 new_line()
 comment('Not included in the spec XML or JSON files.')
 new_line('FRAME_MAX_SIZE = 131072')
@@ -511,8 +510,7 @@ for class_name in class_list:
             doc = get_documentation({'class': class_name,
                                      'method': method['name']})
             label = get_label({'class': class_name,
-                               'method': method['name']}) \
-                    or 'Undefined label'
+                               'method': method['name']}) or 'Undefined label'
             if doc:
                 new_line('"""%s' % label, indent)
                 new_line()
@@ -532,26 +530,28 @@ for class_name in class_list:
         index_value = definition['id'] << 16 | method['id']
         new_line('index = 0x%08X' % index_value, indent)
         new_line('name = \'%s.%s\'' % (pep8_class_name(class_name),
-                                       pep8_class_name(method['name'])), indent)
+                                       pep8_class_name(method['name'])),
+                 indent)
         # Add an attribute that signifies if it's a sync command
         new_line()
         comment("Specifies if this is a synchronous AMQP method", indent)
-        new_line('synchronous = %s' % method.get('synchronous', False), indent)
+        new_line('synchronous = %s' % method.get('synchronous', False),
+                 indent)
 
         # Add an attribute that signifies if it's a sync command
         if method.get('synchronous') and method_xml:
-                responses = list()
-                for response in method_xml[0].iter('response'):
+            responses = list()
+            for response in method_xml[0].iter('response'):
 
-                    response_name = '\'%s.%s\'' %\
-                                    (pep8_class_name(class_name),
-                                     pep8_class_name(response.attrib['name']))
-                    responses.append(response_name)
-                if responses:
-                    new_line()
-                    comment('Valid responses to this method', indent)
-                    new_line('valid_responses = [%s]' % ', '.join(responses),
-                             indent)
+                response_name = '\'%s.%s\'' %\
+                                (pep8_class_name(class_name),
+                                 pep8_class_name(response.attrib['name']))
+                responses.append(response_name)
+            if responses:
+                new_line()
+                comment('Valid responses to this method', indent)
+                new_line('valid_responses = [%s]' % ', '.join(responses),
+                         indent)
         new_line()
 
         comment("AMQP Method Attributes", indent)
@@ -591,7 +591,7 @@ for class_name in class_list:
 
         new_function("__init__",  arguments, indent)
         indent += 4
-        new_line('"""Initialize the %s.%s class' % \
+        new_line('"""Initialize the %s.%s class' %
                  (pep8_class_name(class_name),
                   pep8_class_name(method['name'])),
                  indent)
@@ -599,7 +599,7 @@ for class_name in class_list:
         if type_keyword:
             new_line()
             new_line('Note that the AMQP type argument is referred to as '
-                     '"%s_type" '% class_name, indent)
+                     '"%s_type" ' % class_name, indent)
             new_line('to not conflict with the Python type keyword.', indent)
 
         # List the arguments in the docblock
@@ -649,7 +649,7 @@ for class_name in class_list:
                 comment(doc, indent)
 
             if (isinstance(argument.get('default-value'), dict) and
-                not argument.get('default-value')):
+                    not argument.get('default-value')):
                 new_line('self.%s = %s or dict()' % (name, name), indent)
             else:
                 new_line('self.%s = %s' % (name, name), indent)
