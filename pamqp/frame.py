@@ -11,14 +11,14 @@ import logging
 import struct
 
 from pamqp import body
-from pamqp import codec
+from pamqp import decode
 from pamqp import exceptions
 from pamqp import heartbeat
 from pamqp import header
 from pamqp import specification
 from pamqp import PYTHON3
 
-AMQP = b'AMQP' if PYTHON3 else 'AMQP'
+AMQP = b'AMQP'
 FRAME_HEADER_SIZE = 7
 FRAME_END_CHAR = chr(specification.FRAME_END)
 DECODE_FRAME_END_CHAR = FRAME_END_CHAR
@@ -33,7 +33,7 @@ def unmarshal(data_in):
     """Takes in binary data and maps builds the appropriate frame type,
     returning a frame object.
 
-    :param str data_in: Raw byte stream data
+    :param bytes data_in: Raw byte stream data
     :rtype: tuple of  bytes consumed, channel, and a frame object
     :raises: specification.FrameError
 
@@ -118,7 +118,7 @@ def _unmarshal_protocol_header_frame(data_in):
     as cleanly since we don't have all of the attributes to return even
     regardless of success or failure.
 
-    :param str data_in: Raw byte stream data
+    :param bytes data_in: Raw byte stream data
     :rtype: header.ProtocolHeader
     :raises: ValueError
 
@@ -137,12 +137,12 @@ def _unmarshal_protocol_header_frame(data_in):
 def _unmarshal_method_frame(frame_data):
     """Attempt to unmarshal a method frame
 
-    :param str frame_data: Raw frame data to assign to our method frame
+    :param bytes frame_data: Raw frame data to assign to our method frame
     :return tuple: Amount of data consumed and the frame object
 
     """
     # Get the Method Index from the class data
-    bytes_used, method_index = codec.decode.long_int(frame_data[0:4])
+    bytes_used, method_index = decode.long_int(frame_data[0:4])
 
     # Create an instance of the method object we're going to unmarshal
     try:
@@ -163,7 +163,7 @@ def _unmarshal_method_frame(frame_data):
 def _unmarshal_header_frame(frame_data):
     """Attempt to unmarshal a header frame
 
-    :param str frame_data: Raw frame data to assign to our header frame
+    :param bytes frame_data: Raw frame data to assign to our header frame
     :return tuple: Amount of data consumed and the frame object
 
     """
@@ -178,7 +178,7 @@ def _unmarshal_header_frame(frame_data):
 def _unmarshal_body_frame(frame_data):
     """Attempt to unmarshal a body frame
 
-    :param str frame_data: Raw frame data to assign to our body frame
+    :param bytes frame_data: Raw frame data to assign to our body frame
     :return tuple: Amount of data consumed and the frame object
 
     """
@@ -190,7 +190,7 @@ def _unmarshal_body_frame(frame_data):
 def _frame_parts(data_in):
     """Try and decode a low-level AMQP frame and return the parts of the frame.
 
-    :param str data_in: Raw byte stream data
+    :param bytes data_in: Raw byte stream data
     :return tuple: frame type, channel number, and frame data to decode
 
     """
@@ -207,7 +207,7 @@ def _marshal(frame_type, channel_id, payload):
 
     :param int frame_type: The frame type to marshal
     :param int channel_id: The channel it will be sent on
-    :param str|bytes payload: The frame payload
+    :param bytes|bytes payload: The frame payload
     :rtype: str or bytes
 
     """

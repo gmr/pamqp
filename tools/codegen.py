@@ -163,7 +163,7 @@ def get_label(search_path):
             return node[0].text.strip()[0:1].upper() + \
                    node[0].text.strip()[1:].strip()
 
-    print 'Label couldn\'t find %r' % search_path
+    print('Label couldn\'t find %r' % search_path)
     return None
 
 
@@ -235,7 +235,7 @@ def new_function(function_name, arguments, indent=0):
                isinstance(argument['default-value'], int):
                 value = argument['default-value']
             else:
-                if isinstance(argument['default-value'], basestring):
+                if isinstance(argument['default-value'], str):
                     value = '%r' % str(argument['default-value'])
                 else:
                     value = '%r' % argument['default-value']
@@ -272,7 +272,7 @@ def new_function(function_name, arguments, indent=0):
 if not exists(CODEGEN_JSON):
 
     # Retrieve the codegen archive
-    print "Downloading codegen JSON file to %s." % CODEGEN_JSON
+    print("Downloading codegen JSON file to %s." % CODEGEN_JSON)
     handle = urlopen(CODEGEN_JSON_URL)
     bzip2_tarball = handle.read()
 
@@ -301,7 +301,7 @@ with open(CODEGEN_JSON, 'r') as handle:
 if not exists(CODEGEN_XML):
 
     # Retrieve the codegen XML definition
-    print "Downloading codegen XML file."
+    print("Downloading codegen XML file.")
     handle = urlopen(CODEGEN_XML_URL)
     xml_content = handle.read()
 
@@ -334,11 +334,12 @@ __since__ = '%s'
 
 import struct
 
-from pamqp import codec
-from pamqp import PYTHON3
-
+from pamqp import decode
+from pamqp import encode
 ''' % (CODEGEN_OUTPUT.split('/')[-1], date.today().isoformat())
+
 new_line(docblock)
+new_line()
 
 # AMQP Version Header
 comment("AMQP Protocol Version")
@@ -376,14 +377,14 @@ data_types = []
 domains = []
 for domain, data_type in amqp['domains']:
     if domain == data_type:
-        data_types.append('                   "%s",' % domain)
+        data_types.append('              "%s",' % domain)
     else:
         doc = get_documentation({'domain': domain})
         if doc:
             comments = get_comments(doc, 18)
             for line in comments:
                 domains.append(line)
-        domains.append('                "%s": "%s",' % (domain, data_type))
+        domains.append('           "%s": "%s",' % (domain, data_type))
 
 comment("AMQP data types")
 data_types[0] = data_types[0].replace('              ',
@@ -584,7 +585,7 @@ for class_name in class_list:
 
         # Function definition
         arguments = copy.deepcopy(method['arguments'])
-        for offset in xrange(0, len(arguments)):
+        for offset in range(0, len(arguments)):
             if arguments[offset]['name'] == 'type' and class_name == 'exchange':
                 arguments[offset]['name'] = 'exchange_type'
 
@@ -717,7 +718,7 @@ for class_name in class_list:
 
         # Function definition
         properties = copy.deepcopy(definition['properties'])
-        for offset in xrange(0, len(properties)):
+        for offset in range(0, len(properties)):
             if properties[offset]['name'] == 'type':
                 properties[offset]['name'] = 'message_type'
 

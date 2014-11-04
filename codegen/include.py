@@ -88,15 +88,15 @@ class Frame(object):
                 # append the byte value as an octet
                 if data_type != 'bit':
                     processing_bitset = False
-                    output.append(codec.encode.octet(byte))
+                    output.append(encode.octet(byte))
 
                 else:
                     # Apply the bit value to the byte
-                    byte = codec.encode.bit(data_value, byte, offset)
+                    byte = encode.bit(data_value, byte, offset)
                     offset += 1
                     if offset == 8:
                         # We've filled a byte for all bits, add the byte
-                        output.append(codec.encode.octet(byte))
+                        output.append(encode.octet(byte))
                         # Turn off processing, we'll turn on in next iteration
                         # if needed
                         processing_bitset = False
@@ -105,15 +105,13 @@ class Frame(object):
                     continue
 
             # Not a bit, so just process by type
-            output.append(codec.encode.by_type(data_value, data_type))
+            output.append(encode.by_type(data_value, data_type))
 
         # Append the last byte if we're processing a bitset
         if processing_bitset:
-            output.append(codec.encode.octet(byte))
+            output.append(encode.octet(byte))
 
-        if PYTHON3:
-            return b''.join(output)
-        return ''.join(output)
+        return b''.join(output)
 
     def unmarshal(self, data):
         """
@@ -138,7 +136,7 @@ class Frame(object):
                 processing_bitset = False
                 data = data[1:]
 
-            consumed, value = codec.decode.by_type(data, data_type, offset)
+            consumed, value = decode.by_type(data, data_type, offset)
 
             if data_type == 'bit':
                 offset += 1
@@ -148,6 +146,7 @@ class Frame(object):
             setattr(self, argument, value)
             if consumed:
                 data = data[consumed:]
+
 
 class PropertiesBase(object):
     """Provide a base object that marshals and unmarshals the Basic.Properties
@@ -177,14 +176,14 @@ class PropertiesBase(object):
         :param any property_value: The value to encode
 
         """
-        return codec.encode.by_type(property_value,
-                                    getattr(self.__class__, property_name))
+        return encode.by_type(property_value,
+                              getattr(self.__class__, property_name))
 
     def marshal(self):
         """Take the Basic.Properties data structure and marshal it into the data
         structure needed for the ContentHeader.
 
-        :rtype: str
+        :rtype: bytes
 
         """
         flags = 0
@@ -205,9 +204,7 @@ class PropertiesBase(object):
             flags = remainder
             if not flags:
                 break
-        if PYTHON3:
-            return b''.join(flag_pieces + parts)
-        return ''.join(flag_pieces + parts)
+        return b''.join(flag_pieces + parts)
 
     def to_dict(self):
         output = dict()
@@ -221,12 +218,12 @@ class PropertiesBase(object):
         object by iterating through the attributes in order and decoding them.
 
         :param int flags: Flags that indicate if the data has the given property
-        :param str data: The binary encoded method data
+        :param bytes data: The binary encoded method data
 
         """
         for property_name in self.attributes:
             if flags & self.flags[property_name]:
                 data_type = getattr(self.__class__, property_name)
-                consumed, value = codec.decode.by_type(data, data_type)
+                consumed, value = decode.by_type(data, data_type)
                 setattr(self, property_name, value)
                 data = data[consumed:]

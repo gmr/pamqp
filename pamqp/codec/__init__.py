@@ -1,13 +1,11 @@
-"""AMQP Binary Data Encoding and Decoding
-
-For copyright and licensing please refer to the file LICENSE
+"""
+Deprecating the codec subpackage
 
 """
-from pamqp import PYTHON3
+import warnings
 
-if PYTHON3:
-    from pamqp.codec import decode3 as decode
-    from pamqp.codec import encode3 as encode
-else:
-    from pamqp.codec import decode
-    from pamqp.codec import encode
+warnings.warn('Imports for decode/encode are no longer under codec',
+              DeprecationWarning)
+
+from pamqp import decode
+from pamqp import encode

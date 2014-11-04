@@ -6,11 +6,10 @@ binary data into AMQP Header frames.
 """
 import struct
 
-from pamqp import codec
+from pamqp import decode
 from pamqp import specification
-from pamqp import PYTHON3
 
-AMQP = b'AMQP' if PYTHON3 else 'AMQP'
+AMQP = b'AMQP'
 
 
 class ProtocolHeader(object):
@@ -46,7 +45,7 @@ class ProtocolHeader(object):
         """Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 
-        :param str data: The binary encoded method data
+        :param bytes data: The binary encoded method data
         :rtype: int byte count of data used to unmarshal the frame
         :raises: ValueError
 
@@ -102,7 +101,7 @@ class ContentHeader(object):
         """Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 
-        :param str data: The binary encoded method data
+        :param bytes data: The binary encoded method data
         :rtype: int byte count of data used to unmarshal the frame
         :raises: ValueError
 
@@ -122,7 +121,7 @@ class ContentHeader(object):
         """Decode the flags from the data returning the bytes consumed and
         flags
 
-        :param str data: The data to pull flags out of
+        :param bytes data: The data to pull flags out of
         :rtype: int, int
 
         """
@@ -131,7 +130,7 @@ class ContentHeader(object):
 
         # Read until we don't have a value pulled out of the flags
         while True:
-            consumed, partial_flags = codec.decode.short_int(data)
+            consumed, partial_flags = decode.short_int(data)
             bytes_consumed += consumed
             flags |= (partial_flags << (flagword_index * 16))
             if not partial_flags & 1:

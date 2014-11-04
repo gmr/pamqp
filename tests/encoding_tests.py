@@ -6,112 +6,120 @@ try:
 except ImportError:
     import unittest
 
-from pamqp import codec
+from pamqp import encode
 from pamqp import PYTHON3
 
 if PYTHON3:
     long = int
 
+
 def str_or_bytes(value):
     if PYTHON3:
-        return bytes(value, 'latin1') # Binary values of encoded frame
+        return bytes(value, 'latin-1')  # Binary values of encoded frame
     return value
 
 
 class MarshalingTests(unittest.TestCase):
 
     def test_encode_bool_wrong_type(self):
-        self.assertRaises(ValueError, codec.encode.boolean, 'hi')
+        self.assertRaises(TypeError, encode.boolean, 'hi')
 
     def test_encode_bool_false(self):
-        self.assertEqual(codec.encode.boolean(False), str_or_bytes('\x00'))
+        self.assertEqual(encode.boolean(False), str_or_bytes('\x00'))
 
     def test_encode_bool_true(self):
-        self.assertEqual(codec.encode.boolean(True), str_or_bytes('\x01'))
+        self.assertEqual(encode.boolean(True), str_or_bytes('\x01'))
+
+    def test_encode_byte_array(self):
+        self.assertEqual(encode.byte_array(bytearray([65, 66, 67])),
+                         str_or_bytes('\x00\x00\x00\x03ABC'))
+
+    def test_encode_byte_array_wrong_type(self):
+        self.assertRaises(TypeError, encode.byte_array, b'ABC')
 
     def test_encode_decimal_wrong_type(self):
-        self.assertRaises(ValueError, codec.encode.decimal, 3.141597)
+        self.assertRaises(TypeError, encode.decimal, 3.141597)
 
     def test_encode_decimal(self):
-        self.assertEqual(codec.encode.decimal(Decimal('3.14159')),
+        self.assertEqual(encode.decimal(Decimal('3.14159')),
                          str_or_bytes('\x05\x00\x04\xcb/'))
 
     def test_encode_decimal_whole(self):
-        self.assertEqual(codec.encode.decimal(Decimal('314159')),
+        self.assertEqual(encode.decimal(Decimal('314159')),
                          str_or_bytes('\x00\x00\x04\xcb/'))
 
     def test_encode_floating_point_type(self):
-        self.assertRaises(ValueError, codec.encode.floating_point, '1234')
+        self.assertRaises(TypeError, encode.floating_point, '1234')
 
     def test_encode_float(self):
-        self.assertEqual(codec.encode.floating_point(float(3.14159)),
+        self.assertEqual(encode.floating_point(float(3.14159)),
                          str_or_bytes('@I\x0f\xd0'))
 
     def test_encode_long_int_wrong_type(self):
-        self.assertRaises(ValueError, codec.encode.long_int, 3.141597)
+        self.assertRaises(TypeError, encode.long_int, 3.141597)
 
     def test_encode_table_integer_bad_value_error(self):
-        self.assertRaises(ValueError, codec.encode.long_int,
+        self.assertRaises(TypeError, encode.long_int,
                           9223372036854775808)
 
     def test_encode_long_int(self):
-        self.assertEqual(codec.encode.long_int(long(2147483647)),
+        self.assertEqual(encode.long_int(long(2147483647)),
                          str_or_bytes('\x7f\xff\xff\xff'))
 
     def test_encode_long_int_error(self):
-        self.assertRaises(ValueError, codec.encode.long_int,
+        self.assertRaises(TypeError, encode.long_int,
                           long(21474836449))
 
     def test_encode_long_long_int_wrong_type(self):
-        self.assertRaises(ValueError, codec.encode.long_long_int, 3.141597)
+        self.assertRaises(TypeError, encode.long_long_int, 3.141597)
 
     def test_encode_long_long_int(self):
-        self.assertEqual(codec.encode.long_long_int(long(9223372036854775800)),
+        self.assertEqual(encode.long_long_int(long(9223372036854775800)),
                          str_or_bytes('\x7f\xff\xff\xff\xff\xff\xff\xf8'))
 
     def test_encode_long_long_int_error(self):
-        self.assertRaises(ValueError, codec.encode.long_long_int,
+        self.assertRaises(TypeError, encode.long_long_int,
                           long(9223372036854775808))
 
     def test_encode_octet(self):
-        self.assertEqual(codec.encode.octet(1), str_or_bytes('\x01'))
+        self.assertEqual(encode.octet(1), str_or_bytes('\x01'))
 
     def test_encode_octet_error(self):
-        self.assertRaises(ValueError, codec.encode.octet, 'hi')
+        self.assertRaises(TypeError, encode.octet, 'hi')
 
     def test_encode_short_wrong_type(self):
-        self.assertRaises(ValueError, codec.encode.short_int, 3.141597)
+        self.assertRaises(TypeError, encode.short_int, 3.141597)
 
     def test_encode_short(self):
-        self.assertEqual(codec.encode.short_int(32767),
+        self.assertEqual(encode.short_int(32767),
                          str_or_bytes('\x7f\xff'))
 
     def test_encode_short_error(self):
-        self.assertRaises(ValueError, codec.encode.short_int, 32768)
+        self.assertRaises(TypeError, encode.short_int, 32768)
 
     def test_encode_table_integer_error(self):
-        self.assertRaises(ValueError, codec.encode.table_integer,
+        self.assertRaises(TypeError, encode.table_integer,
                           9223372036854775808)
 
     def test_encode_long_string(self):
-        self.assertEqual(codec.encode.long_string('0123456789'),
+        self.assertEqual(encode.long_string('0123456789'),
                          str_or_bytes('\x00\x00\x00\n0123456789'))
 
     def test_encode_long_string_error(self):
-        self.assertRaises(ValueError, codec.encode.long_string, 100)
+        self.assertRaises(TypeError, encode.long_string, 100)
 
     def test_encode_timestamp_from_datetime(self):
-        self.assertEqual(codec.encode.timestamp(datetime(2006, 11, 21,
+        self.assertEqual(encode.timestamp(datetime(2006, 11, 21,
                                                          16, 30, 10)),
                          str_or_bytes('\x00\x00\x00\x00Ec)\x92'))
 
     def test_encode_timestamp_from_struct_time(self):
-        self.assertEqual(codec.encode.timestamp(datetime(2006, 11, 21, 16, 30,
+        self.assertEqual(encode.timestamp(datetime(2006, 11, 21, 16, 30,
                                                          10).timetuple()),
                          str_or_bytes('\x00\x00\x00\x00Ec)\x92'))
 
     def test_encode_timestamp_error(self):
-        self.assertRaises(ValueError, codec.encode.timestamp, 'hi')
+        self.assertRaises(TypeError, encode.timestamp, 'hi')
 
 
     def test_encode_field_array(self):
@@ -123,17 +131,17 @@ class MarshalingTests(unittest.TestCase):
         data = [1, 45000, 'Test', datetime(2006, 11, 21, 16, 30, 10),
                 -1147483648, Decimal('3.14'), 3.14, long(3294967295),
                 -9223372036854775800]
-        self.assertEqual(codec.encode.field_array(data), expectation)
+        self.assertEqual(encode.field_array(data), expectation)
 
     def test_encode_field_array_error(self):
-        self.assertRaises(ValueError, codec.encode.field_array, 'hi')
+        self.assertRaises(TypeError, encode.field_array, 'hi')
 
     def test_encode_field_table_empty(self):
-        self.assertEqual(codec.encode.field_table(None),
+        self.assertEqual(encode.field_table(None),
                          str_or_bytes('\x00\x00\x00\x00'))
 
     def test_encode_field_table_type_error(self):
-        self.assertRaises(ValueError, codec.encode.field_table, [1, 2, 3])
+        self.assertRaises(TypeError, encode.field_table, [1, 2, 3])
 
     def test_encode_field_table(self):
         expectation = ('\x00\x00\x04\x13\x08arrayvalA\x00\x00\x00\ts\x00\x01s'
@@ -187,7 +195,7 @@ class MarshalingTests(unittest.TestCase):
                             '1111111111111111111111111111111111111111111111110'
                             '0000000000000000000000000000000000000000000000000'
                             '00')}
-        self.assertEqual(codec.encode.field_table(data),
+        self.assertEqual(encode.field_table(data),
                          str_or_bytes(expectation))
 
 
@@ -200,33 +208,32 @@ class MarshalingTests(unittest.TestCase):
         data = [1, 45000, 'Test', datetime(2006, 11, 21, 16, 30, 10),
                 -1147483648, Decimal('3.14'), 3.14, long(3294967295),
                 -9223372036854775800]
-        self.assertEqual(codec.encode.by_type(data, 'field_array'),
+        self.assertEqual(encode.by_type(data, 'field_array'),
                          str_or_bytes(expectation))
 
     def test_encode_by_type_long_int(self):
-        self.assertEqual(codec.encode.by_type(long(2147483647), 'long'),
+        self.assertEqual(encode.by_type(long(2147483647), 'long'),
                          str_or_bytes('\x7f\xff\xff\xff'))
 
     def test_encode_by_type_long_long_int(self):
-        self.assertEqual(codec.encode.by_type(long(9223372036854775800),
-                                              'longlong'),
+        self.assertEqual(encode.by_type(long(9223372036854775800), 'longlong'),
                          str_or_bytes('\x7f\xff\xff\xff\xff\xff\xff\xf8'))
 
     def test_encode_by_type_long_str(self):
-        self.assertEqual(codec.encode.by_type('0123456789', 'longstr'),
+        self.assertEqual(encode.by_type('0123456789', 'longstr'),
                          str_or_bytes('\x00\x00\x00\n0123456789'))
 
     def test_encode_by_type_octet(self):
-        self.assertEqual(codec.encode.by_type(1, 'octet'), str_or_bytes('\x01'))
+        self.assertEqual(encode.by_type(1, 'octet'), str_or_bytes('\x01'))
 
     def test_encode_by_type_short(self):
-        self.assertEqual(codec.encode.by_type(32767, 'short'),
+        self.assertEqual(encode.by_type(32767, 'short'),
                          str_or_bytes('\x7f\xff'))
 
     def test_encode_by_type_timestamp(self):
-        self.assertEqual(codec.encode.by_type(datetime(2006, 11, 21,
+        self.assertEqual(encode.by_type(datetime(2006, 11, 21,
                                                        16, 30, 10),
-                                              'timestamp'),
+                                        'timestamp'),
                          str_or_bytes('\x00\x00\x00\x00Ec)\x92'))
 
     def test_encode_by_type_field_table(self):
@@ -281,8 +288,8 @@ class MarshalingTests(unittest.TestCase):
                             '1111111111111111111111111111111111111111111111110'
                             '0000000000000000000000000000000000000000000000000'
                             '00')}
-        self.assertEqual(codec.encode.by_type(data, 'table'),
+        self.assertEqual(encode.by_type(data, 'table'),
                          str_or_bytes(expectation))
 
     def test_encode_by_type_error(self):
-        self.assertRaises(ValueError, codec.encode.by_type, 12345.12434, 'foo')
+        self.assertRaises(TypeError, encode.by_type, 12345.12434, 'foo')
