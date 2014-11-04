@@ -12,3 +12,13 @@ install:
 script: nosetests --with-coverage --cover-package=pamqp
 after_success:
   - coveralls
+deploy:
+  distributions: sdist bdist_wheel
+  provider: pypi
+  user: crad
+  on:
+    python: 2.7
+    tags: true
+    all_branches: true
+  password:
+    secure: "HW5Ak3scfeQ1/qdXQYrmIVnpGex59qNSGN2WRoHSFMXLfsjzdBQccy2nxWAo7p6P1wgoZ/51lTamJXGKgVqqQGC3gfBiD+AVMu3CROQht+Q4x5xKKLXQtTBoEOpurnx7q0oXRxhK7qmMOek9qqn/GGrK5PJV+pGoPwCvSTF6aic="
