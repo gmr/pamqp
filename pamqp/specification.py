@@ -934,10 +934,6 @@ class Connection(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Connection.CloseOk class
-
-            """
     class Blocked(Frame):
         """Signal that connection is blocked
 
@@ -985,10 +981,6 @@ class Connection(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Connection.Unblocked class
-
-            """
 
 class Channel(object):
     """Work with channels
@@ -1201,10 +1193,6 @@ class Channel(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Channel.CloseOk class
-
-            """
 
 class Exchange(object):
     """Work with exchanges
@@ -1321,10 +1309,6 @@ class Exchange(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Exchange.DeclareOk class
-
-            """
     class Delete(Frame):
         """Delete an exchange
 
@@ -1393,10 +1377,6 @@ class Exchange(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Exchange.DeleteOk class
-
-            """
     class Bind(Frame):
         # AMQP Method Number and Mapping Index
         frame_id = 30
@@ -1460,10 +1440,6 @@ class Exchange(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Exchange.BindOk class
-
-            """
     class Unbind(Frame):
         # AMQP Method Number and Mapping Index
         frame_id = 40
@@ -1527,10 +1503,6 @@ class Exchange(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Exchange.UnbindOk class
-
-            """
 
 class Queue(object):
     """Work with queues
@@ -1744,10 +1716,6 @@ class Queue(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Queue.BindOk class
-
-            """
     class Purge(Frame):
         """Purge a queue
 
@@ -1978,10 +1946,6 @@ class Queue(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Queue.UnbindOk class
-
-            """
 
 class Basic(object):
     """Work with basic content
@@ -2062,10 +2026,6 @@ class Basic(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Basic.QosOk class
-
-            """
     class Consume(Frame):
         """Start a queue consumer
 
@@ -2692,10 +2652,6 @@ class Basic(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Basic.RecoverOk class
-
-            """
     class Nack(Frame):
         # AMQP Method Number and Mapping Index
         frame_id = 120
@@ -2894,10 +2850,6 @@ class Tx(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Tx.Select class
-
-            """
     class SelectOk(Frame):
         """Confirm transaction mode
 
@@ -2916,10 +2868,6 @@ class Tx(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Tx.SelectOk class
-
-            """
     class Commit(Frame):
         """Commit the current transaction
 
@@ -2942,10 +2890,6 @@ class Tx(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Tx.Commit class
-
-            """
     class CommitOk(Frame):
         """Confirm a successful commit
 
@@ -2964,10 +2908,6 @@ class Tx(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Tx.CommitOk class
-
-            """
     class Rollback(Frame):
         """Abandon the current transaction
 
@@ -2992,10 +2932,6 @@ class Tx(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Tx.Rollback class
-
-            """
     class RollbackOk(Frame):
         """Confirm successful rollback
 
@@ -3014,10 +2950,6 @@ class Tx(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Tx.RollbackOk class
-
-            """
 
 class Confirm(object):
     # AMQP Class Number and Mapping Index
@@ -3060,10 +2992,6 @@ class Confirm(object):
         # AMQP Method Attributes
         attributes = []
 
-        def __init__(self):
-            """Initialize the Confirm.SelectOk class
-
-            """
 # AMQP Class.Method Index Mapping
 INDEX_MAPPING = {0x000A000A: Connection.Start,
                  0x000A000B: Connection.StartOk,

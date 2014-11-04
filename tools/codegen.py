@@ -260,10 +260,10 @@ def new_function(function_name, arguments, indent=0):
     definition = 'def %s(%s):' % (function_name, ', '.join(args))
 
     # Build the output of it with wrapping
+    indent_str = ''.join([' ' for x in range(indent + len(function_name) + 5)])
     lines = wrap(''.join([' ' for x in range(indent)]) + definition, 79,
-                 subsequent_indent=\
-                    ''.join([' ' for x in range(indent +
-                                                len(function_name) + 5)]))
+                 subsequent_indent=indent_str)
+
     for line in lines:
         new_line(line)
 
@@ -589,21 +589,21 @@ for class_name in class_list:
             if arguments[offset]['name'] == 'type' and class_name == 'exchange':
                 arguments[offset]['name'] = 'exchange_type'
 
-        new_function("__init__",  arguments, indent)
-        indent += 4
-        new_line('"""Initialize the %s.%s class' %
-                 (pep8_class_name(class_name),
-                  pep8_class_name(method['name'])),
-                 indent)
+        if arguments:
+            new_function("__init__",  arguments, indent)
+            indent += 4
+            new_line('"""Initialize the %s.%s class' %
+                     (pep8_class_name(class_name),
+                      pep8_class_name(method['name'])),
+                     indent)
 
-        if type_keyword:
-            new_line()
-            new_line('Note that the AMQP type argument is referred to as '
-                     '"%s_type" ' % class_name, indent)
-            new_line('to not conflict with the Python type keyword.', indent)
+            if type_keyword:
+                new_line()
+                new_line('Note that the AMQP type argument is referred to as '
+                         '"%s_type" ' % class_name, indent)
+                new_line('to not conflict with the Python type keyword.', indent)
 
-        # List the arguments in the docblock
-        if method['arguments']:
+            # List the arguments in the docblock
             new_line()
             for argument in method['arguments']:
                 name = argument_name(argument['name'])
@@ -622,47 +622,50 @@ for class_name in class_list:
                     new_line(':param %s %s:' % (get_argument_type_doc(argument),
                                                 argument['name']), indent)
 
-        # Note the deprecation warning in the docblock
-        if method_xml and 'deprecated' in method_xml[0].attrib and \
-           method_xml[0].attrib['deprecated']:
-            deprecated = True
-            new_line()
-            new_line(':raises: DeprecationWarning', indent)
-        else:
-            deprecated = False
-
-        new_line()
-        new_line('"""', indent)
-
-        # Create assignments from the arguments to attributes of the object
-        for argument in method['arguments']:
-            name = argument_name(argument['name'])
-
-            if name == 'type' and class_name == 'exchange':
-                name = 'exchange_type'
-
-
-            doc = get_label({'class': class_name,
-                             'method': method['name'],
-                             'field': argument['name']})
-            if doc:
-                comment(doc, indent)
-
-            if (isinstance(argument.get('default-value'), dict) and
-                    not argument.get('default-value')):
-                new_line('self.%s = %s or dict()' % (name, name), indent)
+            # Note the deprecation warning in the docblock
+            if method_xml and 'deprecated' in method_xml[0].attrib and \
+               method_xml[0].attrib['deprecated']:
+                deprecated = True
+                new_line()
+                new_line(':raises: DeprecationWarning', indent)
             else:
-                new_line('self.%s = %s' % (name, name), indent)
-            new_line()
+                deprecated = False
 
-        # Check if we're deprecated and warn if so
-        if deprecated:
-            comment(DEPRECATION_WARNING, indent)
-            new_line('raise DeprecationWarning(DEPRECATION_WARNING)', indent)
             new_line()
+            new_line('"""', indent)
 
-        # End of function
-        indent -= 8
+            # Create assignments from the arguments to attributes of the object
+            for argument in method['arguments']:
+                name = argument_name(argument['name'])
+
+                if name == 'type' and class_name == 'exchange':
+                    name = 'exchange_type'
+
+
+                doc = get_label({'class': class_name,
+                                 'method': method['name'],
+                                 'field': argument['name']})
+                if doc:
+                    comment(doc, indent)
+
+                if (isinstance(argument.get('default-value'), dict) and
+                        not argument.get('default-value')):
+                    new_line('self.%s = %s or dict()' % (name, name), indent)
+                else:
+                    new_line('self.%s = %s' % (name, name), indent)
+                new_line()
+
+            # Check if we're deprecated and warn if so
+            if deprecated:
+                comment(DEPRECATION_WARNING, indent)
+                new_line('raise DeprecationWarning(DEPRECATION_WARNING)', indent)
+                new_line()
+
+            # End of function
+            indent -= 4
+
+        # End of class
+        indent -= 4
 
     if 'properties' in definition and definition['properties']:
         new_line('class Properties(PropertiesBase):', indent)
