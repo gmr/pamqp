@@ -539,19 +539,23 @@ for class_name in class_list:
                  indent)
 
         # Add an attribute that signifies if it's a sync command
-        if method.get('synchronous') and method_xml:
+        if method.get('synchronous'):
             responses = list()
-            for response in method_xml[0].iter('response'):
+            if method_xml:
+                for response in method_xml[0].iter('response'):
 
-                response_name = '\'%s.%s\'' %\
-                                (pep8_class_name(class_name),
-                                 pep8_class_name(response.attrib['name']))
-                responses.append(response_name)
-            if responses:
-                new_line()
-                comment('Valid responses to this method', indent)
-                new_line('valid_responses = [%s]' % ', '.join(responses),
-                         indent)
+                    response_name = '\'%s.%s\'' %\
+                                    (pep8_class_name(class_name),
+                                     pep8_class_name(response.attrib['name']))
+                    responses.append(response_name)
+            if not responses:
+                responses.append('\'%s.%sOk\'' %
+                                 (pep8_class_name(class_name),
+                                  pep8_class_name(method['name'])))
+            new_line()
+            comment('Valid responses to this method', indent)
+            new_line('valid_responses = [%s]' % ', '.join(responses),
+                     indent)
         new_line()
 
         comment("AMQP Method Attributes", indent)

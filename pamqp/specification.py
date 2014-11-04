@@ -1386,6 +1386,9 @@ class Exchange(object):
         # Specifies if this is a synchronous AMQP method
         synchronous = True
 
+        # Valid responses to this method
+        valid_responses = ['Exchange.BindOk']
+
         # AMQP Method Attributes
         attributes = ['ticket',
                       'destination',
@@ -1448,6 +1451,9 @@ class Exchange(object):
 
         # Specifies if this is a synchronous AMQP method
         synchronous = True
+
+        # Valid responses to this method
+        valid_responses = ['Exchange.UnbindOk']
 
         # AMQP Method Attributes
         attributes = ['ticket',
@@ -2620,6 +2626,9 @@ class Basic(object):
         # Specifies if this is a synchronous AMQP method
         synchronous = True
 
+        # Valid responses to this method
+        valid_responses = ['Basic.RecoverOk']
+
         # AMQP Method Attributes
         attributes = ['requeue']
 
@@ -2964,6 +2973,9 @@ class Confirm(object):
 
         # Specifies if this is a synchronous AMQP method
         synchronous = True
+
+        # Valid responses to this method
+        valid_responses = ['Confirm.SelectOk']
 
         # AMQP Method Attributes
         attributes = ['nowait']
