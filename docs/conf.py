@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pamqp'
-copyright = u'2011 - 2013, Gavin M. Roy'
+copyright = u'2011 - 2014, Gavin M. Roy'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
