@@ -148,9 +148,7 @@ def long_str(value):
     """
     try:
         length = Struct.integer.unpack(value[0:4])[0]
-        if PYTHON3:
-            return length + 4, value[4:length + 4]
-        return length + 4, _python2_str(value[4:length + 4])
+        return length + 4, _maybe_utf8(value[4:length + 4])
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -207,9 +205,7 @@ def short_str(value):
     """
     try:
         length = Struct.byte.unpack(value[0:1])[0]
-        if PYTHON3:
-            return length + 1, value[1:length + 1]
-        return length + 1, _python2_str(value[1:length + 1])
+        return length + 1, _maybe_utf8(value[1:length + 1])
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -267,7 +263,7 @@ def field_table(value):
         while offset < field_table_end:
             key_length = Struct.byte.unpack_from(value, offset)[0]
             offset += 1
-            key = value[offset:offset + key_length]
+            key = _maybe_utf8(value[offset:offset + key_length])
             offset += key_length
             consumed, result = _embedded_value(value[offset:])
             offset += consumed
@@ -289,34 +285,30 @@ def _embedded_value(value):
         return 0, None
 
     # Determine the field type and encode it
-    if value[0:1] == b'A':
-        bytes_consumed, value = field_array(value[1:])
+    if value[0:1] == b't':
+        bytes_consumed, value = boolean(value[1:])
     elif value[0:1] == b'b':
         bytes_consumed, value = short_short_int(value[1:])
+    elif value[0:1] == b's':
+        bytes_consumed, value = short_int(value[1:])
+    elif value[0:1] == b'I':
+        bytes_consumed, value = long_int(value[1:])
+    elif value[0:1] == b'l':
+        bytes_consumed, value = long_long_int(value[1:])
+    elif value[0:1] == b'f':
+        bytes_consumed, value = floating_point(value[1:])
     elif value[0:1] == b'd':
         bytes_consumed, value = double(value[1:])
     elif value[0:1] == b'D':
         bytes_consumed, value = decimal(value[1:])
-    elif value[0:1] == b'f':
-        bytes_consumed, value = floating_point(value[1:])
-    elif value[0:1] == b'F':
-        bytes_consumed, value = field_table(value[1:])
-    elif value[0:1] == b'i':
-        bytes_consumed, value = long_int(value[1:])
-    elif value[0:1] == b'I':
-        bytes_consumed, value = long_int(value[1:])
-    elif value[0:1] == b'L':
-        bytes_consumed, value = long_long_int(value[1:])
-    elif value[0:1] == b't':
-        bytes_consumed, value = boolean(value[1:])
-    elif value[0:1] == b'T':
-        bytes_consumed, value = timestamp(value[1:])
-    elif value[0:1] == b's':
-        bytes_consumed, value = short_int(value[1:])
     elif value[0:1] == b'S':
         bytes_consumed, value = long_str(value[1:])
-    elif value[0:1] == b'U':
-        bytes_consumed, value = short_int(value[1:])
+    elif value[0:1] == b'A':
+        bytes_consumed, value = field_array(value[1:])
+    elif value[0:1] == b'T':
+        bytes_consumed, value = timestamp(value[1:])
+    elif value[0:1] == b'F':
+        bytes_consumed, value = field_table(value[1:])
     elif value[0:1] == b'V':
         return 0, None
     elif value[0:1] == b'x':
@@ -375,20 +367,31 @@ def by_type(value, data_type, offset=0):
     raise ValueError('Unknown type "%s"' % value)
 
 
-def _python2_str(value):
+def _maybe_utf8(value):
     """Try and automatically return unicode when there is UTF-8 data
     in them.
 
     :param bytes value: The value to try and decode to unicode
-    :return: unicode or bytes
+    :return: unicode or bytes or str
 
     """
-    value = value.decode('utf-8')
+    if PYTHON3:
+        # If it's already a bytes object, cool
+        if isinstance(value, bytes):
+            return value
+
+        # It might come in as a str in which case we want it to be bytes
+        return bytes(value, 'utf-8')
+
+    # Convert to unicode
+    _value = value.decode('utf-8')
+
     try:
-        return bytes(value)
+        # Try and force it to be a str and return the str value
+        return str(_value)
     except UnicodeEncodeError:
-        pass
-    return value
+        # Unicode obj to str with unicode data fails, return the unicode value
+        return _value
 
 
 # Define a data type mapping to methods

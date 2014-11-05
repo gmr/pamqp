@@ -86,6 +86,7 @@ class ContentHeader(object):
         :param specification.Basic.Properties properties: Message properties
 
         """
+        self.class_id = None
         self.weight = weight
         self.body_size = body_size
         self.properties = properties or specification.Basic.Properties()

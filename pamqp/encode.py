@@ -127,7 +127,7 @@ def long_long_int(value):
         raise TypeError("int/long type required")
     if value < -9223372036854775808 or value > 9223372036854775807:
         raise TypeError("long-long integer range: "
-                         "-9223372036854775808 to 9223372036854775807")
+                        "-9223372036854775808 to 9223372036854775807")
     return struct.pack('>q', value)
 
 
@@ -140,10 +140,11 @@ def long_string(value):
 
     """
     if not isinstance(value, (bytes, str, unicode)):
-        raise TypeError("bytes or str or unicode required")
-    if PYTHON3:
-        return struct.pack('>I', len(value)) + bytes(value, 'utf-8')
-    return struct.pack('>I', len(value)) + bytes(value.decode('utf-8'))
+        raise TypeError("bytes, str, or unicode required")
+
+    # Ensure that the value is utf-8 encoded if it's unicode
+    value = _utf8_encode(value)
+    return struct.pack('>I', len(value)) + value
 
 
 def octet(value):
@@ -182,12 +183,11 @@ def short_string(value):
     :raises: TypeError
 
     """
-    if not isinstance(value, str):
-        raise TypeError("str type required, received %s:%r" % (type(value),
-                                                                value))
-    if PYTHON3:
-        return struct.pack('B', len(value)) + bytes(value, 'utf-8')
-    return struct.pack('B', len(value)) + bytes(value)
+    if not isinstance(value, (str, unicode, bytes)):
+        raise TypeError("bytes, str, or unicode required")
+    # Ensure that the value is utf-8 encoded if it's unicode
+    value = _utf8_encode(value)
+    return struct.pack('B', len(value)) + value
 
 
 def timestamp(value):
@@ -241,15 +241,13 @@ def field_table(value):
 
     # Iterate through all of the keys and encode the data into a table
     data = list()
-    for key in sorted(value.keys()):
+    for key, value in sorted(value.items()):
+        key = _utf8_encode(key)
         # Append the field header / delimiter
         data.append(struct.pack('B', len(key)))
-        if PYTHON3:
-            data.append(bytes(key, 'utf-8'))
-        else:
-            data.append(bytes(key))
+        data.append(key)
         try:
-            data.append(encode_table_value(value[key]))
+            data.append(encode_table_value(value))
         except TypeError as err:
             raise TypeError("%s error: %s" % (key, err))
 
@@ -289,27 +287,37 @@ def encode_table_value(value):
     # Determine the field type and encode it
     if isinstance(value, bool):
         result = b't' + boolean(value)
+
     elif isinstance(value, int) or isinstance(value, long):
         result = table_integer(value)
+
     elif isinstance(value, _decimal.Decimal):
         result = b'D' + decimal(value)
+
     elif isinstance(value, float):
         result = b'f' + floating_point(value)
-    elif isinstance(value, str):
+
+    elif isinstance(value, (str, bytes, unicode)):
         result = b'S' + long_string(value)
+
     elif (isinstance(value, datetime.datetime) or
           isinstance(value, time.struct_time)):
         result = b'T' + timestamp(value)
+
     elif isinstance(value, dict):
         result = b'F' + field_table(value)
+
     elif isinstance(value, list):
         result = b'A' + field_array(value)
-    elif value is None:
-        result = b'V'
+
     elif isinstance(value, bytearray):
         result = b'x' + byte_array(value)
+
+    elif value is None:
+        result = b'V'
+
     else:
-        raise TypeError("Unknown type: %s (%r)"% (type(value), value))
+        raise TypeError("Unknown type: %s (%r)" % (type(value), value))
 
     # Return the encoded value
     return result
@@ -328,7 +336,7 @@ def by_type(value, data_type):
     # Determine the field type and encode it
     if data_type == 'field_array':
         return field_array(value)
-    elif data_type == 'byte_array':
+    elif data_type == 'bytearray':
         return byte_array(value)
     elif data_type == 'double':
         return double(value)
@@ -352,3 +360,13 @@ def by_type(value, data_type):
         return None
     else:
         raise TypeError("Unknown type: %s" % value)
+
+
+def _utf8_encode(value):
+    if PYTHON3:
+        if not isinstance(value, bytes):
+            return bytes(value, 'utf-8')
+        return value
+    if isinstance(value, unicode):
+        return value.encode('utf-8')
+    return value
