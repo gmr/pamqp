@@ -397,7 +397,7 @@ def _maybe_utf8(value):
 # Define a data type mapping to methods
 METHODS = {'array': field_array,
            'bit': bit,
-           'boolen': boolean,
+           'boolean': boolean,
            'byte_array': byte_array,
            'decimal': decimal,
            'double': double,
