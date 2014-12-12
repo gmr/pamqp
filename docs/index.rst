@@ -1,8 +1,3 @@
-.. pamqp documentation master file, created by
-   sphinx-quickstart on Wed Mar 27 13:26:28 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 pamqp
 =====
 pamqp is a low level AMQP 0-9-1 frame encoding and decoding library for Python 2 & 3 released under the BSD license.
@@ -35,6 +30,10 @@ pamqp module documentation
    header
    heartbeat
    specification
+
+Version History
+---------------
+See :doc:`history`
 
 Indices and tables
 ------------------

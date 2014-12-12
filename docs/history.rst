@@ -1,0 +1,59 @@
+Version History
+---------------
+ - 1.6.0 - released *2014-12-12*
+  - Move AMQP Classes in specification.py to slotted classes
+  - Remove UTF-8 encoding from byte_array (#2)
+  - Fix a typo for booleans in the method mapping for table decoding
+ - 1.5.0 - released *2014-11-05*
+  - Cleanup how UTF-8 is handled in decoding strings
+  - Ensure that field tables (headers property, etc) can use keys with utf-8 data
+  - Address missing and mis-aligned AMQP-0-9-1 field table decoding with the field type indicators from the RabbitMQ protocol errata page
+  - Fix a encoding by type bug introduced with 1.4 having to do with bytearrays
+  - Be explicit about needing a class id in the ContentHeader
+  - Update the tests to reflect the unicode changes
+  - Clean up the tests
+ - 1.4.0 - released *2014-11-04*
+  - Fix a long standing bug for non-specified responses for RabbitMQ AMQP extensions
+  - Refactor adding bytearrays and recoding complexity
+   - Add bytearray support (#1 and gmr/rabbitpy#48)
+   - Change encode/decode type errors from ValueError to TypeError exceptions
+   - Remove separate codecs for Python 2 & 3
+   - Move codecs from pamqp.codec.encode and pamqp.codec.decode to pamqp.encode and pamqp.decode
+   - Deprecate pamqp.codec
+   - Remove weird imports from top level __init__.py, not sure what I was thinking there
+   - Clean up codegen a bit to make it more PYTHON3 compatible
+   - Update codegen/include for new codec and PYTHON2/PYTHON3 behavior
+  - Update documentation
+  - Distribution updates
+   - Let travis upload to pypi
+   - Add wheel distribution
+   - Update supported python versions
+   - Update classifiers
+ - 1.3.1 - released *2014-02-14*
+  - Fix encoding of long-long-integers
+ - 1.3.0 - released *2014-01-17*
+  - Remove support for short strings in field tables
+ - 1.2.4 - released *2013-12-22*
+  - Add short-short-int support
+ - 1.2.3 - released *2013-12-22*
+  - Fix distribution requirements
+ - 1.2.2 - released *2013-12-22*
+  - Add decimal data type support
+ - 1.2.1 - released *2013-07-29*
+  - Fix Confirm.Select definition
+ - 1.2.0 - released *2013-07-08*
+  - Add support for Connection.Blocked, Connection.Unblocked
+  - Add documentation to specification.py in the codegen process
+ - 1.1.3 - released *2013-03-27*
+  - Fix exception creation
+ - 1.1.2 - released *2013-03-27*
+  - Add Confirm.Select, Confirm.SelectOk
+ - 1.1.1 - released *2013-03-22*
+  - Remove debugging print statements (eek)
+ - 1.1.0 - released *2013-03-21*
+  - Add Python 3.3 support
+ - 1.0.1 - released *2012-10-02*
+  - Address Unicode issues
+  - Add void support in table arrays
+ - 1.0.0 - released *2012-09-24*
+  - Initial version
