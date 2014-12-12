@@ -143,8 +143,12 @@ def long_string(value):
     """
     if not isinstance(value, (bytes, str, unicode)):
         raise TypeError("bytes, str, or unicode required")
-    if not PYTHON3 and isinstance(value, unicode):
-        value = value.encode('utf-8')
+    if PYTHON3:
+        if isinstance(value, str):
+            value = bytes(value, 'ascii')
+    else:
+        if isinstance(value, unicode):
+            value = value.encode('utf-8')
     return struct.pack('>I', len(value)) + value
 
 def octet(value):
