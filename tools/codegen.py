@@ -570,9 +570,9 @@ for class_name in class_list:
 
         if arguments:
             arguments[-1] = arguments[-1].replace(',', ']')
-            new_line('attributes = [' + arguments.pop(0), indent)
+            new_line('__slots__ = [' + arguments.pop(0), indent)
             for line in arguments:
-                new_line(line, indent + 14)
+                new_line(line, indent + 13)
         else:
             new_line('attributes = []', indent)
         new_line()
@@ -583,7 +583,7 @@ for class_name in class_list:
                 name = argument_name(argument['name'])
                 if name == 'type' and class_name == 'exchange':
                     name = 'exchange_type'
-                new_line('%s = \'%s\'' % (name, get_argument_type(argument)),
+                new_line('_%s = \'%s\'' % (name, get_argument_type(argument)),
                          indent)
             new_line()
 
@@ -682,7 +682,7 @@ for class_name in class_list:
         new_line()
 
         comment("Attributes", indent)
-        new_line('attributes = [\'%s\',' %
+        new_line('__slots__ = [\'%s\',' %
                  argument_name(definition['properties'][0]['name']),
                  indent)
         for argument in definition['properties'][1:-1]:
@@ -716,7 +716,7 @@ for class_name in class_list:
             name = argument_name(argument['name'])
             if name == 'type':
                 name = 'message_type'
-            new_line('%s = \'%s\'' % (name, get_argument_type(argument)),
+            new_line('_%s = \'%s\'' % (name, get_argument_type(argument)),
                      indent)
         new_line()
         new_line('frame_id = %i' % definition['id'], indent)

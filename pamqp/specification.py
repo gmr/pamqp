@@ -5,7 +5,7 @@ Auto-generated AMQP Support Module
 WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 
 """
-__since__ = '2014-11-04'
+__since__ = '2014-12-12'
 
 import struct
 
@@ -80,7 +80,7 @@ class Frame(object):
     behavior.
 
     """
-    attributes = list()
+    __slots__ = list()
     frame_id = 0
     index = 0
     name = 'Frame'
@@ -93,8 +93,7 @@ class Frame(object):
         :rtype: tuple
 
         """
-        self.supported = True
-        for attribute in self.attributes:
+        for attribute in self.__slots__:
             yield (attribute, getattr(self, attribute))
 
     def __contains__(self, item):
@@ -103,7 +102,7 @@ class Frame(object):
         :rtype: bool
 
         """
-        return item in self.attributes
+        return item in self.__slots__
 
     def __getitem__(self, item):
         """Return an attribute as if it were a dict.
@@ -112,7 +111,7 @@ class Frame(object):
         :rtype: any
 
         """
-        if item not in self.attributes:
+        if item not in self.__slots__:
             return None
         return getattr(self, item)
 
@@ -122,7 +121,7 @@ class Frame(object):
         :rtype: int
 
         """
-        return len(self.attributes)
+        return len(self.__slots__)
 
     def __repr__(self):
         """Return the representation of the frame object
@@ -145,8 +144,8 @@ class Frame(object):
         processing_bitset = False
         byte = None
         offset = 0
-        for argument in self.attributes:
-            data_type = getattr(self.__class__, argument)
+        for argument in self.__slots__:
+            data_type = getattr(self.__class__, '_' + argument)
 
             # Check if we need to turn on bit processing
             if not processing_bitset and data_type == 'bit':
@@ -199,9 +198,9 @@ class Frame(object):
         """
         offset = 0
         processing_bitset = False
-        for argument in self.attributes:
+        for argument in self.__slots__:
 
-            data_type = getattr(self.__class__, argument)
+            data_type = getattr(self.__class__, '_' + argument)
 
             if offset == 7 and processing_bitset:
                 data = data[1:]
@@ -230,19 +229,19 @@ class PropertiesBase(object):
 
     """
 
-    attributes = list()
+    __slots__ = list()
     flags = dict()
     name = 'PropertiesBase'
 
     def __contains__(self, item):
-        return item in self.attributes and getattr(self, item, None)
+        return item in self.__slots__ and getattr(self, item, None)
 
     def __iter__(self):
-        for attribute in self.attributes:
+        for attribute in self.__slots__:
             yield attribute
 
     def __delattr__(self, item):
-        if item in self.attributes:
+        if item in self.__slots__:
             setattr(self, item, None)
 
     def encode_property(self, property_name, property_value):
@@ -253,7 +252,7 @@ class PropertiesBase(object):
 
         """
         return encode.by_type(property_value,
-                              getattr(self.__class__, property_name))
+                              getattr(self.__class__, '_' + property_name))
 
     def marshal(self):
         """Take the Basic.Properties data structure and marshal it into the data
@@ -264,7 +263,7 @@ class PropertiesBase(object):
         """
         flags = 0
         parts = list()
-        for property_name in self.attributes:
+        for property_name in self.__slots__:
             property_value = getattr(self, property_name)
             if property_value is not None and property_value != '':
                 flags = flags | self.flags[property_name]
@@ -284,7 +283,7 @@ class PropertiesBase(object):
 
     def to_dict(self):
         output = dict()
-        for attribute in self.attributes:
+        for attribute in self.__slots__:
             output[attribute] = getattr(self, attribute, None)
         return output
 
@@ -297,9 +296,9 @@ class PropertiesBase(object):
         :param bytes data: The binary encoded method data
 
         """
-        for property_name in self.attributes:
+        for property_name in self.__slots__:
             if flags & self.flags[property_name]:
-                data_type = getattr(self.__class__, property_name)
+                data_type = getattr(self.__class__, '_' + property_name)
                 consumed, value = decode.by_type(data, data_type)
                 setattr(self, property_name, value)
                 data = data[consumed:]
@@ -543,18 +542,18 @@ class Connection(object):
         valid_responses = ['Connection.StartOk']
 
         # AMQP Method Attributes
-        attributes = ['version_major',
-                      'version_minor',
-                      'server_properties',
-                      'mechanisms',
-                      'locales']
+        __slots__ = ['version_major',
+                     'version_minor',
+                     'server_properties',
+                     'mechanisms',
+                     'locales']
 
         # Class Attribute Types
-        version_major = 'octet'
-        version_minor = 'octet'
-        server_properties = 'table'
-        mechanisms = 'longstr'
-        locales = 'longstr'
+        _version_major = 'octet'
+        _version_minor = 'octet'
+        _server_properties = 'table'
+        _mechanisms = 'longstr'
+        _locales = 'longstr'
 
         def __init__(self, version_major=0, version_minor=9,
                      server_properties=None, mechanisms='PLAIN',
@@ -598,16 +597,16 @@ class Connection(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['client_properties',
-                      'mechanism',
-                      'response',
-                      'locale']
+        __slots__ = ['client_properties',
+                     'mechanism',
+                     'response',
+                     'locale']
 
         # Class Attribute Types
-        client_properties = 'table'
-        mechanism = 'shortstr'
-        response = 'longstr'
-        locale = 'shortstr'
+        _client_properties = 'table'
+        _mechanism = 'shortstr'
+        _response = 'longstr'
+        _locale = 'shortstr'
 
         def __init__(self, client_properties=None, mechanism='PLAIN',
                      response='', locale='en_US'):
@@ -651,10 +650,10 @@ class Connection(object):
         valid_responses = ['Connection.SecureOk']
 
         # AMQP Method Attributes
-        attributes = ['challenge']
+        __slots__ = ['challenge']
 
         # Class Attribute Types
-        challenge = 'longstr'
+        _challenge = 'longstr'
 
         def __init__(self, challenge=''):
             """Initialize the Connection.Secure class
@@ -681,10 +680,10 @@ class Connection(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['response']
+        __slots__ = ['response']
 
         # Class Attribute Types
-        response = 'longstr'
+        _response = 'longstr'
 
         def __init__(self, response=''):
             """Initialize the Connection.SecureOk class
@@ -714,14 +713,14 @@ class Connection(object):
         valid_responses = ['Connection.TuneOk']
 
         # AMQP Method Attributes
-        attributes = ['channel_max',
-                      'frame_max',
-                      'heartbeat']
+        __slots__ = ['channel_max',
+                     'frame_max',
+                     'heartbeat']
 
         # Class Attribute Types
-        channel_max = 'short'
-        frame_max = 'long'
-        heartbeat = 'short'
+        _channel_max = 'short'
+        _frame_max = 'long'
+        _heartbeat = 'short'
 
         def __init__(self, channel_max=0, frame_max=0, heartbeat=0):
             """Initialize the Connection.Tune class
@@ -757,14 +756,14 @@ class Connection(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['channel_max',
-                      'frame_max',
-                      'heartbeat']
+        __slots__ = ['channel_max',
+                     'frame_max',
+                     'heartbeat']
 
         # Class Attribute Types
-        channel_max = 'short'
-        frame_max = 'long'
-        heartbeat = 'short'
+        _channel_max = 'short'
+        _frame_max = 'long'
+        _heartbeat = 'short'
 
         def __init__(self, channel_max=0, frame_max=0, heartbeat=0):
             """Initialize the Connection.TuneOk class
@@ -805,14 +804,14 @@ class Connection(object):
         valid_responses = ['Connection.OpenOk']
 
         # AMQP Method Attributes
-        attributes = ['virtual_host',
-                      'capabilities',
-                      'insist']
+        __slots__ = ['virtual_host',
+                     'capabilities',
+                     'insist']
 
         # Class Attribute Types
-        virtual_host = 'shortstr'
-        capabilities = 'shortstr'
-        insist = 'bit'
+        _virtual_host = 'shortstr'
+        _capabilities = 'shortstr'
+        _insist = 'bit'
 
         def __init__(self, virtual_host='/', capabilities='', insist=False):
             """Initialize the Connection.Open class
@@ -846,10 +845,10 @@ class Connection(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['known_hosts']
+        __slots__ = ['known_hosts']
 
         # Class Attribute Types
-        known_hosts = 'shortstr'
+        _known_hosts = 'shortstr'
 
         def __init__(self, known_hosts=''):
             """Initialize the Connection.OpenOk class
@@ -882,16 +881,16 @@ class Connection(object):
         valid_responses = ['Connection.CloseOk']
 
         # AMQP Method Attributes
-        attributes = ['reply_code',
-                      'reply_text',
-                      'class_id',
-                      'method_id']
+        __slots__ = ['reply_code',
+                     'reply_text',
+                     'class_id',
+                     'method_id']
 
         # Class Attribute Types
-        reply_code = 'short'
-        reply_text = 'shortstr'
-        class_id = 'short'
-        method_id = 'short'
+        _reply_code = 'short'
+        _reply_text = 'shortstr'
+        _class_id = 'short'
+        _method_id = 'short'
 
         def __init__(self, reply_code=0, reply_text='', class_id=0,
                      method_id=0):
@@ -950,10 +949,10 @@ class Connection(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['reason']
+        __slots__ = ['reason']
 
         # Class Attribute Types
-        reason = 'shortstr'
+        _reason = 'shortstr'
 
         def __init__(self, reason=''):
             """Initialize the Connection.Blocked class
@@ -1011,10 +1010,10 @@ class Channel(object):
         valid_responses = ['Channel.OpenOk']
 
         # AMQP Method Attributes
-        attributes = ['out_of_band']
+        __slots__ = ['out_of_band']
 
         # Class Attribute Types
-        out_of_band = 'shortstr'
+        _out_of_band = 'shortstr'
 
         def __init__(self, out_of_band=''):
             """Initialize the Channel.Open class
@@ -1040,10 +1039,10 @@ class Channel(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['channel_id']
+        __slots__ = ['channel_id']
 
         # Class Attribute Types
-        channel_id = 'longstr'
+        _channel_id = 'longstr'
 
         def __init__(self, channel_id=''):
             """Initialize the Channel.OpenOk class
@@ -1077,10 +1076,10 @@ class Channel(object):
         valid_responses = ['Channel.FlowOk']
 
         # AMQP Method Attributes
-        attributes = ['active']
+        __slots__ = ['active']
 
         # Class Attribute Types
-        active = 'bit'
+        _active = 'bit'
 
         def __init__(self, active=None):
             """Initialize the Channel.Flow class
@@ -1106,10 +1105,10 @@ class Channel(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['active']
+        __slots__ = ['active']
 
         # Class Attribute Types
-        active = 'bit'
+        _active = 'bit'
 
         def __init__(self, active=None):
             """Initialize the Channel.FlowOk class
@@ -1142,16 +1141,16 @@ class Channel(object):
         valid_responses = ['Channel.CloseOk']
 
         # AMQP Method Attributes
-        attributes = ['reply_code',
-                      'reply_text',
-                      'class_id',
-                      'method_id']
+        __slots__ = ['reply_code',
+                     'reply_text',
+                     'class_id',
+                     'method_id']
 
         # Class Attribute Types
-        reply_code = 'short'
-        reply_text = 'shortstr'
-        class_id = 'short'
-        method_id = 'short'
+        _reply_code = 'short'
+        _reply_text = 'shortstr'
+        _class_id = 'short'
+        _method_id = 'short'
 
         def __init__(self, reply_code=0, reply_text='', class_id=0,
                      method_id=0):
@@ -1225,26 +1224,26 @@ class Exchange(object):
         valid_responses = ['Exchange.DeclareOk']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'exchange',
-                      'exchange_type',
-                      'passive',
-                      'durable',
-                      'auto_delete',
-                      'internal',
-                      'nowait',
-                      'arguments']
+        __slots__ = ['ticket',
+                     'exchange',
+                     'exchange_type',
+                     'passive',
+                     'durable',
+                     'auto_delete',
+                     'internal',
+                     'nowait',
+                     'arguments']
 
         # Class Attribute Types
-        ticket = 'short'
-        exchange = 'shortstr'
-        exchange_type = 'shortstr'
-        passive = 'bit'
-        durable = 'bit'
-        auto_delete = 'bit'
-        internal = 'bit'
-        nowait = 'bit'
-        arguments = 'table'
+        _ticket = 'short'
+        _exchange = 'shortstr'
+        _exchange_type = 'shortstr'
+        _passive = 'bit'
+        _durable = 'bit'
+        _auto_delete = 'bit'
+        _internal = 'bit'
+        _nowait = 'bit'
+        _arguments = 'table'
 
         def __init__(self, ticket=0, exchange='', exchange_type='direct',
                      passive=False, durable=False, auto_delete=False,
@@ -1328,16 +1327,16 @@ class Exchange(object):
         valid_responses = ['Exchange.DeleteOk']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'exchange',
-                      'if_unused',
-                      'nowait']
+        __slots__ = ['ticket',
+                     'exchange',
+                     'if_unused',
+                     'nowait']
 
         # Class Attribute Types
-        ticket = 'short'
-        exchange = 'shortstr'
-        if_unused = 'bit'
-        nowait = 'bit'
+        _ticket = 'short'
+        _exchange = 'shortstr'
+        _if_unused = 'bit'
+        _nowait = 'bit'
 
         def __init__(self, ticket=0, exchange='', if_unused=False,
                      nowait=False):
@@ -1390,20 +1389,20 @@ class Exchange(object):
         valid_responses = ['Exchange.BindOk']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'destination',
-                      'source',
-                      'routing_key',
-                      'nowait',
-                      'arguments']
+        __slots__ = ['ticket',
+                     'destination',
+                     'source',
+                     'routing_key',
+                     'nowait',
+                     'arguments']
 
         # Class Attribute Types
-        ticket = 'short'
-        destination = 'shortstr'
-        source = 'shortstr'
-        routing_key = 'shortstr'
-        nowait = 'bit'
-        arguments = 'table'
+        _ticket = 'short'
+        _destination = 'shortstr'
+        _source = 'shortstr'
+        _routing_key = 'shortstr'
+        _nowait = 'bit'
+        _arguments = 'table'
 
         def __init__(self, ticket=0, destination='', source='', routing_key='',
                      nowait=False, arguments=None):
@@ -1456,20 +1455,20 @@ class Exchange(object):
         valid_responses = ['Exchange.UnbindOk']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'destination',
-                      'source',
-                      'routing_key',
-                      'nowait',
-                      'arguments']
+        __slots__ = ['ticket',
+                     'destination',
+                     'source',
+                     'routing_key',
+                     'nowait',
+                     'arguments']
 
         # Class Attribute Types
-        ticket = 'short'
-        destination = 'shortstr'
-        source = 'shortstr'
-        routing_key = 'shortstr'
-        nowait = 'bit'
-        arguments = 'table'
+        _ticket = 'short'
+        _destination = 'shortstr'
+        _source = 'shortstr'
+        _routing_key = 'shortstr'
+        _nowait = 'bit'
+        _arguments = 'table'
 
         def __init__(self, ticket=0, destination='', source='', routing_key='',
                      nowait=False, arguments=None):
@@ -1542,24 +1541,24 @@ class Queue(object):
         valid_responses = ['Queue.DeclareOk']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'queue',
-                      'passive',
-                      'durable',
-                      'exclusive',
-                      'auto_delete',
-                      'nowait',
-                      'arguments']
+        __slots__ = ['ticket',
+                     'queue',
+                     'passive',
+                     'durable',
+                     'exclusive',
+                     'auto_delete',
+                     'nowait',
+                     'arguments']
 
         # Class Attribute Types
-        ticket = 'short'
-        queue = 'shortstr'
-        passive = 'bit'
-        durable = 'bit'
-        exclusive = 'bit'
-        auto_delete = 'bit'
-        nowait = 'bit'
-        arguments = 'table'
+        _ticket = 'short'
+        _queue = 'shortstr'
+        _passive = 'bit'
+        _durable = 'bit'
+        _exclusive = 'bit'
+        _auto_delete = 'bit'
+        _nowait = 'bit'
+        _arguments = 'table'
 
         def __init__(self, ticket=0, queue='', passive=False, durable=False,
                      exclusive=False, auto_delete=False, nowait=False,
@@ -1615,14 +1614,14 @@ class Queue(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['queue',
-                      'message_count',
-                      'consumer_count']
+        __slots__ = ['queue',
+                     'message_count',
+                     'consumer_count']
 
         # Class Attribute Types
-        queue = 'shortstr'
-        message_count = 'long'
-        consumer_count = 'long'
+        _queue = 'shortstr'
+        _message_count = 'long'
+        _consumer_count = 'long'
 
         def __init__(self, queue='', message_count=0, consumer_count=0):
             """Initialize the Queue.DeclareOk class
@@ -1661,20 +1660,20 @@ class Queue(object):
         valid_responses = ['Queue.BindOk']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'queue',
-                      'exchange',
-                      'routing_key',
-                      'nowait',
-                      'arguments']
+        __slots__ = ['ticket',
+                     'queue',
+                     'exchange',
+                     'routing_key',
+                     'nowait',
+                     'arguments']
 
         # Class Attribute Types
-        ticket = 'short'
-        queue = 'shortstr'
-        exchange = 'shortstr'
-        routing_key = 'shortstr'
-        nowait = 'bit'
-        arguments = 'table'
+        _ticket = 'short'
+        _queue = 'shortstr'
+        _exchange = 'shortstr'
+        _routing_key = 'shortstr'
+        _nowait = 'bit'
+        _arguments = 'table'
 
         def __init__(self, ticket=0, queue='', exchange='', routing_key='',
                      nowait=False, arguments=None):
@@ -1741,14 +1740,14 @@ class Queue(object):
         valid_responses = ['Queue.PurgeOk']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'queue',
-                      'nowait']
+        __slots__ = ['ticket',
+                     'queue',
+                     'nowait']
 
         # Class Attribute Types
-        ticket = 'short'
-        queue = 'shortstr'
-        nowait = 'bit'
+        _ticket = 'short'
+        _queue = 'shortstr'
+        _nowait = 'bit'
 
         def __init__(self, ticket=0, queue='', nowait=False):
             """Initialize the Queue.Purge class
@@ -1781,10 +1780,10 @@ class Queue(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['message_count']
+        __slots__ = ['message_count']
 
         # Class Attribute Types
-        message_count = 'long'
+        _message_count = 'long'
 
         def __init__(self, message_count=0):
             """Initialize the Queue.PurgeOk class
@@ -1814,18 +1813,18 @@ class Queue(object):
         valid_responses = ['Queue.DeleteOk']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'queue',
-                      'if_unused',
-                      'if_empty',
-                      'nowait']
+        __slots__ = ['ticket',
+                     'queue',
+                     'if_unused',
+                     'if_empty',
+                     'nowait']
 
         # Class Attribute Types
-        ticket = 'short'
-        queue = 'shortstr'
-        if_unused = 'bit'
-        if_empty = 'bit'
-        nowait = 'bit'
+        _ticket = 'short'
+        _queue = 'shortstr'
+        _if_unused = 'bit'
+        _if_empty = 'bit'
+        _nowait = 'bit'
 
         def __init__(self, ticket=0, queue='', if_unused=False, if_empty=False,
                      nowait=False):
@@ -1867,10 +1866,10 @@ class Queue(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['message_count']
+        __slots__ = ['message_count']
 
         # Class Attribute Types
-        message_count = 'long'
+        _message_count = 'long'
 
         def __init__(self, message_count=0):
             """Initialize the Queue.DeleteOk class
@@ -1898,18 +1897,18 @@ class Queue(object):
         valid_responses = ['Queue.UnbindOk']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'queue',
-                      'exchange',
-                      'routing_key',
-                      'arguments']
+        __slots__ = ['ticket',
+                     'queue',
+                     'exchange',
+                     'routing_key',
+                     'arguments']
 
         # Class Attribute Types
-        ticket = 'short'
-        queue = 'shortstr'
-        exchange = 'shortstr'
-        routing_key = 'shortstr'
-        arguments = 'table'
+        _ticket = 'short'
+        _queue = 'shortstr'
+        _exchange = 'shortstr'
+        _routing_key = 'shortstr'
+        _arguments = 'table'
 
         def __init__(self, ticket=0, queue='', exchange='', routing_key='',
                      arguments=None):
@@ -1987,14 +1986,14 @@ class Basic(object):
         valid_responses = ['Basic.QosOk']
 
         # AMQP Method Attributes
-        attributes = ['prefetch_size',
-                      'prefetch_count',
-                      'global_']
+        __slots__ = ['prefetch_size',
+                     'prefetch_count',
+                     'global_']
 
         # Class Attribute Types
-        prefetch_size = 'long'
-        prefetch_count = 'short'
-        global_ = 'bit'
+        _prefetch_size = 'long'
+        _prefetch_count = 'short'
+        _global_ = 'bit'
 
         def __init__(self, prefetch_size=0, prefetch_count=0, global_=False):
             """Initialize the Basic.Qos class
@@ -2052,24 +2051,24 @@ class Basic(object):
         valid_responses = ['Basic.ConsumeOk']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'queue',
-                      'consumer_tag',
-                      'no_local',
-                      'no_ack',
-                      'exclusive',
-                      'nowait',
-                      'arguments']
+        __slots__ = ['ticket',
+                     'queue',
+                     'consumer_tag',
+                     'no_local',
+                     'no_ack',
+                     'exclusive',
+                     'nowait',
+                     'arguments']
 
         # Class Attribute Types
-        ticket = 'short'
-        queue = 'shortstr'
-        consumer_tag = 'shortstr'
-        no_local = 'bit'
-        no_ack = 'bit'
-        exclusive = 'bit'
-        nowait = 'bit'
-        arguments = 'table'
+        _ticket = 'short'
+        _queue = 'shortstr'
+        _consumer_tag = 'shortstr'
+        _no_local = 'bit'
+        _no_ack = 'bit'
+        _exclusive = 'bit'
+        _nowait = 'bit'
+        _arguments = 'table'
 
         def __init__(self, ticket=0, queue='', consumer_tag='', no_local=False,
                      no_ack=False, exclusive=False, nowait=False,
@@ -2124,10 +2123,10 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['consumer_tag']
+        __slots__ = ['consumer_tag']
 
         # Class Attribute Types
-        consumer_tag = 'shortstr'
+        _consumer_tag = 'shortstr'
 
         def __init__(self, consumer_tag=''):
             """Initialize the Basic.ConsumeOk class
@@ -2159,12 +2158,12 @@ class Basic(object):
         valid_responses = ['Basic.CancelOk']
 
         # AMQP Method Attributes
-        attributes = ['consumer_tag',
-                      'nowait']
+        __slots__ = ['consumer_tag',
+                     'nowait']
 
         # Class Attribute Types
-        consumer_tag = 'shortstr'
-        nowait = 'bit'
+        _consumer_tag = 'shortstr'
+        _nowait = 'bit'
 
         def __init__(self, consumer_tag='', nowait=False):
             """Initialize the Basic.Cancel class
@@ -2194,10 +2193,10 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['consumer_tag']
+        __slots__ = ['consumer_tag']
 
         # Class Attribute Types
-        consumer_tag = 'shortstr'
+        _consumer_tag = 'shortstr'
 
         def __init__(self, consumer_tag=''):
             """Initialize the Basic.CancelOk class
@@ -2226,18 +2225,18 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'exchange',
-                      'routing_key',
-                      'mandatory',
-                      'immediate']
+        __slots__ = ['ticket',
+                     'exchange',
+                     'routing_key',
+                     'mandatory',
+                     'immediate']
 
         # Class Attribute Types
-        ticket = 'short'
-        exchange = 'shortstr'
-        routing_key = 'shortstr'
-        mandatory = 'bit'
-        immediate = 'bit'
+        _ticket = 'short'
+        _exchange = 'shortstr'
+        _routing_key = 'shortstr'
+        _mandatory = 'bit'
+        _immediate = 'bit'
 
         def __init__(self, ticket=0, exchange='', routing_key='',
                      mandatory=False, immediate=False):
@@ -2282,16 +2281,16 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['reply_code',
-                      'reply_text',
-                      'exchange',
-                      'routing_key']
+        __slots__ = ['reply_code',
+                     'reply_text',
+                     'exchange',
+                     'routing_key']
 
         # Class Attribute Types
-        reply_code = 'short'
-        reply_text = 'shortstr'
-        exchange = 'shortstr'
-        routing_key = 'shortstr'
+        _reply_code = 'short'
+        _reply_text = 'shortstr'
+        _exchange = 'shortstr'
+        _routing_key = 'shortstr'
 
         def __init__(self, reply_code=0, reply_text='', exchange='',
                      routing_key=''):
@@ -2332,18 +2331,18 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['consumer_tag',
-                      'delivery_tag',
-                      'redelivered',
-                      'exchange',
-                      'routing_key']
+        __slots__ = ['consumer_tag',
+                     'delivery_tag',
+                     'redelivered',
+                     'exchange',
+                     'routing_key']
 
         # Class Attribute Types
-        consumer_tag = 'shortstr'
-        delivery_tag = 'longlong'
-        redelivered = 'bit'
-        exchange = 'shortstr'
-        routing_key = 'shortstr'
+        _consumer_tag = 'shortstr'
+        _delivery_tag = 'longlong'
+        _redelivered = 'bit'
+        _exchange = 'shortstr'
+        _routing_key = 'shortstr'
 
         def __init__(self, consumer_tag='', delivery_tag=None,
                      redelivered=False, exchange='', routing_key=''):
@@ -2390,14 +2389,14 @@ class Basic(object):
         valid_responses = ['Basic.GetOk', 'Basic.GetEmpty']
 
         # AMQP Method Attributes
-        attributes = ['ticket',
-                      'queue',
-                      'no_ack']
+        __slots__ = ['ticket',
+                     'queue',
+                     'no_ack']
 
         # Class Attribute Types
-        ticket = 'short'
-        queue = 'shortstr'
-        no_ack = 'bit'
+        _ticket = 'short'
+        _queue = 'shortstr'
+        _no_ack = 'bit'
 
         def __init__(self, ticket=0, queue='', no_ack=False):
             """Initialize the Basic.Get class
@@ -2432,18 +2431,18 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['delivery_tag',
-                      'redelivered',
-                      'exchange',
-                      'routing_key',
-                      'message_count']
+        __slots__ = ['delivery_tag',
+                     'redelivered',
+                     'exchange',
+                     'routing_key',
+                     'message_count']
 
         # Class Attribute Types
-        delivery_tag = 'longlong'
-        redelivered = 'bit'
-        exchange = 'shortstr'
-        routing_key = 'shortstr'
-        message_count = 'long'
+        _delivery_tag = 'longlong'
+        _redelivered = 'bit'
+        _exchange = 'shortstr'
+        _routing_key = 'shortstr'
+        _message_count = 'long'
 
         def __init__(self, delivery_tag=None, redelivered=False, exchange='',
                      routing_key='', message_count=0):
@@ -2486,10 +2485,10 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['cluster_id']
+        __slots__ = ['cluster_id']
 
         # Class Attribute Types
-        cluster_id = 'shortstr'
+        _cluster_id = 'shortstr'
 
         def __init__(self, cluster_id=''):
             """Initialize the Basic.GetEmpty class
@@ -2517,12 +2516,12 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['delivery_tag',
-                      'multiple']
+        __slots__ = ['delivery_tag',
+                     'multiple']
 
         # Class Attribute Types
-        delivery_tag = 'longlong'
-        multiple = 'bit'
+        _delivery_tag = 'longlong'
+        _multiple = 'bit'
 
         def __init__(self, delivery_tag=0, multiple=False):
             """Initialize the Basic.Ack class
@@ -2554,12 +2553,12 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['delivery_tag',
-                      'requeue']
+        __slots__ = ['delivery_tag',
+                     'requeue']
 
         # Class Attribute Types
-        delivery_tag = 'longlong'
-        requeue = 'bit'
+        _delivery_tag = 'longlong'
+        _requeue = 'bit'
 
         def __init__(self, delivery_tag=None, requeue=True):
             """Initialize the Basic.Reject class
@@ -2591,10 +2590,10 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['requeue']
+        __slots__ = ['requeue']
 
         # Class Attribute Types
-        requeue = 'bit'
+        _requeue = 'bit'
 
         def __init__(self, requeue=False):
             """Initialize the Basic.RecoverAsync class
@@ -2630,10 +2629,10 @@ class Basic(object):
         valid_responses = ['Basic.RecoverOk']
 
         # AMQP Method Attributes
-        attributes = ['requeue']
+        __slots__ = ['requeue']
 
         # Class Attribute Types
-        requeue = 'bit'
+        _requeue = 'bit'
 
         def __init__(self, requeue=False):
             """Initialize the Basic.Recover class
@@ -2671,14 +2670,14 @@ class Basic(object):
         synchronous = False
 
         # AMQP Method Attributes
-        attributes = ['delivery_tag',
-                      'multiple',
-                      'requeue']
+        __slots__ = ['delivery_tag',
+                     'multiple',
+                     'requeue']
 
         # Class Attribute Types
-        delivery_tag = 'longlong'
-        multiple = 'bit'
-        requeue = 'bit'
+        _delivery_tag = 'longlong'
+        _multiple = 'bit'
+        _requeue = 'bit'
 
         def __init__(self, delivery_tag=0, multiple=False, requeue=True):
             """Initialize the Basic.Nack class
@@ -2701,7 +2700,7 @@ class Basic(object):
         name = 'Basic.Properties'
 
         # Attributes
-        attributes = ['content_type',
+        __slots__ = ['content_type',
                       "content_encoding",
                       "headers",
                       "delivery_mode",
@@ -2733,20 +2732,20 @@ class Basic(object):
                  'cluster_id': 4}
 
         # Class Attribute Types
-        content_type = 'shortstr'
-        content_encoding = 'shortstr'
-        headers = 'table'
-        delivery_mode = 'octet'
-        priority = 'octet'
-        correlation_id = 'shortstr'
-        reply_to = 'shortstr'
-        expiration = 'shortstr'
-        message_id = 'shortstr'
-        timestamp = 'timestamp'
-        message_type = 'shortstr'
-        user_id = 'shortstr'
-        app_id = 'shortstr'
-        cluster_id = 'shortstr'
+        _content_type = 'shortstr'
+        _content_encoding = 'shortstr'
+        _headers = 'table'
+        _delivery_mode = 'octet'
+        _priority = 'octet'
+        _correlation_id = 'shortstr'
+        _reply_to = 'shortstr'
+        _expiration = 'shortstr'
+        _message_id = 'shortstr'
+        _timestamp = 'timestamp'
+        _message_type = 'shortstr'
+        _user_id = 'shortstr'
+        _app_id = 'shortstr'
+        _cluster_id = 'shortstr'
 
         frame_id = 60
         index = 0x003C
@@ -2978,10 +2977,10 @@ class Confirm(object):
         valid_responses = ['Confirm.SelectOk']
 
         # AMQP Method Attributes
-        attributes = ['nowait']
+        __slots__ = ['nowait']
 
         # Class Attribute Types
-        nowait = 'bit'
+        _nowait = 'bit'
 
         def __init__(self, nowait=False):
             """Initialize the Confirm.Select class

@@ -4,7 +4,7 @@ class Frame(object):
     behavior.
 
     """
-    attributes = list()
+    __slots__ = list()
     frame_id = 0
     index = 0
     name = 'Frame'
@@ -17,8 +17,7 @@ class Frame(object):
         :rtype: tuple
 
         """
-        self.supported = True
-        for attribute in self.attributes:
+        for attribute in self.__slots__:
             yield (attribute, getattr(self, attribute))
 
     def __contains__(self, item):
@@ -27,7 +26,7 @@ class Frame(object):
         :rtype: bool
 
         """
-        return item in self.attributes
+        return item in self.__slots__
 
     def __getitem__(self, item):
         """Return an attribute as if it were a dict.
@@ -36,7 +35,7 @@ class Frame(object):
         :rtype: any
 
         """
-        if item not in self.attributes:
+        if item not in self.__slots__:
             return None
         return getattr(self, item)
 
@@ -46,7 +45,7 @@ class Frame(object):
         :rtype: int
 
         """
-        return len(self.attributes)
+        return len(self.__slots__)
 
     def __repr__(self):
         """Return the representation of the frame object
@@ -69,8 +68,8 @@ class Frame(object):
         processing_bitset = False
         byte = None
         offset = 0
-        for argument in self.attributes:
-            data_type = getattr(self.__class__, argument)
+        for argument in self.__slots__:
+            data_type = getattr(self.__class__, '_' + argument)
 
             # Check if we need to turn on bit processing
             if not processing_bitset and data_type == 'bit':
@@ -123,9 +122,9 @@ class Frame(object):
         """
         offset = 0
         processing_bitset = False
-        for argument in self.attributes:
+        for argument in self.__slots__:
 
-            data_type = getattr(self.__class__, argument)
+            data_type = getattr(self.__class__, '_' + argument)
 
             if offset == 7 and processing_bitset:
                 data = data[1:]
@@ -154,19 +153,19 @@ class PropertiesBase(object):
 
     """
 
-    attributes = list()
+    __slots__ = list()
     flags = dict()
     name = 'PropertiesBase'
 
     def __contains__(self, item):
-        return item in self.attributes and getattr(self, item, None)
+        return item in self.__slots__ and getattr(self, item, None)
 
     def __iter__(self):
-        for attribute in self.attributes:
+        for attribute in self.__slots__:
             yield attribute
 
     def __delattr__(self, item):
-        if item in self.attributes:
+        if item in self.__slots__:
             setattr(self, item, None)
 
     def encode_property(self, property_name, property_value):
@@ -177,7 +176,7 @@ class PropertiesBase(object):
 
         """
         return encode.by_type(property_value,
-                              getattr(self.__class__, property_name))
+                              getattr(self.__class__, '_' + property_name))
 
     def marshal(self):
         """Take the Basic.Properties data structure and marshal it into the data
@@ -188,7 +187,7 @@ class PropertiesBase(object):
         """
         flags = 0
         parts = list()
-        for property_name in self.attributes:
+        for property_name in self.__slots__:
             property_value = getattr(self, property_name)
             if property_value is not None and property_value != '':
                 flags = flags | self.flags[property_name]
@@ -208,7 +207,7 @@ class PropertiesBase(object):
 
     def to_dict(self):
         output = dict()
-        for attribute in self.attributes:
+        for attribute in self.__slots__:
             output[attribute] = getattr(self, attribute, None)
         return output
 
@@ -221,9 +220,9 @@ class PropertiesBase(object):
         :param bytes data: The binary encoded method data
 
         """
-        for property_name in self.attributes:
+        for property_name in self.__slots__:
             if flags & self.flags[property_name]:
-                data_type = getattr(self.__class__, property_name)
+                data_type = getattr(self.__class__, '_' + property_name)
                 consumed, value = decode.by_type(data, data_type)
                 setattr(self, property_name, value)
                 data = data[consumed:]
