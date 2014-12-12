@@ -50,8 +50,7 @@ def byte_array(value):
     if not isinstance(value, bytearray):
         raise TypeError("bytearray type required")
     if PYTHON3:
-        return struct.pack('>I', len(value)) + bytes(value.decode('utf-8'),
-                                                     'utf-8')
+        return struct.pack('>I', len(value)) + value
     return struct.pack('>I', len(value)) + bytes(value.decode('utf-8'))
 
 
