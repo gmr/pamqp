@@ -142,13 +142,13 @@ def long_str(value):
     """Decode a string value
 
     :param bytes value: Value to decode
-    :return tuple: bytes used, unicode|str
+    :return tuple: bytes used, bytes|str
     :raises: ValueError
 
     """
     try:
         length = Struct.integer.unpack(value[0:4])[0]
-        return length + 4, _maybe_utf8(value[4:length + 4])
+        return length + 4, value[4:length + 4]
     except TypeError:
         raise ValueError('Could not unpack data')
 

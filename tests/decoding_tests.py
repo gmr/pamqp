@@ -27,7 +27,7 @@ class CodecDecodeTests(unittest.TestCase):
                  b'I\xbb\x9a\xca\x00D\x02\x00\x00\x01:f@H\xf5\xc3l'
                  b'\x00\x00\x00\x00\xc4e5\xffl\x80\x00\x00\x00\x00'
                  b'\x00\x00\x08')
-    FIELD_ARR_VALUE = [1, 45000, utf8('Test ✈'),
+    FIELD_ARR_VALUE = [1, 45000, b'Test \xe2\x9c\x88',
                        time.struct_time((2006, 11, 21, 16, 30, 10, 1, 325, 0)),
                        -1147483648, decimal.Decimal('3.14'),
                        3.14,
@@ -41,14 +41,14 @@ class CodecDecodeTests(unittest.TestCase):
                  b'longvalI6e&U\x06strvalS\x00\x00\x00\x08Test \xe2'
                  b'\x9c\x88\x0ctimestampvalT\x00\x00\x00\x00Ec)\x92')
     FIELD_TBL_VALUE = {b'intval': 1,
-                       b'strval': utf8('Test ✈'),
+                       b'strval': b'Test \xe2\x9c\x88',
                        b'boolval': True,
                        b'timestampval': time.struct_time((2006, 11, 21, 16, 30,
                                                          10, 1, 325, 0)),
                        b'decval': decimal.Decimal('3.14'),
                        b'floatval': 3.14,
                        b'longval': long(912598613),
-                       b'dictval': {utf8('f✉'): utf8('✐')},
+                       b'dictval': {utf8('f✉'): b'\xe2\x9c\x90'},
                        b'arrayval': [1, 2, 3]}
 
     def test_decode_by_type_invalid_data_type(self):
@@ -169,7 +169,7 @@ class CodecDecodeTests(unittest.TestCase):
         self.assertIsInstance(decode.long_str(b'\x00\x00\x00\x0c\xd8\xa7'
                                               b'\xd8\xae\xd8\xaa\xd8\xa8'
                                               b'\xd8\xa7\xd8\xb1')[1],
-                              unicode)
+                              bytes)
 
     def test_decode_long_str_invalid_value(self):
         self.assertRaises(ValueError, decode.long_str, None)
@@ -376,7 +376,7 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_by_type_longstr_data_type_with_unicode(self):
         value = b'\x00\x00\x00\x08Test \xe2\x9c\x88'
-        self.assertIsInstance(decode.by_type(value, 'longstr')[1], unicode)
+        self.assertIsInstance(decode.by_type(value, 'longstr')[1], bytes)
 
     def test_decode_by_type_longstr_data_type(self):
         value = b'\x00\x00\x00\n0123456789'
@@ -543,7 +543,7 @@ class CodecDecodeTests(unittest.TestCase):
     def test_decode_embedded_value_longstr_data_type_unicode(self):
         value = (b'S\x00\x00\x00\x0c\xd8\xa7\xd8\xae\xd8\xaa\xd8\xa8\xd8'
                  b'\xa7\xd8\xb1')
-        self.assertIsInstance( decode._embedded_value(value)[1], unicode)
+        self.assertIsInstance(decode._embedded_value(value)[1], bytes)
 
     def test_decode_embedded_value_longstr_value(self):
         value = b'S\x00\x00\x00\n0123456789'

@@ -6,8 +6,11 @@ Functions for encoding data of various types including field tables and arrays
 import calendar
 import decimal as _decimal
 import datetime
+import logging
 import struct
 import time
+
+LOGGER = logging.getLogger(__name__)
 
 from pamqp import PYTHON3
 
@@ -133,18 +136,16 @@ def long_long_int(value):
 def long_string(value):
     """Encode a string.
 
-    :param str value: Value to encode
+    :param bytes value: Value to encode
     :rtype: bytes
     :raises: TypeError
 
     """
     if not isinstance(value, (bytes, str, unicode)):
         raise TypeError("bytes, str, or unicode required")
-
-    # Ensure that the value is utf-8 encoded if it's unicode
-    value = _utf8_encode(value)
+    if not PYTHON3 and isinstance(value, unicode):
+        value = value.encode('utf-8')
     return struct.pack('>I', len(value)) + value
-
 
 def octet(value):
     """Encode an octet value.
@@ -241,7 +242,15 @@ def field_table(value):
     # Iterate through all of the keys and encode the data into a table
     data = list()
     for key, value in sorted(value.items()):
+
+        # UTF-8 encode the key since it behaves like a short-string
         key = _utf8_encode(key)
+
+        # According to the spec, field names should be 128 char max
+        if len(key) > 128:
+            LOGGER.warning('Truncating key %s to 128 bytes', key)
+            key = key[0:128]
+
         # Append the field header / delimiter
         data.append(struct.pack('B', len(key)))
         data.append(key)

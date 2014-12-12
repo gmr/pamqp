@@ -340,7 +340,7 @@ class DemarshalingTests(unittest.TestCase):
         properties = {
             'content_type': b'application/json',
             'content_encoding':  b'gzip',
-            'headers': {b'foo': b'bar', b'baz':  utf8('Test ✈')},
+            'headers': {b'foo': b'bar', b'baz': b'Test \xe2\x9c\x88'},
             'delivery_mode':  1,
             'priority':  0,
             'correlation_id': b'a53045ef-f174-4621-9ff2-ac0b8fbe6e4a',
