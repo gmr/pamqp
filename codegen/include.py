@@ -32,11 +32,10 @@ class Frame(object):
         """Return an attribute as if it were a dict.
 
         :param str item: The item to look for
+        :raises: KeyError
         :rtype: any
 
         """
-        if item not in self.__slots__:
-            return None
         return getattr(self, item)
 
     def __len__(self):
@@ -55,6 +54,15 @@ class Frame(object):
         """
         return '<%s.%s object at %s>' % (__name__, self.name, hex(id(self)))
 
+    @classmethod
+    def type(cls, attr):
+        """Return the data type for an attribute.
+
+        :rtype: str
+
+        """
+        return getattr(cls, '_' + attr)
+
     def marshal(self):
         """
         Dynamically encode the frame by taking the list of attributes and
@@ -69,7 +77,7 @@ class Frame(object):
         byte = None
         offset = 0
         for argument in self.__slots__:
-            data_type = getattr(self.__class__, '_' + argument)
+            data_type = self.type(argument)
 
             # Check if we need to turn on bit processing
             if not processing_bitset and data_type == 'bit':
@@ -123,8 +131,7 @@ class Frame(object):
         offset = 0
         processing_bitset = False
         for argument in self.__slots__:
-
-            data_type = getattr(self.__class__, '_' + argument)
+            data_type = self.type(argument)
 
             if offset == 7 and processing_bitset:
                 data = data[1:]
@@ -158,15 +165,37 @@ class PropertiesBase(object):
     name = 'PropertiesBase'
 
     def __contains__(self, item):
-        return item in self.__slots__ and getattr(self, item, None)
-
-    def __iter__(self):
-        for attribute in self.__slots__:
-            yield attribute
+        return item in self.__slots__
 
     def __delattr__(self, item):
-        if item in self.__slots__:
-            setattr(self, item, None)
+        setattr(self, item, None)
+
+    def __iter__(self):
+        """Iterate the attributes and values as key, value pairs.
+
+        :rtype: tuple
+
+        """
+        for attribute in self.__slots__:
+            yield (attribute, getattr(self, attribute))
+
+    @classmethod
+    def attributes(cls):
+        """Return the list of attributes
+
+        :rtype: list
+
+        """
+        return [attr for attr in cls.__slots__]
+
+    @classmethod
+    def type(cls, attr):
+        """Return the data type for an attribute.
+
+        :rtype: str
+
+        """
+        return getattr(cls, '_' + attr)
 
     def encode_property(self, property_name, property_value):
         """Encode a single property value
@@ -175,8 +204,7 @@ class PropertiesBase(object):
         :param any property_value: The value to encode
 
         """
-        return encode.by_type(property_value,
-                              getattr(self.__class__, '_' + property_name))
+        return encode.by_type(property_value, self.type(property_name))
 
     def marshal(self):
         """Take the Basic.Properties data structure and marshal it into the data
@@ -206,10 +234,12 @@ class PropertiesBase(object):
         return b''.join(flag_pieces + parts)
 
     def to_dict(self):
-        output = dict()
-        for attribute in self.__slots__:
-            output[attribute] = getattr(self, attribute, None)
-        return output
+        """Return the properties as a dict
+
+        :rtype: dict
+
+        """
+        return dict(self)
 
     def unmarshal(self, flags, data):
         """

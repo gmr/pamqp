@@ -32,7 +32,7 @@ codegen (not required for use) requires lxml.
    :target: https://travis-ci.org/gmr/pamqp
    
 .. |Coverage| image:: https://coveralls.io/repos/gmr/pamqp/badge.png
-   :target: https://coveralls.io/r/gmr/rabbitpy
+   :target: https://coveralls.io/r/gmr/pamqp
 
 .. |License| image:: https://pypip.in/license/pamqp/badge.svg?
    :target: https://pypi.python.org/pypi/pamqp

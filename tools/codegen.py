@@ -489,6 +489,8 @@ for class_name in class_list:
         new_line()
         new_line('"""', indent)
 
+    new_line('__slots__ = []', indent)
+    new_line()
     comment("AMQP Class Number and Mapping Index", indent)
     new_line('frame_id = %i' % definition['id'], indent)
     new_line('index = 0x%08X' % (definition['id'] << 16), indent)
@@ -558,7 +560,7 @@ for class_name in class_list:
                      indent)
         new_line()
 
-        comment("AMQP Method Attributes", indent)
+
         arguments = list()
         type_keyword = False
         for argument in method['arguments']:
@@ -569,13 +571,12 @@ for class_name in class_list:
             arguments.append('\'%s\',' % name)
 
         if arguments:
+            comment("AMQP Method Attributes", indent)
             arguments[-1] = arguments[-1].replace(',', ']')
             new_line('__slots__ = [' + arguments.pop(0), indent)
             for line in arguments:
                 new_line(line, indent + 13)
-        else:
-            new_line('attributes = []', indent)
-        new_line()
+            new_line()
 
         if method['arguments']:
             comment("Class Attribute Types", indent)
@@ -681,7 +682,6 @@ for class_name in class_list:
                  indent)
         new_line()
 
-        comment("Attributes", indent)
         new_line('__slots__ = [\'%s\',' %
                  argument_name(definition['properties'][0]['name']),
                  indent)
@@ -689,9 +689,9 @@ for class_name in class_list:
             name = argument_name(argument['name'])
             if name == 'type':
                 name = 'message_type'
-            new_line('"%s",' % name, indent + 14)
-        new_line('"%s"]' % argument_name(definition['properties'][-1]['name']),
-                 indent + 14)
+            new_line('\'%s\',' % name, indent + 13)
+        new_line('\'%s\']' % argument_name(definition['properties'][-1]['name']),
+                 indent + 13)
         new_line()
 
         comment("Flag Values", indent)

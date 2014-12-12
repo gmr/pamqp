@@ -1,9 +1,17 @@
 Version History
 ---------------
  - 1.6.0 - released *2014-12-12*
-  - Move AMQP Classes in specification.py to slotted classes
   - Remove UTF-8 encoding from byte_array (#2)
+  - Move AMQP Methods in specification.py to slotted classes
+  - Change Basic.Properties to a slotted class
+  - Instead of class level attributes with the same name as obj attributes, prefix class attributes for data types with an underscore
+  - Add new class method type() for Basic.Properties for accessing data type
+  - Add new class method type() for AMQP methods for accessing data type
+  - Change Basic.Properties.attributes to Basic.Properties.attributes(), returning the list of slotted attributes
   - Fix a typo for booleans in the method mapping for table decoding
+  - Frame.__getitem__ will now raise a KeyError instead of None for an invalid attribute
+  - PropertiesBase no longer checks to see if an attribute is set for contains
+  - Adds new specification tests
  - 1.5.0 - released *2014-11-05*
   - Cleanup how UTF-8 is handled in decoding strings
   - Ensure that field tables (headers property, etc) can use keys with utf-8 data
