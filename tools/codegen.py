@@ -4,7 +4,7 @@ communication.
 
 """
 __author__ = 'Gavin M. Roy'
-__email__ = 'gmr@myyearbook.com'
+__email__ = 'gavinmroy@gmail.com'
 __since__ = '2011-03-31'
 
 CODEGEN_DIR = '../codegen/'
