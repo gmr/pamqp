@@ -97,7 +97,7 @@ class MarshalingTests(unittest.TestCase):
                          b'\x7f\xff')
 
     def test_encode_short_error(self):
-        self.assertRaises(TypeError, encode.short_int, 32768)
+        self.assertRaises(TypeError, encode.short_int, 65536)
 
     def test_encode_table_integer_error(self):
         self.assertRaises(TypeError, encode.table_integer,
