@@ -1,5 +1,7 @@
 Version History
 ---------------
+ - 1.6.1 - released *2015-02-05*
+  - Fix the encoding guard for unsigned short integers to be 65535 [rabbitpy #62]
  - 1.6.0 - released *2014-12-12*
   - Remove UTF-8 encoding from byte_array (#2)
   - Fix AMQP Field Tables / Basic.Properties headers behavior:
