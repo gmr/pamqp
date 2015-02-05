@@ -174,8 +174,8 @@ def short_int(value):
     """
     if not isinstance(value, int):
         raise TypeError("int type required")
-    if value < -32768 or value > 32767:
-        raise TypeError("Short range: -32768 to 32767")
+    if value < -65535 or value > 65535:
+        raise TypeError("Short range: -65535 to 65535")
     return struct.pack('>H', value)
 
 
