@@ -21,18 +21,18 @@ Python Versions Supported
 Requirements
 ------------
 codegen (not required for use) requires lxml.
-
-.. |PyPI version| image:: https://badge.fury.io/py/pamqp.svg?
-   :target: http://badge.fury.io/py/pamqp
    
-.. |Downloads| image:: https://pypip.in/d/pamqp/badge.svg?
-   :target: https://pypi.python.org/pypi/pamqp
+.. |Version| image:: https://img.shields.io/pypi/v/pamqp.svg?
+  :target: http://badge.fury.io/py/pamqp
 
-.. |Build Status| image:: https://travis-ci.org/gmr/pamqp.png?branch=master
-   :target: https://travis-ci.org/gmr/pamqp
-   
-.. |Coverage| image:: https://coveralls.io/repos/gmr/pamqp/badge.png
-   :target: https://coveralls.io/r/gmr/pamqp
+.. |Status| image:: https://img.shields.io/travis/gmr/pamqp.svg?
+  :target: https://travis-ci.org/gmr/pamqp
 
-.. |License| image:: https://pypip.in/license/pamqp/badge.svg?
-   :target: https://pypi.python.org/pypi/pamqp
+.. |Coverage| image:: https://img.shields.io/codecov/c/github/gmr/pamqp.svg?
+  :target: https://codecov.io/github/gmr/pamqp?branch=master
+
+.. |Downloads| image:: https://img.shields.io/pypi/dm/pamqp.svg?
+  :target: https://pypi.python.org/pypi/pamqp
+
+.. |License| image:: https://img.shields.io/pypi/l/pamqp.svg?
+  :target: https://pamqp.readthedocs.org
