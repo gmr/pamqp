@@ -3,5 +3,6 @@ languages:
 exclude_paths: 
     - codegen/*
     - docs/*
+    - pamqp/specification.py
     - tests/*
     - tools/*
