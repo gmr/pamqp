@@ -21,7 +21,7 @@ PLATFORM_64BIT = (struct.calcsize('P') * 8) == 64
 
 def utf8(value):
     if PYTHON3:
-        return bytes(value, 'utf-8')
+        return value
     return value.decode('utf-8')
 
 
@@ -44,16 +44,16 @@ class CodecDecodeTests(unittest.TestCase):
                  b'floatvalf@H\xf5\xc3\x06intvals\x00\x01\x07'
                  b'longvalI6e&U\x06strvalS\x00\x00\x00\x08Test \xe2'
                  b'\x9c\x88\x0ctimestampvalT\x00\x00\x00\x00Ec)\x92')
-    FIELD_TBL_VALUE = {b'intval': 1,
-                       b'strval': b'Test \xe2\x9c\x88',
-                       b'boolval': True,
-                       b'timestampval': time.struct_time((2006, 11, 21, 16, 30,
+    FIELD_TBL_VALUE = {'intval': 1,
+                       'strval': b'Test \xe2\x9c\x88',
+                       'boolval': True,
+                       'timestampval': time.struct_time((2006, 11, 21, 16, 30,
                                                          10, 1, 325, 0)),
-                       b'decval': decimal.Decimal('3.14'),
-                       b'floatval': 3.14,
-                       b'longval': long(912598613),
-                       b'dictval': {utf8('f✉'): b'\xe2\x9c\x90'},
-                       b'arrayval': [1, 2, 3]}
+                       'decval': decimal.Decimal('3.14'),
+                       'floatval': 3.14,
+                       'longval': long(912598613),
+                       'dictval': {utf8('f✉'): b'\xe2\x9c\x90'},
+                       'arrayval': [1, 2, 3]}
 
     def test_decode_by_type_invalid_data_type(self):
         self.assertRaises(ValueError, decode.by_type, b'Z\x00', b'foobar')

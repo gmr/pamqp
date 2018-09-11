@@ -6,22 +6,14 @@ try:
 except ImportError:
     import unittest
 
-from pamqp import frame
-from pamqp import header
-from pamqp import specification
+from pamqp import frame, encode, header, specification
 
 PYTHON3 = True if sys.version_info > (3, 0, 0) else False
 
 if PYTHON3:
     long = int
-    unicode = bytes
-    basestring = bytes
-
-
-def utf8(value):
-    if PYTHON3:
-        return bytes(value, 'utf-8')
-    return value.decode('utf-8')
+    basestring = str
+    unicode = None
 
 
 class DemarshalingTests(unittest.TestCase):
@@ -340,7 +332,7 @@ class DemarshalingTests(unittest.TestCase):
         properties = {
             'content_type': b'application/json',
             'content_encoding':  b'gzip',
-            'headers': {b'foo': b'bar', b'baz': b'Test \xe2\x9c\x88'},
+            'headers': {'foo': b'bar', 'baz': b'Test \xe2\x9c\x88'},
             'delivery_mode':  1,
             'priority':  0,
             'correlation_id': b'a53045ef-f174-4621-9ff2-ac0b8fbe6e4a',
@@ -496,8 +488,7 @@ class DemarshalingTests(unittest.TestCase):
     def basic_reject_test(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00Z\x00\x00\x00\x00'
                       b'\x00\x00\x00\x10\x01\xce')
-        expectation = {'requeue':  True,
-                       'delivery_tag':  16}
+        expectation = {'requeue':  True, 'delivery_tag':  16}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -894,17 +885,17 @@ class DemarshalingTests(unittest.TestCase):
                       b'IN AMQPLAIN\x00\x00\x00\x05en_US\xce')
         expectation = {
             'server_properties': {
-                b'information': (b'Licensed under the MPL.  '
-                                 b'See http://www.rabbitmq.com/'),
-                b'product':  b'RabbitMQ',
-                b'copyright': b'Copyright (C) 2007-2011 VMware, Inc.',
-                b'capabilities': {
-                    b'exchange_exchange_bindings':  True,
-                    b'consumer_cancel_notify':  True,
-                    b'publisher_confirms':  True,
-                    b'basic.nack': True},
-                b'platform': b'Erlang/OTP',
-                b'version': b'2.6.1'},
+                'information': (b'Licensed under the MPL.  '
+                                b'See http://www.rabbitmq.com/'),
+                'product':  b'RabbitMQ',
+                'copyright': b'Copyright (C) 2007-2011 VMware, Inc.',
+                'capabilities': {
+                    'exchange_exchange_bindings':  True,
+                    'consumer_cancel_notify':  True,
+                    'publisher_confirms':  True,
+                    'basic.nack': True},
+                'platform': b'Erlang/OTP',
+                'version': b'2.6.1'},
             'version_minor': 9,
             'mechanisms': b'PLAIN AMQPLAIN',
             'locales': b'en_US',
@@ -945,14 +936,14 @@ class DemarshalingTests(unittest.TestCase):
             'locale': b'en_US',
             'mechanism': b'PLAIN',
             'client_properties': {
-                b'platform':  b'Python 2.7.1',
-                b'product':  b'Pika Python Client Library',
-                b'version':  b'0.9.6-pre0',
-                b'capabilities': {
-                    b'consumer_cancel_notify': True,
-                    b'publisher_confirms':  True,
-                    b'basic.nack': True},
-                b'information':  b'See http://pika.github.com'},
+                'platform':  b'Python 2.7.1',
+                'product':  b'Pika Python Client Library',
+                'version':  b'0.9.6-pre0',
+                'capabilities': {
+                    'consumer_cancel_notify': True,
+                    'publisher_confirms':  True,
+                    'basic.nack': True},
+                'information':  b'See http://pika.github.com'},
             'response':  b'\x00guest\x00guest'}
 
         # Decode the frame and validate lengths
