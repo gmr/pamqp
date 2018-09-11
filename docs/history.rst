@@ -5,6 +5,8 @@ Version History
 ------------------
 - **Change Python versions supported to 2.7 and 3.4+**
 - **Always decode field table keys as strings (#6)**
+   - This may be a breaking change means in Python3 keys will always be type str for field tables, which include both server properties and in `Basic.Properties.headers`.
+   - In Python 2.7 if a key has UTF-8 characters in it, it will be a `unicode` object.
 - Combine test coverage across all Python versions
 - Fix range for signed short integer (#7)
 - Fix guards for usage of unsigned short usage in `pamqp.encode` (#7)
@@ -25,6 +27,8 @@ Version History
 - Fix AMQP Field Tables / `Basic.Properties` headers behavior:
    - Field names per spec should not exceed 128 bytes
    - long-strings should not be utf-8 encoded (only short-strings *boggle*)
+- Ensure that field table long strings are not coerced to UTF-8 as specified in AMQP 0-9-1
+   If a string is passed in as a long string in a field table and it contains UTF-8 characters it will be UTF-8 encoded
 - Move AMQP Methods in specification.py to slotted classes
 - Change `Basic.Properties` to a slotted class
 - Instead of class level attributes with the same name as obj attributes, prefix class attributes for data types with an underscore
@@ -35,6 +39,7 @@ Version History
 - `Frame.__getitem__` will now raise a KeyError instead of None for an invalid attribute
 - `PropertiesBase` no longer checks to see if an attribute is set for contains
 - Adds new specification tests
+- More efficiently handle the frame end character in Python 3
 
 1.5.0 (2014-11-05)
 ------------------
