@@ -52,21 +52,15 @@ class ProtocolHeader(object):
         :raises: ValueError
 
         """
-        if data[0:4] == AMQP:
-            try:
-                (self.major_version,
-                 self.minor_version,
-                 self.revision) = struct.unpack('BBB', data[5:8])
-            except struct.error:
-                raise ValueError('Data did not match the ProtocolHeader '
-                                 'format: {}'.format(data))
-
-            # All in we consume 8 bytes
-            return 8
-
-        # The first four bytes did not match
-        raise ValueError('Data did not match the ProtocolHeader '
-                         'format: {}'.format(data))
+        try:
+            (self.major_version,
+             self.minor_version,
+             self.revision) = struct.unpack('BBB', data[5:8])
+        except struct.error:
+            raise ValueError('Data did not match the ProtocolHeader '
+                             'format: {}'.format(data))
+        # All in we consume 8 bytes
+        return 8
 
 
 class ContentHeader(object):
