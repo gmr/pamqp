@@ -321,7 +321,7 @@ class DemarshalingTests(unittest.TestCase):
 
     def test_content_body(self):
         result = frame.unmarshal(
-            frame.marshal(body.ContentBody('TEST'), 1))
+            frame.marshal(body.ContentBody(b'TEST'), 1))
         self.assertEqual(len(result[2]), 4)
 
     def test_basic_properties(self):

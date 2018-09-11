@@ -9,7 +9,7 @@ class MarshalingTests(unittest.TestCase):
 
     def test_protocol_header(self):
         expectation = b'AMQP\x00\x00\t\x01'
-        response = header.ProtocolHeader().marshal()
+        response = frame.marshal(header.ProtocolHeader(), 0)
         self.assertEqual(response,
                          expectation,
                          "ProtocolHeader did not match expectation")
@@ -53,7 +53,20 @@ class MarshalingTests(unittest.TestCase):
         self.assertEqual(response, expectation,
                          "Heartbeat did not match expectation")
 
-    def test_body(self):
+    def test_content_body(self):
         value = str(uuid.uuid4()).encode('utf-8')
-        self.assertEqual(body.ContentBody(value).marshal(), value)
-        self.assertEqual(len(body.ContentBody(value)), len(value))
+        expectation = b'\x03\x00\x01\x00\x00\x00$' + value + b'\xce'
+        self.assertEqual(frame.marshal(body.ContentBody(value), 1),
+                         expectation)
+
+    def test_content_header(self):
+        expectation = (b'\x02\x00\x01\x00\x00\x00\x0e\x00<\x00\x00\x00'
+                       b'\x00\x00\x00\x00\x00\x00\n\x00\x00\xce')
+        self.assertEqual(frame.marshal(header.ContentHeader(body_size=10), 1),
+                         expectation)
+
+
+    def test_unknown_frame_type(self):
+        with self.assertRaises(ValueError):
+            frame.marshal(self, 1)
+

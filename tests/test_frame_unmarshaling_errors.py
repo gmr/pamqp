@@ -11,10 +11,19 @@ class TestCase(unittest.TestCase):
         try:
             frame.unmarshal(b'AMQP\x00\x00\t')
         except exceptions.UnmarshalingException as err:
-            self.assertEqual(str(err),
-                             "Could not unmarshal <class 'pamqp.header."
-                             "ProtocolHeader'> frame: Data did not match "
-                             "the ProtocolHeader format: AMQP\x00\x00\t")
+            self.assertTrue(str(err).startswith(
+                "Could not unmarshal <class 'pamqp.header.ProtocolHeader'> "
+                "frame: Data did not match the ProtocolHeader format"))
+        else:
+            assert False, 'Failed to raise exception'
+
+    def test_invalid_frame_header(self):
+        frame_data = struct.pack('>BI', 255, 0)
+        try:
+            frame.unmarshal(frame_data)
+        except exceptions.UnmarshalingException as err:
+            self.assertEqual(
+                str(err), 'Could not unmarshal Unknown frame: No frame size')
         else:
             assert False, 'Failed to raise exception'
 
@@ -58,10 +67,50 @@ class TestCase(unittest.TestCase):
         frame_value = b''.join([struct.pack('>BHI', 5, 0, len(payload)),
                                 payload, frame.FRAME_END_CHAR])
         try:
-            result = frame.unmarshal(frame_value)
+            frame.unmarshal(frame_value)
         except exceptions.UnmarshalingException as err:
             self.assertEqual(
                 str(err),
                 'Could not unmarshal Unknown frame: Unknown frame type: 5')
+        else:
+            assert False, 'Failed to raise exception'
+
+    def test_invalid_method_frame_index(self):
+        payload = struct.pack('>L', 42949)
+        frame_value = b''.join([struct.pack('>BHI', 1, 0, len(payload)),
+                                payload, frame.FRAME_END_CHAR])
+        try:
+            frame.unmarshal(frame_value)
+        except exceptions.UnmarshalingException as err:
+            self.assertEqual(
+                str(err),
+                ('Could not unmarshal Unknown frame: '
+                 'Unknown method index: 42949'))
+        else:
+            assert False, 'Failed to raise exception'
+
+    def test_invalid_method_frame_content(self):
+        payload = struct.pack('>L', 0x000A0029)
+        frame_value = b''.join([struct.pack('>BHI', 1, 0, len(payload)),
+                                payload, frame.FRAME_END_CHAR])
+        try:
+            frame.unmarshal(frame_value)
+        except exceptions.UnmarshalingException as err:
+            self.assertTrue(str(err).startswith(
+                'Could not unmarshal <pamqp.specification.Connection.OpenOk'))
+        else:
+            assert False, 'Failed to raise exception'
+
+    def test_invalid_content_header_frame(self):
+        payload = struct.pack('>L', 0x000A0029)
+        frame_value = b''.join([struct.pack('>BHI', 2, 0, len(payload)),
+                                payload, frame.FRAME_END_CHAR])
+        try:
+            frame.unmarshal(frame_value)
+        except exceptions.UnmarshalingException as err:
+            self.assertEqual(
+                str(err),
+                ('Could not unmarshal ContentHeader frame: unpack requires a '
+                 'string argument of length 12'))
         else:
             assert False, 'Failed to raise exception'
