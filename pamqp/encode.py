@@ -42,7 +42,7 @@ def boolean(value):
 
     """
     if not isinstance(value, bool):
-        raise TypeError("bool type required")
+        raise TypeError('bool type required')
     return struct.pack('>B', int(value))
 
 
@@ -54,7 +54,7 @@ def byte_array(value):
 
     """
     if not isinstance(value, bytearray):
-        raise TypeError("bytearray type required")
+        raise TypeError('bytearray type required')
     elif PYTHON3:
         return struct.pack('>I', len(value)) + value
     return bytes(struct.pack('>I', len(value)) + value)
@@ -68,7 +68,7 @@ def decimal(value):
 
     """
     if not isinstance(value, _decimal.Decimal):
-        raise TypeError("decimal.Decimal type required")
+        raise TypeError('decimal.Decimal type required')
     tmp = '%s' % value
     if '.' in tmp:
         decimals = len(tmp.split('.')[-1])
@@ -86,7 +86,7 @@ def double(value):
 
     """
     if not isinstance(value, float):
-        raise TypeError("float type required")
+        raise TypeError('float type required')
     return struct.pack('>d', value)
 
 
@@ -98,7 +98,7 @@ def floating_point(value):
 
     """
     if not isinstance(value, float):
-        raise TypeError("float type required")
+        raise TypeError('float type required')
     return struct.pack('>f', value)
 
 
@@ -110,11 +110,11 @@ def long_int(value):
 
     """
     if PYTHON3 and not isinstance(value, int):
-        raise TypeError("int type required")
+        raise TypeError('int type required')
     elif not isinstance(value, int) and not isinstance(value, long):
-        raise TypeError("long type required")
+        raise TypeError('long type required')
     elif not (-2147483648 <= value <=  2147483647):
-        raise TypeError("Long integer range: -2147483648 to 2147483647")
+        raise TypeError('Long integer range: -2147483648 to 2147483647')
     return struct.pack('>l', value)
 
 
@@ -126,11 +126,11 @@ def long_uint(value):
 
     """
     if PYTHON3 and not isinstance(value, int):
-        raise TypeError("int type required")
+        raise TypeError('int type required')
     elif not isinstance(value, int) and not isinstance(value, long):
-        raise TypeError("long type required")
+        raise TypeError('long type required')
     elif not (0 <= value <= 4294967295):
-        raise TypeError("Long unsigned-integer range: 0 to 4294967295")
+        raise TypeError('Long unsigned-integer range: 0 to 4294967295')
     return struct.pack('>L', value)
 
 
@@ -142,9 +142,9 @@ def long_long_int(value):
 
     """
     if PYTHON3 and not isinstance(value, int):
-        raise TypeError("int type required")
+        raise TypeError('int type required')
     elif not isinstance(value, long) and not isinstance(value, int):
-        raise TypeError("int or long type required")
+        raise TypeError('int or long type required')
     elif not (-9223372036854775808 <= value <= 9223372036854775807):
         raise TypeError("long-long integer range: "
                         "-9223372036854775808 to 9223372036854775807")
@@ -152,18 +152,22 @@ def long_long_int(value):
 
 
 def long_string(value):
-    """Encode a string.
+    """Encode a "long string" which the specific defines as any non-null
+    data. We will auto-convert str and unicode to bytes but ignore
+    bytes objects and place them opaquely.
 
-    :param bytes value: Value to encode
+    :param value: Value to encode
+    :type value: bytes or str or unicode
     :rtype: bytes
     :raises: TypeError
 
     """
     if PYTHON3 and not isinstance(value, (bytes, str)):
-        raise TypeError("bytes or str required")
+        raise TypeError('bytes or str required')
     elif not PYTHON3 and not isinstance(value, (bytes, str, unicode)):
-        raise TypeError("bytes, str or unicode required")
-    value = _utf8_encode(value)
+        raise TypeError('bytes, str or unicode required')
+    if not isinstance(value, bytes):
+        value = _utf8_encode(value)
     return struct.pack('>I', len(value)) + value
 
 
@@ -176,7 +180,7 @@ def octet(value):
 
     """
     if not isinstance(value, int):
-        raise TypeError("int type required")
+        raise TypeError('int type required')
     return struct.pack('B', value)
 
 
@@ -189,9 +193,9 @@ def short_int(value):
 
     """
     if not isinstance(value, (int, long)):
-        raise TypeError("int or long type required")
+        raise TypeError('int or long type required')
     elif not (-32768 <= value <= 32767):
-        raise TypeError("Short integer range: -32678 to 32767")
+        raise TypeError('Short integer range: -32678 to 32767')
     return struct.pack('>h', value)
 
 
@@ -204,9 +208,9 @@ def short_uint(value):
 
     """
     if not isinstance(value, int):
-        raise TypeError("int type required")
+        raise TypeError('int type required')
     elif not (0 <= value <= 65535):
-        raise TypeError("Short unsigned integer range: 0 to 65535")
+        raise TypeError('Short unsigned integer range: 0 to 65535')
     return struct.pack('>H', value)
 
 
@@ -219,9 +223,9 @@ def short_string(value):
 
     """
     if PYTHON3 and not isinstance(value, (bytes, str)):
-        raise TypeError("bytes or str required")
+        raise TypeError('bytes or str required')
     elif not PYTHON3 and not isinstance(value, (bytes, str, unicode)):
-        raise TypeError("bytes, str or unicode required")
+        raise TypeError('bytes, str or unicode required')
     # Ensure that the value is utf-8 encoded if it's unicode
     value = _utf8_encode(value)
     return struct.pack('B', len(value)) + value
@@ -239,7 +243,7 @@ def timestamp(value):
         value = value.timetuple()
     if isinstance(value, time.struct_time):
         return struct.pack('>Q', calendar.timegm(value))
-    raise TypeError("datetime.datetime or time.struct_time type required")
+    raise TypeError('datetime.datetime or time.struct_time type required')
 
 
 def field_array(value):
@@ -251,7 +255,7 @@ def field_array(value):
 
     """
     if not isinstance(value, list):
-        raise TypeError("list type required")
+        raise TypeError('list type required')
 
     data = list()
     for item in value:
