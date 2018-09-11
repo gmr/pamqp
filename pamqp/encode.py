@@ -217,7 +217,8 @@ def short_uint(value):
 def short_string(value):
     """ Encode a string.
 
-    :param str value: Value to encode
+    :param value: Value to encode
+    :type value: bytes or str or unicode
     :rtype: bytes
     :raises: TypeError
 
@@ -322,7 +323,7 @@ def table_integer(value):
     elif -2147483648 < value < 2147483647:
         return b'I' + long_int(value)
     elif 0 <= value <= 4294967295:
-        return b'i' +  long_uint(value)
+        return b'i' + long_uint(value)
     elif -9223372036854775808 < value < 9223372036854775807:
         return b'l' + long_long_int(value)
     raise TypeError("Unsupported numeric value: %r" % value)
