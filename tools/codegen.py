@@ -12,8 +12,8 @@ CODEGEN_IGNORE_CLASSES = ['access']
 CODEGEN_JSON = CODEGEN_DIR + 'amqp-rabbitmq-0.9.1.json'
 CODEGEN_XML = CODEGEN_DIR + 'amqp0-9-1.xml'
 CODEGEN_OUTPUT = '../pamqp/specification.py'
-CODEGEN_JSON_URL = ('http://hg.rabbitmq.com'
-                    '/rabbitmq-codegen/archive/default.tar.bz2')
+CODEGEN_JSON_URL = ('https://raw.githubusercontent.com/rabbitmq/'
+                    'rabbitmq-codegen/master/amqp-rabbitmq-0.9.1.json')
 CODEGEN_XML_URL = 'http://www.rabbitmq.com/resources/specs/amqp0-9-1.xml'
 
 XPATH_ORDER = ['class', 'constant', 'method', 'field']
@@ -273,25 +273,13 @@ if not exists(CODEGEN_JSON):
 
     # Retrieve the codegen archive
     print("Downloading codegen JSON file to %s." % CODEGEN_JSON)
-    handle = urlopen(CODEGEN_JSON_URL)
-    bzip2_tarball = handle.read()
-
-    # Write the file out to a temp file
-    tempfile = NamedTemporaryFile(delete=False)
-    tempfile.write(bzip2_tarball)
-    tempfile.close()
-
-    # Extract the CODEGEN_JSON file to this directory
-    tarball = tarfile_open(tempfile.name, 'r:*')
-    archived_file = 'rabbitmq-codegen-default/' + CODEGEN_JSON.split('/')[-1]
-    json_data = tarball.extractfile(archived_file)
+    json_data = urlopen(CODEGEN_JSON_URL)
 
     # Write out the JSON file
     with open(CODEGEN_JSON, 'w') as handle:
         handle.write(json_data.read())
 
-    # Remove the tempfile
-    unlink(tempfile.name)
+    json_data.close()
 
 # Read in the codegen JSON file
 with open(CODEGEN_JSON, 'r') as handle:
@@ -376,14 +364,14 @@ data_types = []
 domains = []
 for domain, data_type in amqp['domains']:
     if domain == data_type:
-        data_types.append('              "%s",' % domain)
+        data_types.append('              \'%s\',' % domain)
     else:
         doc = get_documentation({'domain': domain})
         if doc:
             comments = get_comments(doc, 18)
             for line in comments:
                 domains.append(line)
-        domains.append('           "%s": "%s",' % (domain, data_type))
+        domains.append('           \'%s\': \'%s\',' % (domain, data_type))
 
 comment("AMQP data types")
 data_types[0] = data_types[0].replace('              ',
