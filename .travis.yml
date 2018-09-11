@@ -14,17 +14,19 @@ stages:
 - name: deploy
   if: tag IS present
 
+matrix:
+  include:
+  - python: 3.7
+    dist: xenial
+    sudo: true
+
 jobs:
   include:
     - python: 2.7
     - python: 3.4
     - python: 3.5
     - python: 3.6
-    - matrix:
-        include:
-        - python: 3.7
-          dist: xenial
-          sudo: true
+    - python: 3.7
     - python: pypy
     - python: pypy3
     - stage: upload coverage
