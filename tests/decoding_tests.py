@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 import decimal
+import struct
 import time
 try:
     import unittest2 as unittest
@@ -13,6 +14,9 @@ if PYTHON3:
     long = int
     unicode = bytes
     basestring = bytes
+
+PLATFORM_32BIT = (struct.calcsize('P') * 8) == 32
+PLATFORM_64BIT = (struct.calcsize('P') * 8) == 64
 
 
 def utf8(value):
@@ -145,9 +149,15 @@ class CodecDecodeTests(unittest.TestCase):
         value = b'\x7f\xff\xff\xff\xff\xff\xff\xf8'
         self.assertEqual(decode.long_long_int(value)[0], 8)
 
+    @unittest.skipIf(PLATFORM_32BIT, 'Skipped on 32-bit platforms')
     def test_decode_long_long_int_data_type(self):
         value = b'\x7f\xff\xff\xff\xff\xff\xff\xf8'
         self.assertIsInstance(decode.long_long_int(value)[1], int)
+
+    @unittest.skipIf(PLATFORM_64BIT, 'Skipped on 64-bit platforms')
+    def test_decode_long_long_int_data_type(self):
+        value = b'\x7f\xff\xff\xff\xff\xff\xff\xf8'
+        self.assertIsInstance(decode.long_long_int(value)[1], long)
 
     def test_decode_long_long_int_invalid_value(self):
         self.assertRaises(ValueError, decode.long_long_int, None)
@@ -358,9 +368,15 @@ class CodecDecodeTests(unittest.TestCase):
         value = b'\x7f\xff\xff\xff\xff\xff\xff\xf8'
         self.assertEqual(decode.by_type(value, 'longlong')[0], 8)
 
+    @unittest.skipIf(PLATFORM_32BIT, 'Skipped on 32-bit platforms')
     def test_decode_by_type_long_long_data_type(self):
         value = b'\x7f\xff\xff\xff\xff\xff\xff\xf8'
         self.assertIsInstance(decode.by_type(value, 'longlong')[1], int)
+
+    @unittest.skipIf(PLATFORM_64BIT, 'Skipped on 64-bit platforms')
+    def test_decode_by_type_long_long_data_type(self):
+        value = b'\x7f\xff\xff\xff\xff\xff\xff\xf8'
+        self.assertIsInstance(decode.by_type(value, 'longlong')[1], long)
 
     def test_decode_by_type_long_long_invalid_value(self):
         self.assertRaises(ValueError, decode.by_type, None, 'longlong')
@@ -512,9 +528,15 @@ class CodecDecodeTests(unittest.TestCase):
         value = b'l\x7f\xff\xff\xff\xff\xff\xff\xf8'
         self.assertEqual(decode._embedded_value(value)[0], 9)
 
+    @unittest.skipIf(PLATFORM_32BIT, 'Skipped on 32-bit platforms')
     def test_decode_embedded_value_long_long_data_type(self):
         value = b'l\x7f\xff\xff\xff\xff\xff\xff\xf8'
         self.assertIsInstance(decode._embedded_value(value)[1], int)
+
+    @unittest.skipIf(PLATFORM_64BIT, 'Skipped on 64-bit platforms')
+    def test_decode_embedded_value_long_long_data_type(self):
+        value = b'l\x7f\xff\xff\xff\xff\xff\xff\xf8'
+        self.assertIsInstance(decode._embedded_value(value)[1], long)
 
     def test_decode_embedded_value_long_long_value(self):
         value = b'l\x7f\xff\xff\xff\xff\xff\xff\xf8'
