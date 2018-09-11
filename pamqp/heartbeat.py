@@ -17,7 +17,8 @@ class Heartbeat(object):
     """
     name = 'Heartbeat'
 
-    def marshal(self):
+    @staticmethod
+    def marshal():
         """Return the binary frame content
 
         :rtype: str or bytes
