@@ -25,5 +25,5 @@ class Heartbeat(object):
         """
         value = struct.pack('>BHI', specification.FRAME_HEARTBEAT, 0, 0)
         if PYTHON3:
-            return value + bytes(chr(specification.FRAME_END))
+            return value + bytes((specification.FRAME_END, ))
         return value + chr(specification.FRAME_END)

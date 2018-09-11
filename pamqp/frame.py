@@ -24,7 +24,7 @@ FRAME_HEADER_SIZE = 7
 FRAME_END_CHAR = chr(specification.FRAME_END)
 DECODE_FRAME_END_CHAR = FRAME_END_CHAR
 if PYTHON3:
-    FRAME_END_CHAR = bytes(FRAME_END_CHAR, 'latin-1')
+    FRAME_END_CHAR = bytes((specification.FRAME_END,))
     DECODE_FRAME_END_CHAR = specification.FRAME_END
 LOGGER = logging.getLogger(__name__)
 UNMARSHAL_FAILURE = 0, 0, None
