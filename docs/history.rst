@@ -5,8 +5,9 @@ Version History
 ------------------
 - **Change Python versions supported to 2.7 and 3.4+**
 - **Always decode field table keys as strings (#6)**
-   - This may be a breaking change means in Python3 keys will always be type str for field tables, which include both server properties and in `Basic.Properties.headers`.
-   - In Python 2.7 if a key has UTF-8 characters in it, it will be a `unicode` object.
+   - This may be a breaking change means in Python3 keys will always be type str for short strings. This includes frame
+     values and field table values.
+   - In Python 2.7 if a short-string (key, frame field value, etc) has UTF-8 characters in it, it will be a `unicode` object.
 - Combine test coverage across all Python versions
 - Fix range for signed short integer (#7)
 - Fix guards for usage of unsigned short usage in `pamqp.encode` (#7)
