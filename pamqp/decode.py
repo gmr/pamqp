@@ -16,8 +16,10 @@ class Struct(object):
     double = struct.Struct('>d')
     float = struct.Struct('>f')
     integer = struct.Struct('>I')
+    ulong = struct.Struct('>L')
     long = struct.Struct('>l')
-    short = struct.Struct('>H')
+    ushort = struct.Struct('>H')
+    short = struct.Struct('>h')
     short_short = struct.Struct('>B')
     timestamp = struct.Struct('>Q')
 
@@ -124,6 +126,20 @@ def long_int(value):
         raise ValueError('Could not unpack data')
 
 
+def long_uint(value):
+    """Decode an unsigned long integer value
+
+    :param bytes value: Value to decode
+    :return tuple: bytes used, int
+    :raises: ValueError
+
+    """
+    try:
+        return 4, Struct.ulong.unpack(value[0:4])[0]
+    except TypeError:
+        raise ValueError('Could not unpack data')
+
+
 def long_long_int(value):
     """Decode a long-long integer value
 
@@ -177,6 +193,20 @@ def short_int(value):
     """
     try:
         return 2, Struct.short.unpack_from(value[0:2])[0]
+    except TypeError:
+        raise ValueError('Could not unpack data')
+
+
+def short_uint(value):
+    """Decode an unsigned short integer value
+
+    :param bytes value: Value to decode
+    :return tuple: bytes used, int
+    :raises: ValueError
+
+    """
+    try:
+        return 2, Struct.ushort.unpack_from(value[0:2])[0]
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -291,8 +321,12 @@ def _embedded_value(value):
         bytes_consumed, value = short_short_int(value[1:])
     elif value[0:1] == b's':
         bytes_consumed, value = short_int(value[1:])
+    elif value[0:1] == b'u':
+        bytes_consumed, value = short_uint(value[1:])
     elif value[0:1] == b'I':
         bytes_consumed, value = long_int(value[1:])
+    elif value[0:1] == b'i':
+        bytes_consumed, value = long_uint(value[1:])
     elif value[0:1] == b'l':
         bytes_consumed, value = long_long_int(value[1:])
     elif value[0:1] == b'f':
@@ -346,7 +380,7 @@ def by_type(value, data_type, offset=0):
     elif data_type == 'float':
         return floating_point(value)
     elif data_type == 'long':
-        return long_int(value)
+        return long_uint(value)
     elif data_type == 'longlong':
         return long_long_int(value)
     elif data_type == 'longstr':
@@ -354,7 +388,7 @@ def by_type(value, data_type, offset=0):
     elif data_type == 'octet':
         return octet(value)
     elif data_type == 'short':
-        return short_int(value)
+        return short_uint(value)
     elif data_type == 'shortstr':
         return short_str(value)
     elif data_type == 'table':
@@ -402,11 +436,11 @@ METHODS = {'array': field_array,
            'decimal': decimal,
            'double': double,
            'float': floating_point,
-           'long': long_int,
+           'long': long_uint,
            'longlong': long_long_int,
            'longstr': long_str,
            'octet': octet,
-           'short': short_int,
+           'short': short_uint,
            'shortstr': short_str,
            'table': field_table,
            'timestamp': timestamp}
