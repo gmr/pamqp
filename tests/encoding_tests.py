@@ -72,12 +72,16 @@ class MarshalingTests(unittest.TestCase):
         self.assertRaises(TypeError, encode.long_int,
                           long(21474836449))
 
+    def test_encode_long_uint(self):
+        self.assertEqual(encode.long_uint(long(4294967295)),
+                         b'\xff\xff\xff\xff')
+
+    def test_encode_long_uint_error(self):
+        self.assertRaises(TypeError, encode.long_uint,
+                          long(4294967296))
+
     def test_encode_long_long_int_wrong_type(self):
         self.assertRaises(TypeError, encode.long_long_int, 3.141597)
-
-    def test_encode_long_long_int(self):
-        self.assertEqual(encode.long_long_int(long(9223372036854775800)),
-                         b'\x7f\xff\xff\xff\xff\xff\xff\xf8')
 
     def test_encode_long_long_int_error(self):
         self.assertRaises(TypeError, encode.long_long_int,
@@ -124,11 +128,10 @@ class MarshalingTests(unittest.TestCase):
 
 
     def test_encode_field_array(self):
-        expectation = (b'\x00\x00\x00<s\x00\x01I\x00\x00\xaf\xc8S'
-                       b'\x00\x00\x00\x04TestT\x00\x00\x00\x00Ec)'
-                       b'\x92I\xbb\x9a\xca\x00D\x02\x00\x00\x01:f@H'
-                       b'\xf5\xc3l\x00\x00\x00\x00\xc4e5\xffl\x80'
-                       b'\x00\x00\x00\x00\x00\x00\x08')
+        expectation = (b'\x00\x00\x006s\x00\x01u\xaf\xc8S\x00\x00\x00\x04TestT'
+                       b'\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02\x00\x00'
+                       b'\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00\x00\x00\x00'
+                       b'\x00\x08')
         data = [1, 45000, b'Test', datetime(2006, 11, 21, 16, 30, 10),
                 -1147483648, Decimal('3.14'), 3.14, long(3294967295),
                 -9223372036854775800]
@@ -197,22 +200,20 @@ class MarshalingTests(unittest.TestCase):
                             '00')}
         self.assertEqual(encode.field_table(data), expectation)
 
-
     def test_encode_by_type_field_array(self):
-
-        expectation = (b'\x00\x00\x00<s\x00\x01I\x00\x00\xaf\xc8S\x00\x00\x00'
-                       b'\x04TestT\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02'
-                       b'\x00\x00\x01:f@H\xf5\xc3l\x00\x00\x00\x00\xc4e5\xffl'
-                       b'\x80\x00\x00\x00\x00\x00\x00\x08')
+        expectation = (b'\x00\x00\x006s\x00\x01u\xaf\xc8S\x00\x00\x00\x04TestT'
+                       b'\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02\x00\x00'
+                       b'\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00\x00\x00\x00'
+                       b'\x00\x08')
         data = [1, 45000, b'Test', datetime(2006, 11, 21, 16, 30, 10),
                 -1147483648, Decimal('3.14'), 3.14, long(3294967295),
                 -9223372036854775800]
         self.assertEqual(encode.by_type(data, 'field_array'),
                          expectation)
 
-    def test_encode_by_type_long_int(self):
-        self.assertEqual(encode.by_type(long(2147483647), 'long'),
-                         b'\x7f\xff\xff\xff')
+    def test_encode_by_type_long_uint(self):
+        self.assertEqual(encode.by_type(long(4294967295), 'long'),
+                         b'\xff\xff\xff\xff')
 
     def test_encode_by_type_long_long_int(self):
         self.assertEqual(encode.by_type(long(9223372036854775800), 'longlong'),

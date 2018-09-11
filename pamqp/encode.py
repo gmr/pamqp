@@ -111,9 +111,26 @@ def long_int(value):
     elif not isinstance(value, int) and not isinstance(value, long):
         raise TypeError("long type required")
 
-    if value < -2147483648 or value > 2147483647:
+    if not (-2147483648 <= value <=  2147483647):
         raise TypeError("Long integer range: -2147483648 to 2147483647")
     return struct.pack('>l', value)
+
+
+def long_uint(value):
+    """Encode a long integer.
+
+    :param int value: Value to encode
+    :rtype: bytes
+
+    """
+    if PYTHON3 and not isinstance(value, int):
+        raise TypeError("int type required")
+    elif not isinstance(value, int) and not isinstance(value, long):
+        raise TypeError("long type required")
+
+    if not (0 <= value <= 4294967295):
+        raise TypeError("Long unsigned-integer range: 0 to 4294967295")
+    return struct.pack('>L', value)
 
 
 def long_long_int(value):
@@ -126,8 +143,8 @@ def long_long_int(value):
     if PYTHON3 and not isinstance(value, int):
         raise TypeError("int type required")
     elif not isinstance(value, long) and not isinstance(value, int):
-        raise TypeError("int/long type required")
-    if value < -9223372036854775808 or value > 9223372036854775807:
+        raise TypeError("int or long type required")
+    if not (-9223372036854775808 <= value <= 9223372036854775807):
         raise TypeError("long-long integer range: "
                         "-9223372036854775808 to 9223372036854775807")
     return struct.pack('>q', value)
@@ -150,6 +167,7 @@ def long_string(value):
         if isinstance(value, unicode):
             value = value.encode('utf-8')
     return struct.pack('>I', len(value)) + value
+
 
 def octet(value):
     """Encode an octet value.
@@ -174,8 +192,23 @@ def short_int(value):
     """
     if not isinstance(value, int):
         raise TypeError("int type required")
-    if value < -65535 or value > 65535:
-        raise TypeError("Short range: -65535 to 65535")
+    if not (-32768 <= value <= 32767):
+        raise TypeError("Short integer range: -32678 to 32767")
+    return struct.pack('>h', value)
+
+
+def short_uint(value):
+    """Encode an unsigned short integer.
+
+    :param int value: Value to encode
+    :rtype: bytes
+    :raises: TypeError
+
+    """
+    if not isinstance(value, int):
+        raise TypeError("int type required")
+    if not (0 <= value <= 65535):
+        raise TypeError("Short unsigned integer range: 0 to 65535")
     return struct.pack('>H', value)
 
 
@@ -278,14 +311,17 @@ def table_integer(value):
 
     """
     # Send the appropriately sized data value
-    if -32768 < value < 32767:
+    if -32768 <= value <= 32767:
         return b's' + short_int(value)
+    elif 0 <= value <= 65535:
+        return b'u' + short_uint(value)
     elif -2147483648 < value < 2147483647:
         return b'I' + long_int(value)
+    elif 0 <= value <= 4294967295:
+        return b'i' +  long_uint(value)
     elif -9223372036854775808 < value < 9223372036854775807:
         return b'l' + long_long_int(value)
-
-    raise TypeError("Numeric value exceeds long-long-int max: %r" % value)
+    raise TypeError("Unsupported numeric value: %r" % value)
 
 
 def encode_table_value(value):
@@ -353,7 +389,7 @@ def by_type(value, data_type):
     elif data_type == 'double':
         return double(value)
     elif data_type == 'long':
-        return long_int(value)
+        return long_uint(value)
     elif data_type == 'longlong':
         return long_long_int(value)
     elif data_type == 'longstr':
@@ -361,7 +397,7 @@ def by_type(value, data_type):
     elif data_type == 'octet':
         return octet(value)
     elif data_type == 'short':
-        return short_int(value)
+        return short_uint(value)
     elif data_type == 'shortstr':
         return short_string(value)
     elif data_type == 'table':
