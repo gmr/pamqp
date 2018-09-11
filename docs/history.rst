@@ -1,14 +1,19 @@
 Version History
 ===============
 
-1.7.0 (2018-09-11)
+2.0.0 (2018-09-11)
 ------------------
-- Fix range for signed short integer
-- Add support for unsigned short integer and long integer in field tables  (#10)
+- **Change Python versions supported to 2.7 and 3.4+**
+- **Always decode field table keys as strings (#6)**
+- Combine test coverage across all Python versions
+- Fix range for signed short integer (#7)
 - Fix guards for usage of unsigned short usage in `pamqp.encode` (#7)
 - Fix encoding and decoding of unsigned short (#7)
-- Combine test coverage across all Python versions
-- Change Python versions supported to 2.7 and 3.4+
+- Add support for unsigned short integer and long integer in field tables  (#10)
+- Address edge case of small value in long type (#8)
+- Address long string encoding inconsistency (#9)
+- Cleanup unicode object & conditionals in py3 (#9)
+- Add `pamqp.exceptions.PAMQPException` as a base class for pamqp specific exceptions (#4)
 
 1.6.1 (2015-02-05)
 ------------------
