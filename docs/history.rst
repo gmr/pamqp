@@ -23,8 +23,8 @@ Version History
 ------------------
 - Remove UTF-8 encoding from byte_array (#2)
 - Fix AMQP Field Tables / `Basic.Properties` headers behavior:
-    - Field names per spec should not exceed 128 bytes
-    - long-strings should not be utf-8 encoded (only short-strings *boggle*)
+   - Field names per spec should not exceed 128 bytes
+   - long-strings should not be utf-8 encoded (only short-strings *boggle*)
 - Move AMQP Methods in specification.py to slotted classes
 - Change `Basic.Properties` to a slotted class
 - Instead of class level attributes with the same name as obj attributes, prefix class attributes for data types with an underscore
@@ -60,10 +60,10 @@ Version History
 - Update codegen/include for new codec and PYTHON2/PYTHON3 behavior
 - Update documentation
 - Distribution updates:
-    - Let travis upload to pypi
-    - Add wheel distribution
-    - Update supported python versions
-    - Update classifiers
+   - Let travis upload to pypi
+   - Add wheel distribution
+   - Update supported python versions
+   - Update classifiers
 
 1.3.1 (2014-02-14)
 ------------------
