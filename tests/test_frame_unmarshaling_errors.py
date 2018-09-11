@@ -2,7 +2,7 @@
 import struct
 import unittest
 
-from pamqp import exceptions, frame, specification
+from pamqp import exceptions, frame
 
 
 class TestCase(unittest.TestCase):

@@ -1,24 +1,7 @@
 # -*- encoding: utf-8 -*-
-from datetime import datetime
-from decimal import Decimal
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
 from pamqp import encode, decode
-from pamqp import PYTHON3
-
-if PYTHON3:
-    long = int
-
-
-def to_bytes(value):
-    if isinstance(value, bytes):
-        return bytes
-    if PYTHON3:
-        return bytes(value, 'utf-8')
-    return bytes(value)
 
 
 class EncodeDecodeTests(unittest.TestCase):

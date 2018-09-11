@@ -1,13 +1,9 @@
 # -*- encoding: utf-8 -*-
 from datetime import datetime
 from decimal import Decimal
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
-from pamqp import encode
-from pamqp import PYTHON3
+from pamqp import encode, PYTHON3
 
 if PYTHON3:
     long = int
