@@ -60,10 +60,4 @@ install:
 
 script: nosetests
 after_success:
-- ! aws s3 cp .coverage "s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/.coverage.${TRAVIS_PYTHON_VERSION}"
-
-matrix:
-  include:
-  - python: 3.7
-    dist: xenial
-    sudo: true
+- aws s3 cp .coverage "s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/.coverage.${TRAVIS_PYTHON_VERSION}"
