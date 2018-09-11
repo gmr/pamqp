@@ -1,20 +1,17 @@
 sudo: false
 language: python
 
-python:
-  - 2.7
-  - 3.4
-  - 3.5
-  - 3.6
-  - pypy
-  - pypy3
-
-
 matrix:
   include:
+    - python: 2.7
+    - python: 3.4
+    - python: 3.5
+    - python: 3.6
     - python: 3.7
       dist: xenial
       sudo: true
+    - python: pypy
+    - python: pypy3
 
 env:
   global:
@@ -26,34 +23,30 @@ env:
 stages:
   - test
   - name: upload coverage
+    if: repo = gmr/pamqp
   - name: deploy
     if: tag IS present
+
+install:
+  - pip install -r requirements.txt
+  - pip install awscli coverage
+script: nosetests
+after_success: bin/upload-coverage.sh
 
 jobs:
   include:
     - stage: upload coverage
       if: repo = gmr/pamqp
-      services: []
       python: 3.6
       install:
         - pip install awscli coverage codecov
-      script:
-        - mkdir coverage
-        - aws s3 cp --recursive s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/
-          coverage
-        - cd coverage
-        - coverage combine
-        - cd ..
-        - mv coverage/.coverage .
-        - coverage report
+      script: bin/combine-coverage.sh
       after_success: codecov
     - stage: deploy
-      if: repo = gmr/pamqp
       python: 3.6
-      services: []
-      install: true
-      script: true
-      after_success: true
+      install: skip
+      script: skip
+      after_success: skip
       deploy:
         distributions: sdist bdist_wheel
         provider: pypi
@@ -63,10 +56,3 @@ jobs:
           all_branches: true
         password:
           secure: "HW5Ak3scfeQ1/qdXQYrmIVnpGex59qNSGN2WRoHSFMXLfsjzdBQccy2nxWAo7p6P1wgoZ/51lTamJXGKgVqqQGC3gfBiD+AVMu3CROQht+Q4x5xKKLXQtTBoEOpurnx7q0oXRxhK7qmMOek9qqn/GGrK5PJV+pGoPwCvSTF6aic="
-
-install:
-  - pip install -r requirements.txt
-  - pip install awscli coverage
-script: nosetests
-after_success:
-  - aws s3 cp .coverage "s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/.coverage.${TRAVIS_PYTHON_VERSION}"
