@@ -1,14 +1,8 @@
 # -*- encoding: utf-8 -*-
-import sys
 import time
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
-from pamqp import frame, encode, header, specification
-
-PYTHON3 = True if sys.version_info > (3, 0, 0) else False
+from pamqp import body, frame, header, specification, PYTHON3
 
 if PYTHON3:
     long = int
@@ -18,8 +12,7 @@ if PYTHON3:
 
 class DemarshalingTests(unittest.TestCase):
 
-    def protocol_header_test(self):
-
+    def test_protocol_header(self):
         # Decode the frame and validate lengths
         frame_data = b'AMQP\x00\x00\t\x01'
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -42,7 +35,7 @@ class DemarshalingTests(unittest.TestCase):
                           frame_obj.revision),
                          (0, 9, 1), "Protocol version is incorrect")
 
-    def heartbeat_test(self):
+    def test_heartbeat(self):
         frame_data = b'\x08\x00\x00\x00\x00\x00\x00\xce'
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
@@ -59,7 +52,7 @@ class DemarshalingTests(unittest.TestCase):
                          ('Frame was of wrong type, expected Heartbeat, '
                           'received %s' % frame_obj.name))
 
-    def basic_ack_test(self):
+    def test_basic_ack(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00P\x00\x00\x00\x00'
                       b'\x00\x00\x00\x01\x00\xce')
         expectation = {'multiple':  False, 'delivery_tag':  1}
@@ -83,7 +76,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_cancel_test(self):
+    def test_basic_cancel(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00\x1e\x07ctag1.0\x00'
                       b'\xce')
         expectation = {'consumer_tag': 'ctag1.0',
@@ -109,7 +102,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_cancelok_test(self):
+    def test_basic_cancelok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x00<\x00\x1f\x07ctag1.0'
                       b'\xce')
         expectation = {'consumer_tag':  'ctag1.0'}
@@ -134,7 +127,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_consume_test(self):
+    def test_basic_consume(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x18\x00<\x00\x14\x00\x00\x04'
                       b'test\x07ctag1.0\x00\x00\x00\x00\x00\xce')
         expectation = {'exclusive':  False,
@@ -166,7 +159,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_consumeok_test(self):
+    def test_basic_consumeok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x00<\x00\x15\x07ctag1.0'
                       b'\xce')
         expectation = {'consumer_tag':  'ctag1.0'}
@@ -191,7 +184,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_deliver_test(self):
+    def test_basic_deliver(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x1b\x00<\x00<\x07ctag1.0'
                       b'\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x04test\xce')
 
@@ -220,7 +213,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_get_test(self):
+    def test_basic_get(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x00<\x00F\x00\x00\x04'
                       b'test\x00\xce')
         expectation = {'queue':  'test', 'ticket':  0, 'no_ack':  False}
@@ -244,7 +237,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_getempty_test(self):
+    def test_basic_getempty(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00<\x00H\x00\xce'
         expectation = {'cluster_id':  ''}
 
@@ -267,7 +260,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_getok_test(self):
+    def test_basic_getok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x17\x00<\x00G\x00\x00\x00\x00'
                       b'\x00\x00\x00\x10\x00\x00\x04test\x00\x00\x12\x06\xce')
         expectation = {'message_count':  4614,
@@ -295,7 +288,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_nack_test(self):
+    def test_basic_nack(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00x\x00\x00\x00\x00'
                       b'\x00\x00\x00\x01\x00\xce')
         expectation = {'requeue':  False,
@@ -321,7 +314,17 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_properties_test(self):
+    def test_content_header(self):
+        result = frame.unmarshal(
+            frame.marshal(header.ContentHeader(0, 100), 1))
+        self.assertEqual(result[2].body_size, 100)
+
+    def test_content_body(self):
+        result = frame.unmarshal(
+            frame.marshal(body.ContentBody('TEST'), 1))
+        self.assertEqual(len(result[2]), 4)
+
+    def test_basic_properties(self):
         encoded_properties = (b'\xff\xfc\x10application/json\x04gzip\x00\x00'
                               b'\x00\x1d\x03bazS\x00\x00\x00\x08Test \xe2\x9c'
                               b'\x88\x03fooS\x00\x00\x00\x03bar\x01\x00$a5304'
@@ -358,7 +361,7 @@ class DemarshalingTests(unittest.TestCase):
                              '%r value of %r did not match expectation of %r' %
                              (key, getattr(obj, key), properties[key]))
 
-    def basic_publish_test(self):
+    def test_basic_publish(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00(\x00\x00\x00'
                       b'\x04test\x00\xce')
         expectation = {'ticket':  0,
@@ -386,7 +389,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_qos_test(self):
+    def test_basic_qos(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0b\x00<\x00\n\x00\x00\x00'
                       b'\x00\x00\x01\x00\xce')
         expectation = {'prefetch_count':  1,
@@ -412,7 +415,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_qosok_test(self):
+    def test_basic_qosok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00<\x00\x0b\xce'
         expectation = {}
 
@@ -435,7 +438,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_recover_test(self):
+    def test_basic_recover(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00<\x00n\x00\xce'
         expectation = {'requeue':  False}
 
@@ -458,11 +461,11 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_recoverasync_test(self):
+    def test_basic_recoverasync(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00<\x00d\x00\xce'
         self.assertRaises(DeprecationWarning, frame.unmarshal, frame_data)
 
-    def basic_recoverok_test(self):
+    def test_basic_recoverok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00<\x00o\xce'
         expectation = {}
 
@@ -485,7 +488,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_reject_test(self):
+    def test_basic_reject(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00Z\x00\x00\x00\x00'
                       b'\x00\x00\x00\x10\x01\xce')
         expectation = {'requeue':  True, 'delivery_tag':  16}
@@ -509,7 +512,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def basic_return_test(self):
+    def test_basic_return(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00"\x00<\x002\x00\xc8\x0f'
                       b'Normal shutdown\x03foo\x07foo.bar\xce')
         expectation = {'reply_code':  200,
@@ -536,7 +539,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def channel_close_test(self):
+    def test_channel_close(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x1a\x00\x14\x00(\x00\xc8\x0f'
                       b'Normal shutdown\x00\x00\x00\x00\xce')
         expectation = {'class_id':  0,
@@ -563,7 +566,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def channel_closeok_test(self):
+    def test_channel_closeok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00\x14\x00)\xce'
         expectation = {}
 
@@ -586,7 +589,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def channel_flow_test(self):
+    def test_channel_flow(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00\x14\x00\x14\x01\xce'
         expectation = {'active':  True}
 
@@ -609,7 +612,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def channel_flowok_test(self):
+    def test_channel_flowok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00\x14\x00\x15\x01\xce'
         expectation = {'active':  True}
 
@@ -632,7 +635,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def channel_open_test(self):
+    def test_channel_open(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00\x14\x00\n\x00\xce'
         expectation = {'out_of_band':  ''}
 
@@ -655,7 +658,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def channel_openok_test(self):
+    def test_channel_openok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x08\x00\x14\x00\x0b\x00\x00'
                       b'\x00\x00\xce')
         expectation = {'channel_id':  b''}
@@ -679,7 +682,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def confirm_select_test(self):
+    def test_confirm_select(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00U\x00\n\x00\xce'
         expectation = {'nowait':  False}
 
@@ -702,7 +705,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def confirm_selectok_test(self):
+    def test_confirm_selectok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00U\x00\x0b\xce'
         expectation = {}
 
@@ -725,7 +728,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def connection_close_test(self):
+    def test_connection_close(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x1a\x00\n\x002\x00\xc8\x0f'
                       b'Normal shutdown\x00\x00\x00\x00\xce')
         expectation = {'class_id':  0, 'method_id':  0, 'reply_code':  200,
@@ -750,7 +753,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def connection_closeok_test(self):
+    def test_connection_closeok(self):
         frame_data = b'\x01\x00\x00\x00\x00\x00\x04\x00\n\x003\xce'
         expectation = {}
 
@@ -773,7 +776,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def connection_open_test(self):
+    def test_connection_open(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x08\x00\n\x00(\x01/\x00'
                       b'\x01\xce')
         expectation = {'insist':  True,
@@ -799,7 +802,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def connection_openok_test(self):
+    def test_connection_openok(self):
         frame_data = b'\x01\x00\x00\x00\x00\x00\x05\x00\n\x00)\x00\xce'
         expectation = {'known_hosts':  ''}
 
@@ -822,7 +825,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def connection_secure_test(self):
+    def test_connection_secure(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x08\x00\n\x00\x14\x00\x00'
                       b'\x00\x00\xce')
         expectation = {'challenge':  b''}
@@ -846,7 +849,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def connection_secureok_test(self):
+    def test_connection_secureok(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x08\x00\n\x00\x15\x00\x00'
                       b'\x00\x00\xce')
         expectation = {'response':  b''}
@@ -870,7 +873,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def connection_start_test(self):
+    def test_connection_start(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x01G\x00\n\x00\n\x00\t'
                       b'\x00\x00\x01"\x0ccapabilitiesF\x00\x00\x00X'
                       b'\x12publisher_confirmst\x01\x1aexchange_exc'
@@ -921,7 +924,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def connection_startok_test(self):
+    def test_connection_startok(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\xf4\x00\n\x00\x0b'
                       b'\x00\x00\x00\xd0\x08platformS\x00\x00\x00'
                       b'\x0cPython 2.7.1\x07productS\x00\x00\x00'
@@ -965,7 +968,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def connection_tune_test(self):
+    def test_connection_tune(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x0c\x00\n\x00\x1e\x00\x00'
                       b'\x00\x02\x00\x00\x00\x00\xce')
         expectation = {'frame_max':  131072,
@@ -991,7 +994,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def connection_tuneok_test(self):
+    def test_connection_tuneok(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x0c\x00\n\x00\x1f\x00\x00'
                       b'\x00\x02\x00\x00\x00\x00\xce')
         expectation = {'frame_max':  131072,
@@ -1017,7 +1020,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def content_body_frame_test(self):
+    def test_content_body_frame(self):
         frame_data = (b'\x03\x00\x00\x00\x00\x00"Hello World #0:1316899165.'
                       b'75516605\xce')
 
@@ -1037,7 +1040,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertEqual(data.value, expectation)
 
-    def exchange_bind_test(self):
+    def test_exchange_bind(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x15\x00(\x00\x1e\x00\x00'
                       b'\x00\x00\x07foo.bar\x00\x00\x00\x00\x00\xce')
         expectation = {'arguments':  {},
@@ -1066,7 +1069,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def exchange_bindok_test(self):
+    def test_exchange_bindok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00(\x00\x1f\xce'
         expectation = {}
 
@@ -1089,7 +1092,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def exchange_declare_test(self):
+    def test_exchange_declare(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00%\x00(\x00\n\x00\x00\x12pika_'
                       b'test_exchange\x06direct\x00\x00\x00\x00\x00\xce')
         expectation = {'nowait':  False,
@@ -1121,7 +1124,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def exchange_declareok_test(self):
+    def test_exchange_declareok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00(\x00\x0b\xce'
         expectation = {}
 
@@ -1144,7 +1147,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def exchange_delete_test(self):
+    def test_exchange_delete(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x1a\x00(\x00\x14\x00\x00\x12'
                       b'pika_test_exchange\x00\xce')
         expectation = {'ticket':  0,
@@ -1171,7 +1174,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def exchange_deleteok_test(self):
+    def test_exchange_deleteok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00(\x00\x15\xce'
         expectation = {}
 
@@ -1194,7 +1197,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def exchange_unbind_test(self):
+    def test_exchange_unbind(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x15\x00(\x00(\x00\x00\x00'
                       b'\x00\x07foo.bar\x00\x00\x00\x00\x00\xce')
         expectation = {'arguments':  {},
@@ -1223,7 +1226,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def exchange_unbindok_test(self):
+    def test_exchange_unbindok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00(\x003\xce'
         expectation = {}
 
@@ -1246,7 +1249,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def queue_bind_test(self):
+    def test_queue_bind(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00?\x002\x00\x14\x00'
                       b'\x00\x0fpika_test_queue\x12pika_test_excha'
                       b'nge\x10test_routing_key\x00\x00\x00\x00\x00'
@@ -1277,7 +1280,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def queue_bindok_test(self):
+    def test_queue_bindok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x002\x00\x15\xce'
         expectation = {}
 
@@ -1300,7 +1303,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def queue_declare_test(self):
+    def test_queue_declare(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x10\x002\x00\n\x00\x00\x04'
                       b'test\x02\x00\x00\x00\x00\xce')
         expectation = {'passive':  False,
@@ -1331,7 +1334,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def queue_declareok_test(self):
+    def test_queue_declareok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x11\x002\x00\x0b\x04test'
                       b'\x00\x00\x12\x07\x00\x00\x00\x00\xce')
         expectation = {'queue':  'test', 'message_count':  4615,
@@ -1356,7 +1359,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def queue_delete_test(self):
+    def test_queue_delete(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x17\x002\x00(\x00\x00\x0f'
                       b'pika_test_queue\x00\xce')
         expectation = {'queue':  'pika_test_queue',
@@ -1384,7 +1387,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def queue_deleteok_test(self):
+    def test_queue_deleteok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x08\x002\x00)\x00\x00\x00'
                       b'\x00\xce')
         expectation = {'message_count':  0}
@@ -1408,7 +1411,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def queue_purge_test(self):
+    def test_queue_purge(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x002\x00\x1e\x00\x00'
                       b'\x04test\x00\xce')
         expectation = {'queue': 'test', 'ticket': 0,
@@ -1433,7 +1436,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def queue_purgeok_test(self):
+    def test_queue_purgeok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x08\x002\x00\x1f\x00\x00\x00'
                       b'\x01\xce')
         expectation = {'message_count':  1}
@@ -1457,7 +1460,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def queue_unbind_test(self):
+    def test_queue_unbind(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00>\x002\x002\x00\x00\x0f'
                       b'pika_test_queue\x12pika_test_exchange\x10test_routing'
                       b'_key\x00\x00\x00\x00\xce')
@@ -1486,7 +1489,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def queue_unbindok_test(self):
+    def test_queue_unbindok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x002\x003\xce'
         expectation = {}
 
@@ -1509,7 +1512,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def tx_commit_test(self):
+    def test_tx_commit(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\x14\xce'
         expectation = {}
 
@@ -1532,7 +1535,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def tx_commitok_test(self):
+    def test_tx_commitok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\x15\xce'
         expectation = {}
 
@@ -1555,7 +1558,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def tx_rollback_test(self):
+    def test_tx_rollback(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\x1e\xce'
         expectation = {}
 
@@ -1578,7 +1581,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def tx_rollbackok_test(self):
+    def test_tx_rollbackok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\x1f\xce'
         expectation = {}
 
@@ -1601,7 +1604,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def tx_select_test(self):
+    def test_tx_select(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\n\xce'
         expectation = {}
 
@@ -1624,7 +1627,7 @@ class DemarshalingTests(unittest.TestCase):
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
 
-    def tx_selectok_test(self):
+    def test_tx_selectok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00Z\x00\x0b\xce'
         expectation = {}
 
