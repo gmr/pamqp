@@ -1,4 +1,7 @@
-"""AMQP Data Decoder
+# -*- encoding: utf-8 -*-
+"""
+AMQP Data Decoder
+=================
 
 Functions for decoding data of various types including field tables and arrays
 
@@ -11,6 +14,7 @@ from pamqp import PYTHON3
 
 
 class Struct(object):
+    """Simple object for getting to the struct objects"""
 
     byte = struct.Struct('B')
     double = struct.Struct('>d')
@@ -28,6 +32,7 @@ def bit(value, position):
     """Decode a bit value
 
     :param bytes value: Value to decode
+    :param int position: The bit position to retrieve
     :return tuple: bytes used, bool value
     :raises: ValueError
 
@@ -235,7 +240,7 @@ def short_str(value):
     """
     try:
         length = Struct.byte.unpack(value[0:1])[0]
-        return length + 1, _maybe_utf8(value[1:length + 1])
+        return length + 1, _to_bytes(value[1:length + 1])
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -293,7 +298,7 @@ def field_table(value):
         while offset < field_table_end:
             key_length = Struct.byte.unpack_from(value, offset)[0]
             offset += 1
-            key = _maybe_utf8(value[offset:offset + key_length])
+            key = _to_str(value[offset:offset + key_length])
             offset += key_length
             consumed, result = _embedded_value(value[offset:])
             offset += consumed
@@ -401,25 +406,35 @@ def by_type(value, data_type, offset=0):
     raise ValueError('Unknown type "%s"' % value)
 
 
-def _maybe_utf8(value):
+def _to_bytes(value):
     """Try and automatically return unicode when there is UTF-8 data
     in them.
 
     :param bytes value: The value to try and decode to unicode
-    :return: unicode or bytes or str
+    :rtype: unicode or bytes or str
 
     """
-    if PYTHON3:
-        # If it's already a bytes object, cool
-        if isinstance(value, bytes):
-            return value
+    if isinstance(value, bytes):
+        return value
+    elif PYTHON3:
+        return value.encode('utf-8')
+    elif isinstance(value, unicode):
+        return value.encode('utf-8')
+    return value
 
-        # It might come in as a str in which case we want it to be bytes
-        return bytes(value, 'utf-8')
+
+def _to_str(value):
+    """Ensure the field table keys are strings (unicode or otherwise)
+
+    :param bytes value: The value to try and decode to unicode
+    :rtype: unicode or str
+
+    """
+    if PYTHON3 and isinstance(value, bytes):
+        return value.decode('utf-8')
 
     # Convert to unicode
     _value = value.decode('utf-8')
-
     try:
         # Try and force it to be a str and return the str value
         return str(_value)
