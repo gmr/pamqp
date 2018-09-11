@@ -10,3 +10,6 @@ docs/_build
 atlassian-ide-plugin.xml
 .DS_Store
 pamqp.egg-info
+env
+env2.7
+env3
