@@ -1,4 +1,5 @@
 .idea
+.vscode
 codegen/amqp-rabbitmq-0.9.1.json
 codegen/amqp0-9-1.xml
 *.pyc
