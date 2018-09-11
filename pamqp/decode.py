@@ -349,7 +349,7 @@ def _embedded_value(value):
     elif value[0:1] == b'F':
         bytes_consumed, value = field_table(value[1:])
     elif value[0:1] == b'V':
-        return 0, None
+        bytes_consumed, value = 0, None
     elif value[0:1] == b'x':
         bytes_consumed, value = byte_array(value[1:])
     elif value[0:1] == b'\x00':
@@ -430,17 +430,13 @@ def _to_str(value):
     :rtype: unicode or str
 
     """
-    if PYTHON3 and isinstance(value, bytes):
+    if PYTHON3:
         return value.decode('utf-8')
 
-    # Convert to unicode
-    _value = value.decode('utf-8')
     try:
-        # Try and force it to be a str and return the str value
-        return str(_value)
+        return str(value.decode('utf-8'))
     except UnicodeEncodeError:
-        # Unicode obj to str with unicode data fails, return the unicode value
-        return _value
+        return value.decode('utf-8')
 
 
 # Define a data type mapping to methods

@@ -16,6 +16,7 @@ Version History
 - Address long string encoding inconsistency (#9)
 - Cleanup unicode object & conditionals in py3 (#9)
 - Add `pamqp.exceptions.PAMQPException` as a base class for pamqp specific exceptions (#4)
+- Fix decoding of void values in a field table or array
 
 1.6.1 (2015-02-05)
 ------------------
