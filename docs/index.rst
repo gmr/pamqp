@@ -1,10 +1,15 @@
 pamqp
 =====
-pamqp is a low level AMQP 0-9-1 frame encoding and decoding library for Python 2 & 3 released under the BSD license.
+pamqp is a low level AMQP 0-9-1 frame encoding and decoding library for Python 2 & 3
+released under the BSD license.
 
-pamqp is not a end-user client library for talking to RabbitMQ but rather is used by client libraries for marshaling and unmarshaling AMQP frames. All methods should have test coverage and pass in Python 2.6, 2.7, 3.3, and 3.4.
+pamqp is not a end-user client library for talking to RabbitMQ but rather is used
+by client libraries for marshaling and unmarshaling AMQP frames. All methods should
+have test coverage and pass in Python 2.7, and 3.4 - 3.7.
 
-AMQP class/method command class mappings can be found in the :py:mod:`pamqp.specification` module while actual frame encoding and encoding should be run through the :py:mod:`pamqp.frame` module.
+AMQP class/method command class mappings can be found in the :py:mod:`pamqp.specification`
+module while actual frame encoding and encoding should be run through the :py:mod:`pamqp.frame`
+module.
 
 Issues
 ------
