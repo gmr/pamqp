@@ -16,43 +16,43 @@ stages:
 
 jobs:
   include:
-  - python: 2.7
-  - python: 3.4
-  - python: 3.5
-  - python: 3.6
-  - python: pypy
-  - python: pypy3
-  - stage: upload coverage
-    if: repo IS gmr/pamqp
-    services: []
-    python: 3.6
-    install:
-    - pip install awscli coverage codecov
-    script:
-    - mkdir coverage
-    - aws s3 cp --recursive s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/
-      coverage
-    - cd coverage
-    - coverage combine
-    - cd ..
-    - mv coverage/.coverage .
-    - coverage report
-  - stage: deploy
-    if: repo IS gmr/pamqp
-    python: 3.6
-    services: []
-    install: true
-    script: true
-    after_success: true
-    deploy:
-      distributions: sdist bdist_wheel
-      provider: pypi
-      user: crad
-      on:
-        tags: true
-        all_branches: true
-      password:
-        secure: "HW5Ak3scfeQ1/qdXQYrmIVnpGex59qNSGN2WRoHSFMXLfsjzdBQccy2nxWAo7p6P1wgoZ/51lTamJXGKgVqqQGC3gfBiD+AVMu3CROQht+Q4x5xKKLXQtTBoEOpurnx7q0oXRxhK7qmMOek9qqn/GGrK5PJV+pGoPwCvSTF6aic="
+    - python: 2.7
+    - python: 3.4
+    - python: 3.5
+    - python: 3.6
+    - python: pypy
+    - python: pypy3
+    - stage: upload coverage
+      if: repo = gmr/pamqp
+      services: []
+      python: 3.6
+      install:
+      - pip install awscli coverage codecov
+      script:
+      - mkdir coverage
+      - aws s3 cp --recursive s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/
+        coverage
+      - cd coverage
+      - coverage combine
+      - cd ..
+      - mv coverage/.coverage .
+      - coverage report
+    - stage: deploy
+      if: repo = gmr/pamqp
+      python: 3.6
+      services: []
+      install: true
+      script: true
+      after_success: true
+      deploy:
+        distributions: sdist bdist_wheel
+        provider: pypi
+        user: crad
+        on:
+          tags: true
+          all_branches: true
+        password:
+          secure: "HW5Ak3scfeQ1/qdXQYrmIVnpGex59qNSGN2WRoHSFMXLfsjzdBQccy2nxWAo7p6P1wgoZ/51lTamJXGKgVqqQGC3gfBiD+AVMu3CROQht+Q4x5xKKLXQtTBoEOpurnx7q0oXRxhK7qmMOek9qqn/GGrK5PJV+pGoPwCvSTF6aic="
 
 install:
 - pip install -r requirements.txt
