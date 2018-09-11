@@ -120,14 +120,10 @@ def _unmarshal_protocol_header_frame(data_in):
 
     """
     # Do the first four bytes match?
-
     if data_in[0:4] == AMQP:
-        try:
-            frame = header.ProtocolHeader()
-            frame.unmarshal(data_in)
-            return frame
-        except IndexError:
-            raise ValueError('Frame data did not meet minimum length')
+        frame = header.ProtocolHeader()
+        frame.unmarshal(data_in)
+        return frame
 
 
 def _unmarshal_method_frame(frame_data):
@@ -143,8 +139,9 @@ def _unmarshal_method_frame(frame_data):
     # Create an instance of the method object we're going to unmarshal
     try:
         method = specification.INDEX_MAPPING[method_index]()
-    except KeyError as error:
-        raise exceptions.UnmarshalingException('Unknown', error)
+    except KeyError:
+        raise exceptions.UnmarshalingException(
+            'Unknown', 'Unknown method index: {}'.format(str(method_index)))
 
     # Unmarshal the data
     try:
