@@ -30,4 +30,4 @@ class EncodeDecodeTests(unittest.TestCase):
                 ((b'A' * 128) + b'\xf0\x9f\x92\xa9').decode('utf-8'): 2}
         encoded = encode.field_table(data)
         decoded = decode.field_table(encoded)[1]
-        self.assertIn(b'A' * 128, decoded)
+        self.assertIn('A' * 128, decoded)
