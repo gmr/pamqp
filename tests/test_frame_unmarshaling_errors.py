@@ -109,6 +109,6 @@ class TestCase(unittest.TestCase):
             frame.unmarshal(frame_value)
         except exceptions.UnmarshalingException as err:
             self.assertTrue(str(err).startswith(
-                'Could not unmarshal ContentHeader frame: unpack requires'))
+                'Could not unmarshal ContentHeader frame:'))
         else:
             assert False, 'Failed to raise exception'
