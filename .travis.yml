@@ -1,29 +1,69 @@
+sudo: false
 language: python
-python:
-    - 2.7
-    - pypy
-    - pypy3
-    - 3.4
-    - 3.5
-    - 3.6
-# Enable 3.7 without globally enabling sudo and dist: xenial for other build jobs
+
+env:
+  global:
+  - PATH=$HOME/.local/bin:$PATH
+  - AWS_DEFAULT_REGION=us-east-1
+  - secure: "HwRFY/PT2BkpcaxTpgvcZH7NVzFHB5bITEsdLNnAyyR1p6penesezg3VUnY5Bl91s4vP9sDFBZJC7AkAEOGTNAHJ0h1/2bEH3rQvi8WNnWFIjb5HbpZpfdHch+NO5kyEn7mUkcdyPpkI18JqlJLRcPKqNHpKqTuKt3FhrtfkfFs="
+  - secure: "cE93hguZtiygLXcYAL/twX9zd9ELLmCepUUocYnV9JUxwZJ8s6jj4PXTXShXVl6KNY4pRViKNROfm+l0HzCrfi3C6BiRHBKP0zccGWSYRceEQFmK1irb+idsdz74J1DHA3KF+LNYaSBTSk5eU8o45WOx5p+bJ8P8QMRnIsybTgY="
+
+stages:
+- test
+- name: upload coverage
+- name: deploy
+  if: tag IS present
+
+jobs:
+  include:
+  - python: 2.7
+  - python: 3.4
+  - python: 3.5
+  - python: 3.6
+  - python: pypy
+  - python: pypy3
+  - stage: upload coverage
+    if: repo IS gmr/pamqp
+    services: []
+    python: 3.6
+    install:
+    - pip install awscli coverage codecov
+    script:
+    - mkdir coverage
+    - aws s3 cp --recursive s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/
+      coverage
+    - cd coverage
+    - coverage combine
+    - cd ..
+    - mv coverage/.coverage .
+    - coverage report
+  - stage: deploy
+    if: repo IS gmr/pamqp
+    python: 3.6
+    services: []
+    install: true
+    script: true
+    after_success: true
+    deploy:
+      distributions: sdist bdist_wheel
+      provider: pypi
+      user: crad
+      on:
+        tags: true
+        all_branches: true
+      password:
+        secure: "HW5Ak3scfeQ1/qdXQYrmIVnpGex59qNSGN2WRoHSFMXLfsjzdBQccy2nxWAo7p6P1wgoZ/51lTamJXGKgVqqQGC3gfBiD+AVMu3CROQht+Q4x5xKKLXQtTBoEOpurnx7q0oXRxhK7qmMOek9qqn/GGrK5PJV+pGoPwCvSTF6aic="
+
+install:
+- pip install -r requirements.txt
+- pip install awscli coverage codecov
+
+script: nosetests
+after_success:
+- ! aws s3 cp .coverage "s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/.coverage.${TRAVIS_PYTHON_VERSION}"
+
 matrix:
   include:
-    - python: 3.7
-      dist: xenial
-      sudo: true
-install:
-    - "pip install -r requirements.txt"
-script: nosetests --with-coverage --cover-package=pamqp
-after_success:
-  - codecov
-deploy:
-  distributions: sdist bdist_wheel
-  provider: pypi
-  user: crad
-  on:
-    python: 3.6
-    tags: true
-    all_branches: true
-  password:
-    secure: "HW5Ak3scfeQ1/qdXQYrmIVnpGex59qNSGN2WRoHSFMXLfsjzdBQccy2nxWAo7p6P1wgoZ/51lTamJXGKgVqqQGC3gfBiD+AVMu3CROQht+Q4x5xKKLXQtTBoEOpurnx7q0oXRxhK7qmMOek9qqn/GGrK5PJV+pGoPwCvSTF6aic="
+  - python: 3.7
+    dist: xenial
+    sudo: true
