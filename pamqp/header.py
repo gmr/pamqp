@@ -59,14 +59,14 @@ class ProtocolHeader(object):
                  self.revision) = struct.unpack('BBB', data[5:8])
             except struct.error:
                 raise ValueError('Data did not match the ProtocolHeader '
-                                 'format: %r', data)
+                                 'format: {}'.format(data))
 
             # All in we consume 8 bytes
             return 8
 
         # The first four bytes did not match
-        raise ValueError('Data did not match the ProtocolHeader format: %r' %
-                         data)
+        raise ValueError('Data did not match the ProtocolHeader '
+                         'format: {}'.format(data))
 
 
 class ContentHeader(object):

@@ -48,28 +48,24 @@ def unmarshal(data_in):
         raise exceptions.UnmarshalingException(header.ProtocolHeader, error)
 
     # Decode the low level frame and break it into parts
-    try:
-        frame_type, channel_id, frame_size = _frame_parts(data_in)
+    frame_type, channel_id, frame_size = _frame_parts(data_in)
 
-        # Heartbeats do not have frame length indicators
-        if frame_type == specification.FRAME_HEARTBEAT and frame_size == 0:
-            return 8, channel_id, heartbeat.Heartbeat()
+    # Heartbeats do not have frame length indicators
+    if frame_type == specification.FRAME_HEARTBEAT and frame_size == 0:
+        return 8, channel_id, heartbeat.Heartbeat()
 
-        if not frame_size:
-            raise exceptions.UnmarshalingException('Unknown', 'No frame size')
+    if not frame_size:
+        raise exceptions.UnmarshalingException('Unknown', 'No frame size')
 
-        byte_count = FRAME_HEADER_SIZE + frame_size + 1
-        if byte_count > len(data_in):
-            raise exceptions.UnmarshalingException('Unknown',
-                                                   'Not all data received')
-        if data_in[byte_count - 1] != DECODE_FRAME_END_CHAR:
-            raise exceptions.UnmarshalingException('Unknown',
-                                                   'Last byte error')
+    byte_count = FRAME_HEADER_SIZE + frame_size + 1
+    if byte_count > len(data_in):
+        raise exceptions.UnmarshalingException('Unknown',
+                                               'Not all data received')
+    if data_in[byte_count - 1] != DECODE_FRAME_END_CHAR:
+        raise exceptions.UnmarshalingException('Unknown',
+                                               'Last byte error')
 
-        frame_data = data_in[FRAME_HEADER_SIZE:byte_count - 1]
-
-    except ValueError as error:
-        raise exceptions.UnmarshalingException('Unknown', error)
+    frame_data = data_in[FRAME_HEADER_SIZE:byte_count - 1]
 
     # Decode a method frame
     if frame_type == specification.FRAME_METHOD:
@@ -83,9 +79,8 @@ def unmarshal(data_in):
     elif frame_type == specification.FRAME_BODY:
         return byte_count, channel_id, _unmarshal_body_frame(frame_data)
 
-    raise exceptions.UnmarshalingException('Unknown',
-                                           'Unknown frame type: %i' %
-                                           frame_type)
+    raise exceptions.UnmarshalingException(
+        'Unknown', 'Unknown frame type: {}'.format(frame_type))
 
 
 def marshal(frame_value, channel_id):
@@ -108,7 +103,7 @@ def marshal(frame_value, channel_id):
         return _marshal_content_body_frame(frame_value, channel_id)
     elif isinstance(frame_value, heartbeat.Heartbeat):
         return frame_value.marshal()
-    raise ValueError('Could not determine frame type: %r' % frame_value)
+    raise ValueError('Could not determine frame type: {}'.format(frame_value))
 
 
 def _unmarshal_protocol_header_frame(data_in):
@@ -212,10 +207,8 @@ def _marshal(frame_type, channel_id, payload):
     :rtype: str or bytes
 
     """
-    header = struct.pack('>BHI', frame_type, channel_id, len(payload))
-    if PYTHON3:
-        return b''.join([header, payload, FRAME_END_CHAR])
-    return ''.join([header, payload, FRAME_END_CHAR])
+    return b''.join([struct.pack('>BHI', frame_type, channel_id, len(payload)),
+                     payload, FRAME_END_CHAR])
 
 
 def _marshal_content_body_frame(frame_value, channel_id):
