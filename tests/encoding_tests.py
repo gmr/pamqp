@@ -79,6 +79,9 @@ class MarshalingTests(unittest.TestCase):
         self.assertRaises(TypeError, encode.long_uint,
                           long(4294967296))
 
+    def test_encode_long_uint_wrong_type(self):
+        self.assertRaises(TypeError, encode.long_uint, 3.141597)
+
     def test_encode_long_long_int_wrong_type(self):
         self.assertRaises(TypeError, encode.long_long_int, 3.141597)
 
