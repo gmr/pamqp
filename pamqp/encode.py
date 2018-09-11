@@ -10,13 +10,13 @@ import logging
 import struct
 import time
 
-LOGGER = logging.getLogger(__name__)
-
 from pamqp import PYTHON3
+
+LOGGER = logging.getLogger(__name__)
 
 if PYTHON3:
     long = int
-    unicode = bytes
+    unicode = None  # Dont throw exceptions as it is not defined
 
 
 def bit(value, byte, position):
@@ -156,8 +156,10 @@ def long_string(value):
     :raises: TypeError
 
     """
-    if not isinstance(value, (bytes, str, unicode)):
-        raise TypeError("bytes, str, or unicode required")
+    if PYTHON3 and not isinstance(value, (bytes, str)):
+        raise TypeError("bytes or str required")
+    elif not PYTHON3 and not isinstance(value, (bytes, str, unicode)):
+        raise TypeError("bytes, str or unicode required")
     value = _utf8_encode(value)
     return struct.pack('>I', len(value)) + value
 
@@ -213,8 +215,10 @@ def short_string(value):
     :raises: TypeError
 
     """
-    if not isinstance(value, (str, unicode, bytes)):
-        raise TypeError("bytes, str, or unicode required")
+    if PYTHON3 and not isinstance(value, (bytes, str)):
+        raise TypeError("bytes or str required")
+    elif not PYTHON3 and not isinstance(value, (bytes, str, unicode)):
+        raise TypeError("bytes, str or unicode required")
     # Ensure that the value is utf-8 encoded if it's unicode
     value = _utf8_encode(value)
     return struct.pack('B', len(value)) + value
@@ -338,7 +342,10 @@ def encode_table_value(value):
     elif isinstance(value, float):
         result = b'f' + floating_point(value)
 
-    elif isinstance(value, (str, bytes, unicode)):
+    elif PYTHON3 and isinstance(value, (str, bytes)):
+        result = b'S' + long_string(value)
+
+    elif not PYTHON3 and isinstance(value, (str, bytes, unicode)):
         result = b'S' + long_string(value)
 
     elif (isinstance(value, datetime.datetime) or
@@ -404,7 +411,14 @@ def by_type(value, data_type):
 
 
 def _utf8_encode(value):
-    if PYTHON3 and isinstance(value, bytes):
+    """Ensure that a string or unicode object is UTF-8 encoded.
+
+    :param value: The value to evaluate
+    :type value: str, bytes, or unicode
+    :rtype: bytes
+
+    """
+    if PYTHON3 and isinstance(value, str):
         return value.encode('utf-8')
     elif not PYTHON3 and isinstance(value, unicode):
         return value.encode('utf-8')
