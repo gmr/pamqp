@@ -1,4 +1,6 @@
-"""The pamqp.body module contains the Body class which is used when
+# -*- encoding: utf-8 -*-
+"""
+The pamqp.body module contains the Body class which is used when
 unmarshaling body frames. When dealing with content frames, the message body
 will be returned from the library as an instance of the body class.
 

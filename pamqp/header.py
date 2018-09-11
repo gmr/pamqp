@@ -1,4 +1,6 @@
-"""AMQP Header Class Definitions
+# -*- encoding: utf-8 -*-
+"""
+AMQP Header Class Definitions
 
 For encoding AMQP Header frames into binary AMQP stream data and decoding AMQP
 binary data into AMQP Header frames.

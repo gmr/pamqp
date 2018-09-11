@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 """Manage the marshaling and unmarshaling of AMQP frames
 
 unmarshal will turn a raw AMQP byte stream into the appropriate AMQP objects

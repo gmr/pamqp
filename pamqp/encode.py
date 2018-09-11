@@ -1,4 +1,7 @@
-"""AMQP Data Encoder
+# -*- encoding: utf-8 -*-
+"""
+AMQP Data Encoder
+=================
 
 Functions for encoding data of various types including field tables and arrays
 

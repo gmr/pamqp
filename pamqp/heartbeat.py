@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 """
 AMQP Heartbeat Frame, used to create new Heartbeat frames for sending to a peer
 
@@ -24,5 +25,5 @@ class Heartbeat(object):
         """
         value = struct.pack('>BHI', specification.FRAME_HEARTBEAT, 0, 0)
         if PYTHON3:
-            return value + bytes(chr(specification.FRAME_END), 'latin1')
+            return value + bytes(chr(specification.FRAME_END))
         return value + chr(specification.FRAME_END)
