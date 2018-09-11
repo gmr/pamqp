@@ -16,18 +16,16 @@ stages:
 
 matrix:
   include:
+  - python: 2.7
+  - python: 3.4
+  - python: 3.5
+  - python: 3.6
   - python: 3.7
     dist: xenial
     sudo: true
 
 jobs:
   include:
-    - python: 2.7
-    - python: 3.4
-    - python: 3.5
-    - python: 3.6
-    - python: pypy
-    - python: pypy3
     - stage: upload coverage
       if: repo = gmr/pamqp
       services: []
