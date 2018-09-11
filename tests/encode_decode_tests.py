@@ -24,11 +24,10 @@ def to_bytes(value):
 class EncodeDecodeTests(unittest.TestCase):
 
     def test_encode_decode_field_table_long_keys(self):
-        """ Encoding and decoding a field_table with too long keys.
-        """
+        """Encoding and decoding a field_table with too long keys."""
         # second key is 126 A's + \N{PILE OF POO}
         data = {'A' * 256: 1,
-                ((b'A' * 126) + b'\xf0\x9f\x92\xa9').decode('utf-8'): 2}
+                ((b'A' * 128) + b'\xf0\x9f\x92\xa9').decode('utf-8'): 2}
         encoded = encode.field_table(data)
         decoded = decode.field_table(encoded)[1]
         self.assertIn(b'A' * 128, decoded)
