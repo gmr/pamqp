@@ -240,7 +240,7 @@ def short_str(value):
     """
     try:
         length = Struct.byte.unpack(value[0:1])[0]
-        return length + 1, _to_bytes(value[1:length + 1])
+        return length + 1, _to_str(value[1:length + 1])
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -404,20 +404,6 @@ def by_type(value, data_type, offset=0):
         return None
 
     raise ValueError('Unknown type "%s"' % value)
-
-
-def _to_bytes(value):
-    """Try and automatically return unicode when there is UTF-8 data
-    in them.
-
-    :param value: The value to try and decode to unicode
-    :type value: bytes or str or unicode
-    :rtype: bytes
-
-    """
-    if isinstance(value, bytes):
-        return value
-    return value.encode('utf-8')
 
 
 def _to_str(value):

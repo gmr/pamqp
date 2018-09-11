@@ -238,7 +238,7 @@ class CodecDecodeTests(unittest.TestCase):
         self.assertRaises(ValueError, decode.short_str, None)
 
     def test_decode_short_str_value(self):
-        self.assertEqual(decode.short_str(b'\n0123456789')[1], b'0123456789')
+        self.assertEqual(decode.short_str(b'\n0123456789')[1], '0123456789')
 
     def test_decode_timestamp_bytes_consumed(self):
         self.assertEqual(decode.timestamp(b'\x00\x00\x00\x00Ec)\x92')[0], 8)

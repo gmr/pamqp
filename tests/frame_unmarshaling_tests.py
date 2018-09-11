@@ -86,7 +86,7 @@ class DemarshalingTests(unittest.TestCase):
     def basic_cancel_test(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00\x1e\x07ctag1.0\x00'
                       b'\xce')
-        expectation = {'consumer_tag': b'ctag1.0',
+        expectation = {'consumer_tag': 'ctag1.0',
                        'nowait':  False}
 
         # Decode the frame and validate lengths
@@ -112,7 +112,7 @@ class DemarshalingTests(unittest.TestCase):
     def basic_cancelok_test(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x00<\x00\x1f\x07ctag1.0'
                       b'\xce')
-        expectation = {'consumer_tag':  b'ctag1.0'}
+        expectation = {'consumer_tag':  'ctag1.0'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -140,8 +140,8 @@ class DemarshalingTests(unittest.TestCase):
         expectation = {'exclusive':  False,
                        'nowait':  False,
                        'no_local':  False,
-                       'consumer_tag': b'ctag1.0',
-                       'queue':  b'test',
+                       'consumer_tag': 'ctag1.0',
+                       'queue':  'test',
                        'arguments':  {},
                        'ticket':  0,
                        'no_ack':  False}
@@ -169,7 +169,7 @@ class DemarshalingTests(unittest.TestCase):
     def basic_consumeok_test(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x00<\x00\x15\x07ctag1.0'
                       b'\xce')
-        expectation = {'consumer_tag':  b'ctag1.0'}
+        expectation = {'consumer_tag':  'ctag1.0'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -195,11 +195,11 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x1b\x00<\x00<\x07ctag1.0'
                       b'\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x04test\xce')
 
-        expectation = {'consumer_tag': b'ctag1.0',
+        expectation = {'consumer_tag': 'ctag1.0',
                        'delivery_tag': 1,
                        'redelivered': False,
-                       'exchange': b'',
-                       'routing_key': b'test'}
+                       'exchange': '',
+                       'routing_key': 'test'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -223,7 +223,7 @@ class DemarshalingTests(unittest.TestCase):
     def basic_get_test(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x00<\x00F\x00\x00\x04'
                       b'test\x00\xce')
-        expectation = {'queue':  b'test', 'ticket':  0, 'no_ack':  False}
+        expectation = {'queue':  'test', 'ticket':  0, 'no_ack':  False}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -246,7 +246,7 @@ class DemarshalingTests(unittest.TestCase):
 
     def basic_getempty_test(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00<\x00H\x00\xce'
-        expectation = {'cluster_id':  b''}
+        expectation = {'cluster_id':  ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -272,9 +272,9 @@ class DemarshalingTests(unittest.TestCase):
                       b'\x00\x00\x00\x10\x00\x00\x04test\x00\x00\x12\x06\xce')
         expectation = {'message_count':  4614,
                        'redelivered':  False,
-                       'routing_key':  b'test',
+                       'routing_key':  'test',
                        'delivery_tag':  16,
-                       'exchange': b''}
+                       'exchange': ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -330,21 +330,21 @@ class DemarshalingTests(unittest.TestCase):
                               b'9feecda35660\x00\x00\x00\x00Pj\xb9\x07\x08uni'
                               b'ttest\x04pika\x18frame_unmarshaling_tests\x00')
         properties = {
-            'content_type': b'application/json',
-            'content_encoding':  b'gzip',
+            'content_type': 'application/json',
+            'content_encoding':  'gzip',
             'headers': {'foo': b'bar', 'baz': b'Test \xe2\x9c\x88'},
             'delivery_mode':  1,
             'priority':  0,
-            'correlation_id': b'a53045ef-f174-4621-9ff2-ac0b8fbe6e4a',
-            'reply_to': b'unmarshaling_tests',
-            'expiration': b'1345274026',
-            'message_id': b'746a1902-39dc-47cf-9471-9feecda35660',
+            'correlation_id': 'a53045ef-f174-4621-9ff2-ac0b8fbe6e4a',
+            'reply_to': 'unmarshaling_tests',
+            'expiration': '1345274026',
+            'message_id': '746a1902-39dc-47cf-9471-9feecda35660',
             'timestamp': time.struct_time((2012, 10, 2, 9, 51, 3,
                                            1, 276, 0)),
-            'message_type': b'unittest',
-            'user_id':   b'pika',
-            'app_id': b'frame_unmarshaling_tests',
-            'cluster_id': b''}
+            'message_type': 'unittest',
+            'user_id':   'pika',
+            'app_id': 'frame_unmarshaling_tests',
+            'cluster_id': ''}
 
         obj = header.ContentHeader()
         offset, flags = obj._get_flags(encoded_properties)
@@ -363,9 +363,9 @@ class DemarshalingTests(unittest.TestCase):
                       b'\x04test\x00\xce')
         expectation = {'ticket':  0,
                        'mandatory':  False,
-                       'routing_key':  b'test',
+                       'routing_key':  'test',
                        'immediate':  False,
-                       'exchange':  b''}
+                       'exchange':  ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -513,9 +513,9 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = (b'\x01\x00\x01\x00\x00\x00"\x00<\x002\x00\xc8\x0f'
                       b'Normal shutdown\x03foo\x07foo.bar\xce')
         expectation = {'reply_code':  200,
-                       'reply_text':  b'Normal shutdown',
-                       'routing_key': b'foo.bar',
-                       'exchange':  b'foo'}
+                       'reply_text':  'Normal shutdown',
+                       'routing_key': 'foo.bar',
+                       'exchange':  'foo'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -542,7 +542,7 @@ class DemarshalingTests(unittest.TestCase):
         expectation = {'class_id':  0,
                        'method_id':  0,
                        'reply_code':  200,
-                       'reply_text':  b'Normal shutdown'}
+                       'reply_text':  'Normal shutdown'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -634,7 +634,7 @@ class DemarshalingTests(unittest.TestCase):
 
     def channel_open_test(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00\x14\x00\n\x00\xce'
-        expectation = {'out_of_band':  b''}
+        expectation = {'out_of_band':  ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -729,7 +729,7 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x1a\x00\n\x002\x00\xc8\x0f'
                       b'Normal shutdown\x00\x00\x00\x00\xce')
         expectation = {'class_id':  0, 'method_id':  0, 'reply_code':  200,
-                       'reply_text':  b'Normal shutdown'}
+                       'reply_text':  'Normal shutdown'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -777,8 +777,8 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x08\x00\n\x00(\x01/\x00'
                       b'\x01\xce')
         expectation = {'insist':  True,
-                       'capabilities':  b'',
-                       'virtual_host':  b'/'}
+                       'capabilities':  '',
+                       'virtual_host':  '/'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -801,7 +801,7 @@ class DemarshalingTests(unittest.TestCase):
 
     def connection_openok_test(self):
         frame_data = b'\x01\x00\x00\x00\x00\x00\x05\x00\n\x00)\x00\xce'
-        expectation = {'known_hosts':  b''}
+        expectation = {'known_hosts':  ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -887,7 +887,7 @@ class DemarshalingTests(unittest.TestCase):
             'server_properties': {
                 'information': (b'Licensed under the MPL.  '
                                 b'See http://www.rabbitmq.com/'),
-                'product':  b'RabbitMQ',
+                'product': b'RabbitMQ',
                 'copyright': b'Copyright (C) 2007-2011 VMware, Inc.',
                 'capabilities': {
                     'exchange_exchange_bindings':  True,
@@ -933,8 +933,8 @@ class DemarshalingTests(unittest.TestCase):
                       b'http://pika.github.com\x05PLAIN\x00\x00'
                       b'\x00\x0c\x00guest\x00guest\x05en_US\xce')
         expectation = {
-            'locale': b'en_US',
-            'mechanism': b'PLAIN',
+            'locale': 'en_US',
+            'mechanism': 'PLAIN',
             'client_properties': {
                 'platform':  b'Python 2.7.1',
                 'product':  b'Pika Python Client Library',
@@ -1041,11 +1041,11 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x15\x00(\x00\x1e\x00\x00'
                       b'\x00\x00\x07foo.bar\x00\x00\x00\x00\x00\xce')
         expectation = {'arguments':  {},
-                       'source': b'',
+                       'source': '',
                        'ticket': 0,
-                       'destination': b'',
+                       'destination': '',
                        'nowait': False,
-                       'routing_key': b'foo.bar'}
+                       'routing_key': 'foo.bar'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -1093,13 +1093,13 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = (b'\x01\x00\x01\x00\x00\x00%\x00(\x00\n\x00\x00\x12pika_'
                       b'test_exchange\x06direct\x00\x00\x00\x00\x00\xce')
         expectation = {'nowait':  False,
-                       'exchange':  b'pika_test_exchange',
+                       'exchange':  'pika_test_exchange',
                        'durable':  False,
                        'passive':  False,
                        'internal':  False,
                        'arguments':  {},
                        'ticket':  0,
-                       'exchange_type':  b'direct',
+                       'exchange_type':  'direct',
                        'auto_delete':  False}
 
         # Decode the frame and validate lengths
@@ -1150,7 +1150,7 @@ class DemarshalingTests(unittest.TestCase):
         expectation = {'ticket':  0,
                        'if_unused':  False,
                        'nowait':  False,
-                       'exchange':  b'pika_test_exchange'}
+                       'exchange':  'pika_test_exchange'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -1198,11 +1198,11 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x15\x00(\x00(\x00\x00\x00'
                       b'\x00\x07foo.bar\x00\x00\x00\x00\x00\xce')
         expectation = {'arguments':  {},
-                       'source':  b'',
+                       'source':  '',
                        'ticket':  0,
-                       'destination':  b'',
+                       'destination':  '',
                        'nowait':  False,
-                       'routing_key':  b'foo.bar'}
+                       'routing_key':  'foo.bar'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -1252,9 +1252,9 @@ class DemarshalingTests(unittest.TestCase):
                       b'nge\x10test_routing_key\x00\x00\x00\x00\x00'
                       b'\xce')
         expectation = {'nowait':  False,
-                       'exchange':  b'pika_test_exchange',
-                       'routing_key':  b'test_routing_key',
-                       'queue':  b'pika_test_queue',
+                       'exchange':  'pika_test_exchange',
+                       'routing_key':  'test_routing_key',
+                       'queue':  'pika_test_queue',
                        'arguments':  {},
                        'ticket':  0}
 
@@ -1307,7 +1307,7 @@ class DemarshalingTests(unittest.TestCase):
                        'nowait':  False,
                        'exclusive':  False,
                        'durable':  True,
-                       'queue':  b'test',
+                       'queue':  'test',
                        'arguments':  {},
                        'ticket':  0,
                        'auto_delete':  False}
@@ -1334,7 +1334,7 @@ class DemarshalingTests(unittest.TestCase):
     def queue_declareok_test(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x11\x002\x00\x0b\x04test'
                       b'\x00\x00\x12\x07\x00\x00\x00\x00\xce')
-        expectation = {'queue':  b'test', 'message_count':  4615,
+        expectation = {'queue':  'test', 'message_count':  4615,
                        'consumer_count':  0}
 
         # Decode the frame and validate lengths
@@ -1359,7 +1359,7 @@ class DemarshalingTests(unittest.TestCase):
     def queue_delete_test(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x17\x002\x00(\x00\x00\x0f'
                       b'pika_test_queue\x00\xce')
-        expectation = {'queue':  b'pika_test_queue',
+        expectation = {'queue':  'pika_test_queue',
                        'ticket':  0,
                        'if_empty':  False,
                        'nowait':  False,
@@ -1411,7 +1411,7 @@ class DemarshalingTests(unittest.TestCase):
     def queue_purge_test(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x002\x00\x1e\x00\x00'
                       b'\x04test\x00\xce')
-        expectation = {'queue': b'test', 'ticket': 0,
+        expectation = {'queue': 'test', 'ticket': 0,
                        'nowait': False}
 
         # Decode the frame and validate lengths
@@ -1461,11 +1461,11 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = (b'\x01\x00\x01\x00\x00\x00>\x002\x002\x00\x00\x0f'
                       b'pika_test_queue\x12pika_test_exchange\x10test_routing'
                       b'_key\x00\x00\x00\x00\xce')
-        expectation = {'queue':  b'pika_test_queue',
+        expectation = {'queue':  'pika_test_queue',
                        'arguments':  {},
                        'ticket':  0,
-                       'routing_key':  b'test_routing_key',
-                       'exchange':  b'pika_test_exchange'}
+                       'routing_key':  'test_routing_key',
+                       'exchange':  'pika_test_exchange'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
