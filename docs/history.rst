@@ -1,8 +1,8 @@
 Version History
 ===============
 
-1.7.0 - released *2018-09-11*
------------------------------
+1.7.0 (2018-09-11)
+------------------
 - Fix range for signed short integer
 - Add support for unsigned short integer and long integer in field tables  (#10)
 - Fix guards for usage of unsigned short usage in `pamqp.encode` (#7)
@@ -10,12 +10,12 @@ Version History
 - Combine test coverage across all Python versions
 - Change Python versions supported to 2.7 and 3.4+
 
-1.6.1 - released *2015-02-05*
------------------------------
+1.6.1 (2015-02-05)
+------------------
 - Fix the encoding guard for unsigned short integers to be 65535 [rabbitpy #62]
 
-1.6.0 - released *2014-12-12*
------------------------------
+1.6.0 (2014-12-12)
+------------------
 - Remove UTF-8 encoding from byte_array (#2)
 - Fix AMQP Field Tables / `Basic.Properties` headers behavior:
     - Field names per spec should not exceed 128 bytes
@@ -31,8 +31,8 @@ Version History
 - `PropertiesBase` no longer checks to see if an attribute is set for contains
 - Adds new specification tests
 
-1.5.0 - released *2014-11-05*
------------------------------
+1.5.0 (2014-11-05)
+------------------
 - Cleanup how UTF-8 is handled in decoding strings
 - Ensure that field tables (headers property, etc) can use keys with utf-8 data
 - Address missing and mis-aligned AMQP-0-9-1 field table decoding with the field type indicators from the RabbitMQ protocol errata page
@@ -41,8 +41,8 @@ Version History
 - Update the tests to reflect the unicode changes
 - Clean up the tests
 
-1.4.0 - released *2014-11-04*
------------------------------
+1.4.0 (2014-11-04)
+------------------
 - Fix a long standing bug for non-specified responses for RabbitMQ AMQP extensions
 - Refactor adding bytearrays and recoding complexity
 - Add bytearray support (#1 and gmr/rabbitpy#48)
@@ -60,56 +60,56 @@ Version History
     - Update supported python versions
     - Update classifiers
 
-1.3.1 - released *2014-02-14*
------------------------------
+1.3.1 (2014-02-14)
+------------------
 - Fix encoding of long-long-integers
 
-1.3.0 - released *2014-01-17*
------------------------------
+1.3.0 (2014-01-17)
+------------------
 - Remove support for short strings in field tables
 
-1.2.4 - released *2013-12-22*
------------------------------
+1.2.4 (2013-12-22)
+------------------
 - Add short-short-int support
 
-1.2.3 - released *2013-12-22*
------------------------------
+1.2.3 (2013-12-22)
+------------------
 - Fix distribution requirements
 
-1.2.2 - released *2013-12-22*
------------------------------
+1.2.2 (2013-12-22)
+------------------
 - Add decimal data type support
 
-1.2.1 - released *2013-07-29*
------------------------------
+1.2.1 (2013-07-29)
+------------------
 - Fix Confirm.Select definition
 
-1.2.0 - released *2013-07-08*
------------------------------
+1.2.0 (2013-07-08)
+------------------
 - Add support for Connection.Blocked, Connection.Unblocked
 - Add documentation to specification.py in the codegen process
 
-1.1.3 - released *2013-03-27*
------------------------------
+1.1.3 (2013-03-27)
+------------------
 - Fix exception creation
 
-1.1.2 - released *2013-03-27*
------------------------------
+1.1.2 (2013-03-27)
+------------------
 - Add Confirm.Select, Confirm.SelectOk
 
-1.1.1 - released *2013-03-22*
------------------------------
+1.1.1 (2013-03-22)
+------------------
 - Remove debugging print statements (eek)
 
-1.1.0 - released *2013-03-21*
------------------------------
+1.1.0 (2013-03-21)
+------------------
 - Add Python 3.3 support
 
-1.0.1 - released *2012-10-02*
------------------------------
+1.0.1 (2012-10-02)
+------------------
 - Address Unicode issues
 - Add void support in table arrays
 
-1.0.0 - released *2012-09-24*
------------------------------
+1.0.0 (2012-09-24)
+------------------
 - Initial version
