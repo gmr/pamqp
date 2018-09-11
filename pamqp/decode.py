@@ -410,17 +410,14 @@ def _to_bytes(value):
     """Try and automatically return unicode when there is UTF-8 data
     in them.
 
-    :param bytes value: The value to try and decode to unicode
-    :rtype: unicode or bytes or str
+    :param value: The value to try and decode to unicode
+    :type value: bytes or str or unicode
+    :rtype: bytes
 
     """
     if isinstance(value, bytes):
         return value
-    elif PYTHON3:
-        return value.encode('utf-8')
-    elif isinstance(value, unicode):
-        return value.encode('utf-8')
-    return value
+    return value.encode('utf-8')
 
 
 def _to_str(value):
