@@ -1,28 +1,33 @@
 sudo: false
 language: python
 
-env:
-  global:
-  - PATH=$HOME/.local/bin:$PATH
-  - AWS_DEFAULT_REGION=us-east-1
-  - secure: "HwRFY/PT2BkpcaxTpgvcZH7NVzFHB5bITEsdLNnAyyR1p6penesezg3VUnY5Bl91s4vP9sDFBZJC7AkAEOGTNAHJ0h1/2bEH3rQvi8WNnWFIjb5HbpZpfdHch+NO5kyEn7mUkcdyPpkI18JqlJLRcPKqNHpKqTuKt3FhrtfkfFs="
-  - secure: "cE93hguZtiygLXcYAL/twX9zd9ELLmCepUUocYnV9JUxwZJ8s6jj4PXTXShXVl6KNY4pRViKNROfm+l0HzCrfi3C6BiRHBKP0zccGWSYRceEQFmK1irb+idsdz74J1DHA3KF+LNYaSBTSk5eU8o45WOx5p+bJ8P8QMRnIsybTgY="
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
+  - pypy
+  - pypy3
 
-stages:
-- test
-- name: upload coverage
-- name: deploy
-  if: tag IS present
 
 matrix:
   include:
-  - python: 2.7
-  - python: 3.4
-  - python: 3.5
-  - python: 3.6
-  - python: 3.7
-    dist: xenial
-    sudo: true
+    - python: 3.7
+      dist: xenial
+      sudo: true
+
+env:
+  global:
+    - PATH=$HOME/.local/bin:$PATH
+    - AWS_DEFAULT_REGION=us-east-1
+    - secure: "HwRFY/PT2BkpcaxTpgvcZH7NVzFHB5bITEsdLNnAyyR1p6penesezg3VUnY5Bl91s4vP9sDFBZJC7AkAEOGTNAHJ0h1/2bEH3rQvi8WNnWFIjb5HbpZpfdHch+NO5kyEn7mUkcdyPpkI18JqlJLRcPKqNHpKqTuKt3FhrtfkfFs="
+    - secure: "cE93hguZtiygLXcYAL/twX9zd9ELLmCepUUocYnV9JUxwZJ8s6jj4PXTXShXVl6KNY4pRViKNROfm+l0HzCrfi3C6BiRHBKP0zccGWSYRceEQFmK1irb+idsdz74J1DHA3KF+LNYaSBTSk5eU8o45WOx5p+bJ8P8QMRnIsybTgY="
+
+stages:
+  - test
+  - name: upload coverage
+  - name: deploy
+    if: tag IS present
 
 jobs:
   include:
@@ -31,16 +36,16 @@ jobs:
       services: []
       python: 3.6
       install:
-      - pip install awscli coverage codecov
+        - pip install awscli coverage codecov
       script:
-      - mkdir coverage
-      - aws s3 cp --recursive s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/
-        coverage
-      - cd coverage
-      - coverage combine
-      - cd ..
-      - mv coverage/.coverage .
-      - coverage report
+        - mkdir coverage
+        - aws s3 cp --recursive s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/
+          coverage
+        - cd coverage
+        - coverage combine
+        - cd ..
+        - mv coverage/.coverage .
+        - coverage report
       after_success: codecov
     - stage: deploy
       if: repo = gmr/pamqp
@@ -60,9 +65,8 @@ jobs:
           secure: "HW5Ak3scfeQ1/qdXQYrmIVnpGex59qNSGN2WRoHSFMXLfsjzdBQccy2nxWAo7p6P1wgoZ/51lTamJXGKgVqqQGC3gfBiD+AVMu3CROQht+Q4x5xKKLXQtTBoEOpurnx7q0oXRxhK7qmMOek9qqn/GGrK5PJV+pGoPwCvSTF6aic="
 
 install:
-- pip install -r requirements.txt
-- pip install awscli coverage codecov
-
+  - pip install -r requirements.txt
+  - pip install awscli coverage
 script: nosetests
 after_success:
-- aws s3 cp .coverage "s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/.coverage.${TRAVIS_PYTHON_VERSION}"
+  - aws s3 cp .coverage "s3://com-gavinroy-travis/pamqp/$TRAVIS_BUILD_NUMBER/.coverage.${TRAVIS_PYTHON_VERSION}"
