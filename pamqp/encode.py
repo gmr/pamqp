@@ -158,12 +158,7 @@ def long_string(value):
     """
     if not isinstance(value, (bytes, str, unicode)):
         raise TypeError("bytes, str, or unicode required")
-    if PYTHON3:
-        if isinstance(value, str):
-            value = bytes(value, 'ascii')
-    else:
-        if isinstance(value, unicode):
-            value = value.encode('utf-8')
+    value = _utf8_encode(value)
     return struct.pack('>I', len(value)) + value
 
 
@@ -409,10 +404,8 @@ def by_type(value, data_type):
 
 
 def _utf8_encode(value):
-    if PYTHON3:
-        if not isinstance(value, bytes):
-            return bytes(value, 'utf-8')
-        return value
-    if isinstance(value, unicode):
+    if PYTHON3 and isinstance(value, bytes):
+        return value.encode('utf-8')
+    elif not PYTHON3 and isinstance(value, unicode):
         return value.encode('utf-8')
     return value
