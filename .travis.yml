@@ -20,6 +20,11 @@ jobs:
     - python: 3.4
     - python: 3.5
     - python: 3.6
+    - matrix:
+        include:
+        - python: 3.7
+          dist: xenial
+          sudo: true
     - python: pypy
     - python: pypy3
     - stage: upload coverage
@@ -37,6 +42,7 @@ jobs:
       - cd ..
       - mv coverage/.coverage .
       - coverage report
+      after_success: codecov
     - stage: deploy
       if: repo = gmr/pamqp
       python: 3.6
