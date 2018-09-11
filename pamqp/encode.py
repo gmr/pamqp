@@ -52,7 +52,7 @@ def byte_array(value):
     """
     if not isinstance(value, bytearray):
         raise TypeError("bytearray type required")
-    if PYTHON3:
+    elif PYTHON3:
         return struct.pack('>I', len(value)) + value
     return bytes(struct.pack('>I', len(value)) + value)
 
@@ -110,8 +110,7 @@ def long_int(value):
         raise TypeError("int type required")
     elif not isinstance(value, int) and not isinstance(value, long):
         raise TypeError("long type required")
-
-    if not (-2147483648 <= value <=  2147483647):
+    elif not (-2147483648 <= value <=  2147483647):
         raise TypeError("Long integer range: -2147483648 to 2147483647")
     return struct.pack('>l', value)
 
@@ -127,8 +126,7 @@ def long_uint(value):
         raise TypeError("int type required")
     elif not isinstance(value, int) and not isinstance(value, long):
         raise TypeError("long type required")
-
-    if not (0 <= value <= 4294967295):
+    elif not (0 <= value <= 4294967295):
         raise TypeError("Long unsigned-integer range: 0 to 4294967295")
     return struct.pack('>L', value)
 
@@ -144,7 +142,7 @@ def long_long_int(value):
         raise TypeError("int type required")
     elif not isinstance(value, long) and not isinstance(value, int):
         raise TypeError("int or long type required")
-    if not (-9223372036854775808 <= value <= 9223372036854775807):
+    elif not (-9223372036854775808 <= value <= 9223372036854775807):
         raise TypeError("long-long integer range: "
                         "-9223372036854775808 to 9223372036854775807")
     return struct.pack('>q', value)
@@ -190,9 +188,9 @@ def short_int(value):
     :raises: TypeError
 
     """
-    if not isinstance(value, int):
-        raise TypeError("int type required")
-    if not (-32768 <= value <= 32767):
+    if not isinstance(value, (int, long)):
+        raise TypeError("int or long type required")
+    elif not (-32768 <= value <= 32767):
         raise TypeError("Short integer range: -32678 to 32767")
     return struct.pack('>h', value)
 
@@ -207,7 +205,7 @@ def short_uint(value):
     """
     if not isinstance(value, int):
         raise TypeError("int type required")
-    if not (0 <= value <= 65535):
+    elif not (0 <= value <= 65535):
         raise TypeError("Short unsigned integer range: 0 to 65535")
     return struct.pack('>H', value)
 
@@ -273,7 +271,7 @@ def field_table(value):
     if not value:
         return struct.pack('>I', 0)
 
-    if not isinstance(value, dict):
+    elif not isinstance(value, dict):
         raise TypeError("dict type required, got %s" % type(value))
 
     # Iterate through all of the keys and encode the data into a table
