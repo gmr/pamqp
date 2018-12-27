@@ -5,9 +5,10 @@ Auto-generated AMQP Support Module
 WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 
 """
-__since__ = '2018-09-11'
+__since__ = '2018-12-27'
 
 import struct
+import warnings
 
 from pamqp import decode
 from pamqp import encode
@@ -2610,14 +2611,15 @@ class Basic(object):
 
             :param bool requeue: Requeue the message
 
-            :raises: DeprecationWarning
+            .. deprecated:: 0-9-1
+            This command is deprecated in AMQP 0-9-1
 
             """
             # Requeue the message
             self.requeue = requeue
 
             # This command is deprecated in AMQP 0-9-1
-            raise DeprecationWarning(DEPRECATION_WARNING)
+            warnings.warn(DEPRECATION_WARNING, category=DeprecationWarning)
 
     class Recover(Frame):
         """Redeliver unacknowledged messages

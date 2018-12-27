@@ -1,4 +1,5 @@
 import unittest
+import warnings
 
 from pamqp import specification
 
@@ -908,7 +909,14 @@ class AttributeInMethodTests(unittest.TestCase):
 
 class DeprecationWarningTests(unittest.TestCase):
     def test_basic_recoverasync_raises_deprecation_error(self):
-        self.assertRaises(DeprecationWarning, specification.Basic.RecoverAsync)
+        with warnings.catch_warnings(record=True) as warning:
+            warnings.simplefilter("always")
+            specification.Basic.RecoverAsync()
+            self.assertEqual(warning[0].category, DeprecationWarning)
+            self.assertEqual(
+                'This command is deprecated in AMQP 0-9-1',
+                 str(warning[0].message)
+            )
 
 
 class BasicPropertiesTests(unittest.TestCase):
