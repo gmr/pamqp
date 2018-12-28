@@ -463,7 +463,24 @@ class DemarshalingTests(unittest.TestCase):
 
     def test_basic_recoverasync(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00<\x00d\x00\xce'
-        self.assertRaises(DeprecationWarning, frame.unmarshal, frame_data)
+        expectation = {'requeue': False}
+
+        # Decode the frame and validate lengths
+        consumed, channel, frame_obj = frame.unmarshal(frame_data)
+        self.assertEqual(consumed, 13,
+                         'Bytes consumed did not match expectation: %i, %i' %
+                         (consumed, 13))
+
+        self.assertEqual(channel, 1,
+                         'Channel number did not match expectation: %i, %i' %
+                         (channel, 1))
+
+        # Validate the frame name
+        self.assertEqual(frame_obj.name, 'Basic.RecoverAsync',
+                         ('Frame was of wrong type, expected Basic.RecoverAsync, '
+                          'received %s' % frame_obj.name))
+
+        self.assertDictEqual(dict(frame_obj), expectation)
 
     def test_basic_recoverok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x04\x00<\x00o\xce'

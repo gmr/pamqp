@@ -321,6 +321,7 @@ WARNING: DO NOT EDIT. To Generate run tools/codegen.py
 __since__ = '%s'
 
 import struct
+import warnings
 
 from pamqp import decode
 from pamqp import encode
@@ -390,10 +391,12 @@ new_line()
 
 comment("Other constants")
 # Deprecation Warning
-DEPRECATION_WARNING = 'This command is deprecated in AMQP %s' % \
-                        ('-'.join([str(amqp['major-version']),
-                                   str(amqp['minor-version']),
-                                   str(amqp['revision'])]))
+
+AMQP_VERSION = ('-'.join([str(amqp['major-version']),
+           str(amqp['minor-version']),
+           str(amqp['revision'])]))
+DEPRECATION_WARNING = 'This command is deprecated in AMQP %s' % AMQP_VERSION
+
 new_line('DEPRECATION_WARNING = \'%s\'' % DEPRECATION_WARNING)
 new_line()
 
@@ -620,7 +623,8 @@ for class_name in class_list:
                method_xml[0].attrib['deprecated']:
                 deprecated = True
                 new_line()
-                new_line(':raises: DeprecationWarning', indent)
+                new_line('.. deprecated:: %s' % AMQP_VERSION, indent)
+                new_line(DEPRECATION_WARNING, indent)
             else:
                 deprecated = False
 
@@ -651,7 +655,8 @@ for class_name in class_list:
             # Check if we're deprecated and warn if so
             if deprecated:
                 comment(DEPRECATION_WARNING, indent)
-                new_line('raise DeprecationWarning(DEPRECATION_WARNING)', indent)
+                new_line('warnings.warn(DEPRECATION_WARNING,'
+                         ' category=DeprecationWarning)', indent)
                 new_line()
 
             # End of function
