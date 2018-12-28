@@ -1,6 +1,10 @@
 Version History
 ===============
 
+2.1.0 (2018-12-28)
+------------------
+- Change raising a DeprecationWarning exception to using warnings.warn for deprecated AMQP methods (#13 - `dzen <https://github.com/dzen>`_)
+
 2.0.0 (2018-09-11)
 ------------------
 - **Change Python versions supported to 2.7 and 3.4+**
