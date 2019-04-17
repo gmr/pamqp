@@ -362,8 +362,8 @@ class MarshalingTests(unittest.TestCase):
         )
 
         for cls, validator, value in cases:
-            with self.subTest("%r" % cls):
-                self.assertEqual(
-                    encode.table_integer(cls(value))[1:],
-                    validator(value)
-                )
+            self.assertEqual(
+                encode.table_integer(cls(value))[1:],
+                validator(value),
+                "Invalid value for %r" % cls,
+            )
