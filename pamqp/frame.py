@@ -48,7 +48,7 @@ def unmarshal(data_in):
         raise exceptions.UnmarshalingException(header.ProtocolHeader, error)
 
     # Decode the low level frame and break it into parts
-    frame_type, channel_id, frame_size = _frame_parts(data_in)
+    frame_type, channel_id, frame_size = frame_parts(data_in)
 
     # Heartbeats do not have frame length indicators
     if frame_type == specification.FRAME_HEARTBEAT and frame_size == 0:
@@ -180,7 +180,7 @@ def _unmarshal_body_frame(frame_data):
     return content_body
 
 
-def _frame_parts(data_in):
+def frame_parts(data_in):
     """Try and decode a low-level AMQP frame and return the parts of the frame.
 
     :param bytes data_in: Raw byte stream data
