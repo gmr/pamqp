@@ -235,7 +235,7 @@ def short_string(value):
 def timestamp(value):
     """Encode a datetime.datetime object or time.struct_time.
 
-    :param datetime.datetime or time.struct_time value value: Value to encode
+    :param datetime.datetime or time.struct_time or numeric value value: Value to encode
     :rtype: bytes
     :raises: TypeError
 
@@ -244,6 +244,8 @@ def timestamp(value):
         value = value.timetuple()
     if isinstance(value, time.struct_time):
         return struct.pack('>Q', calendar.timegm(value))
+    elif isinstance(value, (int, float)):
+        return struct.pack('>Q', value)
     raise TypeError('datetime.datetime or time.struct_time type required')
 
 
