@@ -14,6 +14,9 @@ import struct
 import time
 
 from pamqp import PYTHON3
+from pamqp.types import (
+    LongInt, LongLongInt, LongUInt, ShortInt, ShortUInt
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -316,16 +319,29 @@ def table_integer(value):
 
     """
     # Send the appropriately sized data value
-    if -32768 <= value <= 32767:
+    if type(value) in (int, long):
+        if ShortInt.validate(value):
+            value = ShortInt(value)
+        elif ShortUInt.validate(value):
+            value = ShortUInt(value)
+        elif LongInt.validate(value):
+            value = LongInt(value)
+        elif LongUInt.validate(value):
+            value = LongUInt(value)
+        elif LongLongInt.validate(value):
+            value = LongLongInt(value)
+
+    if isinstance(value, ShortInt):
         return b's' + short_int(value)
-    elif 0 <= value <= 65535:
+    elif isinstance(value, ShortUInt):
         return b'u' + short_uint(value)
-    elif -2147483648 < value < 2147483647:
+    elif isinstance(value, LongInt):
         return b'I' + long_int(value)
-    elif 0 <= value <= 4294967295:
+    elif isinstance(value, LongUInt):
         return b'i' + long_uint(value)
-    elif -9223372036854775808 < value < 9223372036854775807:
+    elif isinstance(value, LongLongInt):
         return b'l' + long_long_int(value)
+
     raise TypeError("Unsupported numeric value: %r" % value)
 
 

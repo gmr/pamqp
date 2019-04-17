@@ -11,6 +11,9 @@ import struct
 import time
 
 from pamqp import PYTHON3
+from pamqp.types import (
+    LongInt, LongLongInt, LongUInt, ShortInt, ShortUInt, ShortShortInt
+)
 
 
 class Struct(object):
@@ -126,7 +129,7 @@ def long_int(value):
 
     """
     try:
-        return 4, Struct.long.unpack(value[0:4])[0]
+        return 4, LongInt(Struct.long.unpack(value[0:4])[0])
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -140,7 +143,7 @@ def long_uint(value):
 
     """
     try:
-        return 4, Struct.ulong.unpack(value[0:4])[0]
+        return 4, LongUInt(Struct.ulong.unpack(value[0:4])[0])
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -154,7 +157,7 @@ def long_long_int(value):
 
     """
     try:
-        return 8, struct.unpack('>q', value[0:8])[0]
+        return 8, LongLongInt(struct.unpack('>q', value[0:8])[0])
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -197,7 +200,7 @@ def short_int(value):
 
     """
     try:
-        return 2, Struct.short.unpack_from(value[0:2])[0]
+        return 2, ShortInt(Struct.short.unpack_from(value[0:2])[0])
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -211,7 +214,7 @@ def short_uint(value):
 
     """
     try:
-        return 2, Struct.ushort.unpack_from(value[0:2])[0]
+        return 2, ShortUInt(Struct.ushort.unpack_from(value[0:2])[0])
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -225,7 +228,7 @@ def short_short_int(value):
 
     """
     try:
-        return 1, Struct.short_short.unpack_from(value[0:1])[0]
+        return 1, ShortShortInt(Struct.short_short.unpack_from(value[0:1])[0])
     except TypeError:
         raise ValueError('Could not unpack data')
 

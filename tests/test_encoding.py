@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 import unittest
 
-from pamqp import encode, PYTHON3
+from pamqp import encode, PYTHON3, types
 
 if PYTHON3:
     long = int
@@ -351,3 +351,19 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_by_type_error(self):
         self.assertRaises(TypeError, encode.by_type, 12345.12434, 'foo')
+
+    def test_explicit_table_integer(self):
+        cases = (
+            [types.ShortInt, encode.short_int, -120],
+            [types.ShortUInt, encode.short_uint, 120],
+            [types.LongInt, encode.long_int, 120],
+            [types.LongUInt, encode.long_uint, 120],
+            [types.LongLongInt, encode.long_long_int, -12345678],
+        )
+
+        for cls, validator, value in cases:
+            with self.subTest("%r" % cls):
+                self.assertEqual(
+                    encode.table_integer(cls(value))[1:],
+                    validator(value)
+                )
