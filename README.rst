@@ -18,6 +18,10 @@ Python Versions Supported
 -------------------------
 2.7, 3.4+
 
+Roadmap
+-------
+pamqp 3.0 will drop support for Python 2.7 and will be released after January 1st, 2020.
+
 Requirements
 ------------
 codegen (not required for use) requires lxml.
