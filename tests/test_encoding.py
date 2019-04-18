@@ -188,7 +188,7 @@ class MarshalingTests(unittest.TestCase):
                           {'key': encode.field_table})
 
     def test_encode_field_table(self):
-        expectation = (b'\x00\x00\x04\'\x08arrayvalA\x00\x00\x00\x06b\x01b'
+        expectation = (b"\x00\x00\x04'\x08arrayvalA\x00\x00\x00\x06b\x01b"
                        b'\x02b\x03\x07boolvalt\x01\tbytearrayx\x00\x00\x00'
                        b'\x03AAA\x06decvalD\x02\x00\x00\x01:\x07dictvalF\x00'
                        b'\x00\x00\x0c\x03fooS\x00\x00\x00\x03bar\x08floatval'
