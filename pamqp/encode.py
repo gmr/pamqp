@@ -244,7 +244,7 @@ def timestamp(value):
         value = value.timetuple()
     if isinstance(value, time.struct_time):
         return struct.pack('>Q', calendar.timegm(value))
-    elif isinstance(value, (int, float)):
+    elif isinstance(value, int):
         return struct.pack('>Q', value)
     raise TypeError('datetime.datetime or time.struct_time type required')
 
