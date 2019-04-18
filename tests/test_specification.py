@@ -1,5 +1,7 @@
-import unittest
-import warnings
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from pamqp import specification
 
@@ -46,7 +48,8 @@ class ArgumentTypeTests(unittest.TestCase):
         self.assertEqual(specification.Basic.Consume.type('nowait'), 'bit')
 
     def test_basic_consume_has_arguments(self):
-        self.assertEqual(specification.Basic.Consume.type('arguments'), 'table')
+        self.assertEqual(specification.Basic.Consume.type('arguments'),
+                         'table')
 
     def test_basic_consumeok_has_consumer_tag(self):
         self.assertEqual(specification.Basic.ConsumeOk.type('consumer_tag'),
@@ -61,7 +64,8 @@ class ArgumentTypeTests(unittest.TestCase):
                          'longlong')
 
     def test_basic_deliver_has_redelivered(self):
-        self.assertEqual(specification.Basic.Deliver.type('redelivered'), 'bit')
+        self.assertEqual(specification.Basic.Deliver.type('redelivered'),
+                         'bit')
 
     def test_basic_deliver_has_exchange(self):
         self.assertEqual(specification.Basic.Deliver.type('exchange'),
@@ -92,7 +96,8 @@ class ArgumentTypeTests(unittest.TestCase):
         self.assertEqual(specification.Basic.GetOk.type('redelivered'), 'bit')
 
     def test_basic_getok_has_exchange(self):
-        self.assertEqual(specification.Basic.GetOk.type('exchange'), 'shortstr')
+        self.assertEqual(specification.Basic.GetOk.type('exchange'),
+                         'shortstr')
 
     def test_basic_getok_has_routing_key(self):
         self.assertEqual(specification.Basic.GetOk.type('routing_key'),
@@ -154,7 +159,8 @@ class ArgumentTypeTests(unittest.TestCase):
         self.assertEqual(specification.Basic.Reject.type('requeue'), 'bit')
 
     def test_basic_return_has_reply_code(self):
-        self.assertEqual(specification.Basic.Return.type('reply_code'), 'short')
+        self.assertEqual(specification.Basic.Return.type('reply_code'),
+                         'short')
 
     def test_basic_return_has_reply_text(self):
         self.assertEqual(specification.Basic.Return.type('reply_text'),
@@ -180,7 +186,8 @@ class ArgumentTypeTests(unittest.TestCase):
         self.assertEqual(specification.Channel.Close.type('class_id'), 'short')
 
     def test_channel_close_has_method_id(self):
-        self.assertEqual(specification.Channel.Close.type('method_id'), 'short')
+        self.assertEqual(specification.Channel.Close.type('method_id'),
+                         'short')
 
     def test_channel_flow_has_active(self):
         self.assertEqual(specification.Channel.Flow.type('active'), 'bit')
@@ -264,7 +271,8 @@ class ArgumentTypeTests(unittest.TestCase):
 
     def test_connection_startok_has_client_properties(self):
         self.assertEqual(
-            specification.Connection.StartOk.type('client_properties'), 'table')
+            specification.Connection.StartOk.type('client_properties'),
+            'table')
 
     def test_connection_startok_has_mechanism(self):
         self.assertEqual(specification.Connection.StartOk.type('mechanism'),
@@ -310,7 +318,8 @@ class ArgumentTypeTests(unittest.TestCase):
                          'shortstr')
 
     def test_exchange_bind_has_source(self):
-        self.assertEqual(specification.Exchange.Bind.type('source'), 'shortstr')
+        self.assertEqual(specification.Exchange.Bind.type('source'),
+                         'shortstr')
 
     def test_exchange_bind_has_routing_key(self):
         self.assertEqual(specification.Exchange.Bind.type('routing_key'),
@@ -320,10 +329,12 @@ class ArgumentTypeTests(unittest.TestCase):
         self.assertEqual(specification.Exchange.Bind.type('nowait'), 'bit')
 
     def test_exchange_bind_has_arguments(self):
-        self.assertEqual(specification.Exchange.Bind.type('arguments'), 'table')
+        self.assertEqual(specification.Exchange.Bind.type('arguments'),
+                         'table')
 
     def test_exchange_declare_has_ticket(self):
-        self.assertEqual(specification.Exchange.Declare.type('ticket'), 'short')
+        self.assertEqual(specification.Exchange.Declare.type('ticket'),
+                         'short')
 
     def test_exchange_declare_has_exchange(self):
         self.assertEqual(specification.Exchange.Declare.type('exchange'),
@@ -344,7 +355,8 @@ class ArgumentTypeTests(unittest.TestCase):
                          'bit')
 
     def test_exchange_declare_has_internal(self):
-        self.assertEqual(specification.Exchange.Declare.type('internal'), 'bit')
+        self.assertEqual(specification.Exchange.Declare.type('internal'),
+                         'bit')
 
     def test_exchange_declare_has_nowait(self):
         self.assertEqual(specification.Exchange.Declare.type('nowait'), 'bit')
@@ -361,7 +373,8 @@ class ArgumentTypeTests(unittest.TestCase):
                          'shortstr')
 
     def test_exchange_delete_has_if_unused(self):
-        self.assertEqual(specification.Exchange.Delete.type('if_unused'), 'bit')
+        self.assertEqual(specification.Exchange.Delete.type('if_unused'),
+                         'bit')
 
     def test_exchange_delete_has_nowait(self):
         self.assertEqual(specification.Exchange.Delete.type('nowait'), 'bit')
@@ -423,13 +436,15 @@ class ArgumentTypeTests(unittest.TestCase):
         self.assertEqual(specification.Queue.Declare.type('exclusive'), 'bit')
 
     def test_queue_declare_has_auto_delete(self):
-        self.assertEqual(specification.Queue.Declare.type('auto_delete'), 'bit')
+        self.assertEqual(specification.Queue.Declare.type('auto_delete'),
+                         'bit')
 
     def test_queue_declare_has_nowait(self):
         self.assertEqual(specification.Queue.Declare.type('nowait'), 'bit')
 
     def test_queue_declare_has_arguments(self):
-        self.assertEqual(specification.Queue.Declare.type('arguments'), 'table')
+        self.assertEqual(specification.Queue.Declare.type('arguments'),
+                         'table')
 
     def test_queue_declareok_has_queue(self):
         self.assertEqual(specification.Queue.DeclareOk.type('queue'),
@@ -494,7 +509,6 @@ class ArgumentTypeTests(unittest.TestCase):
 
 
 class AttributeInMethodTests(unittest.TestCase):
-
     def test_basic_ack_has_delivery_tag(self):
         self.assertIn('delivery_tag', specification.Basic.Ack())
 
@@ -909,13 +923,8 @@ class AttributeInMethodTests(unittest.TestCase):
 
 class DeprecationWarningTests(unittest.TestCase):
     def test_basic_recoverasync_raises_deprecation_error(self):
-        with warnings.catch_warnings(record=True) as warning:
+        with self.assertWarns(DeprecationWarning):
             specification.Basic.RecoverAsync()
-            self.assertEqual(warning[0].category, DeprecationWarning)
-            self.assertEqual(
-                'This command is deprecated in AMQP 0-9-1',
-                str(warning[0].message)
-            )
 
 
 class BasicPropertiesTests(unittest.TestCase):
@@ -925,7 +934,8 @@ class BasicPropertiesTests(unittest.TestCase):
 
     def test_basic_properties_has_content_encoding(self):
         self.assertEqual(
-            specification.Basic.Properties.type('content_encoding'), 'shortstr')
+            specification.Basic.Properties.type('content_encoding'),
+            'shortstr')
 
     def test_basic_properties_has_headers(self):
         self.assertEqual(specification.Basic.Properties.type('headers'),
@@ -977,7 +987,6 @@ class BasicPropertiesTests(unittest.TestCase):
 
 
 class MethodAttributeLengthTests(unittest.TestCase):
-
     def test_basic_ack_attribute_count(self):
         self.assertEqual(len(specification.Basic.Ack()), 2)
 

@@ -7,8 +7,8 @@ Functions for encoding data of various types including field tables and arrays
 
 """
 import calendar
-import decimal as _decimal
 import datetime
+import decimal as _decimal
 import logging
 import struct
 import time
@@ -73,7 +73,7 @@ def decimal(value):
     if '.' in tmp:
         decimals = len(tmp.split('.')[-1])
         value = value.normalize()
-        raw = int(value * (_decimal.Decimal(10) ** decimals))
+        raw = int(value * (_decimal.Decimal(10)**decimals))
         return struct.pack('>Bi', decimals, raw)
     return struct.pack('>Bi', 0, int(value))
 
@@ -113,7 +113,7 @@ def long_int(value):
         raise TypeError('int type required')
     elif not isinstance(value, int) and not isinstance(value, long):
         raise TypeError('long type required')
-    elif not (-2147483648 <= value <=  2147483647):
+    elif not (-2147483648 <= value <= 2147483647):
         raise TypeError('Long integer range: -2147483648 to 2147483647')
     return struct.pack('>l', value)
 
@@ -146,8 +146,8 @@ def long_long_int(value):
     elif not isinstance(value, long) and not isinstance(value, int):
         raise TypeError('int or long type required')
     elif not (-9223372036854775808 <= value <= 9223372036854775807):
-        raise TypeError("long-long integer range: "
-                        "-9223372036854775808 to 9223372036854775807")
+        raise TypeError('long-long integer range: '
+                        '-9223372036854775808 to 9223372036854775807')
     return struct.pack('>q', value)
 
 
@@ -262,7 +262,7 @@ def field_array(value):
     if not isinstance(value, list):
         raise TypeError('list type required')
 
-    data = list()
+    data = []
     for item in value:
         data.append(encode_table_value(item))
 
@@ -283,10 +283,10 @@ def field_table(value):
         return struct.pack('>I', 0)
 
     elif not isinstance(value, dict):
-        raise TypeError("dict type required, got %s" % type(value))
+        raise TypeError('dict type required, got {}'.format(type(value)))
 
     # Iterate through all of the keys and encode the data into a table
-    data = list()
+    data = []
     for key, value in sorted(value.items()):
 
         # UTF-8 encode the key since it behaves like a short-string
@@ -303,7 +303,7 @@ def field_table(value):
         try:
             data.append(encode_table_value(value))
         except TypeError as err:
-            raise TypeError("%s error: %s" % (key, err))
+            raise TypeError('{} error: {}/'.format(key, err))
 
     # Join all of the data together as a string
     output = b''.join(data)
@@ -330,7 +330,7 @@ def table_integer(value):
         return b'i' + long_uint(value)
     elif -9223372036854775808 < value < 9223372036854775807:
         return b'l' + long_long_int(value)
-    raise TypeError("Unsupported numeric value: %r" % value)
+    raise TypeError('Unsupported numeric value: {}'.format(value))
 
 
 def encode_table_value(value):
@@ -360,8 +360,8 @@ def encode_table_value(value):
     elif not PYTHON3 and isinstance(value, (str, bytes, unicode)):
         result = b'S' + long_string(value)
 
-    elif (isinstance(value, datetime.datetime) or
-          isinstance(value, time.struct_time)):
+    elif (isinstance(value, datetime.datetime)
+          or isinstance(value, time.struct_time)):
         result = b'T' + timestamp(value)
 
     elif isinstance(value, dict):
@@ -377,7 +377,7 @@ def encode_table_value(value):
         result = b'V'
 
     else:
-        raise TypeError("Unknown type: %s (%r)" % (type(value), value))
+        raise TypeError('Unknown type: {} ({!r})'.format(type(value), value))
 
     # Return the encoded value
     return result
@@ -418,8 +418,7 @@ def by_type(value, data_type):
         return timestamp(value)
     elif data_type == 'void':
         return None
-    else:
-        raise TypeError("Unknown type: %s" % value)
+    raise TypeError('Unknown type: {}'.format(value))
 
 
 def _utf8_encode(value):

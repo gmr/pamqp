@@ -5,8 +5,7 @@ AMQP Heartbeat Frame, used to create new Heartbeat frames for sending to a peer
 """
 import struct
 
-from pamqp import specification
-from pamqp import PYTHON3
+from pamqp import PYTHON3, specification
 
 
 class Heartbeat(object):

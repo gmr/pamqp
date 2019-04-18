@@ -19,31 +19,40 @@ def _utf8_key(value):
     return value.decode('utf-8') if not PYTHON3 else value
 
 
-
 class CodecDecodeTests(unittest.TestCase):
     FIELD_ARR = (b'\x00\x00\x00@s\x00\x01I\x00\x00\xaf\xc8S\x00\x00'
                  b'\x00\x08Test \xe2\x9c\x88T\x00\x00\x00\x00Ec)\x92'
                  b'I\xbb\x9a\xca\x00D\x02\x00\x00\x01:f@H\xf5\xc3l'
                  b'\x00\x00\x00\x00\xc4e5\xffl\x80\x00\x00\x00\x00'
                  b'\x00\x00\x08')
-    FIELD_ARR_VALUE = [1, 45000, b'Test \xe2\x9c\x88',
-                       time.struct_time((2006, 11, 21, 16, 30, 10, 1, 325, 0)),
-                       -1147483648, decimal.Decimal('3.14'),
-                       3.14,
-                       3294967295,
-                       -9223372036854775800]
-    FIELD_TBL = (b'\x00\x00\x00\x9d\x08arrayvalA\x00\x00\x00\ts\x00\x01s\x00\x02s\x00\x03\x07boolvalt\x01\x06decvalD\x02\x00\x00\x01:\x07dictvalF\x00\x00\x00\r\x04f\xe2\x9c\x89S\x00\x00\x00\x03\xe2\x9c\x90\x08floatvalf@H\xf5\xc3\x06intvals\x00\x01\x07longvalI6e&U\x06strvalS\x00\x00\x00\x08Test \xe2\x9c\x88\x0ctimestampvalT\x00\x00\x00\x00Ec)\x92\x04\xf0\x9f\x90\xb0V')
-    FIELD_TBL_VALUE = {'intval': 1,
-                       'strval': b'Test \xe2\x9c\x88',
-                       'boolval': True,
-                       'timestampval': time.struct_time((2006, 11, 21, 16, 30,
-                                                         10, 1, 325, 0)),
-                       'decval': decimal.Decimal('3.14'),
-                       _utf8_key('🐰'): None,
-                       'floatval': 3.14,
-                       'longval': long(912598613),
-                       'dictval': {_utf8_key('f✉'): b'\xe2\x9c\x90'},
-                       'arrayval': [1, 2, 3]}
+    FIELD_ARR_VALUE = [
+        1, 45000, b'Test \xe2\x9c\x88',
+        time.struct_time((2006, 11, 21, 16, 30, 10, 1, 325, 0)), -1147483648,
+        decimal.Decimal('3.14'), 3.14, 3294967295, -9223372036854775800
+    ]
+    FIELD_TBL = (
+        b'\x00\x00\x00\x9d\x08arrayvalA\x00\x00\x00\ts\x00\x01s\x00\x02s\x00'
+        b'\x03\x07boolvalt\x01\x06decvalD\x02\x00\x00\x01:\x07dictvalF\x00'
+        b'\x00\x00\r\x04f\xe2\x9c\x89S\x00\x00\x00\x03\xe2\x9c\x90\x08'
+        b'floatvalf@H\xf5\xc3\x06intvals\x00\x01\x07longvalI6e&U\x06strvalS'
+        b'\x00\x00\x00\x08Test \xe2\x9c\x88\x0ctimestampvalT\x00\x00\x00'
+        b'\x00Ec)\x92\x04\xf0\x9f\x90\xb0V'
+    )
+    FIELD_TBL_VALUE = {
+        'intval': 1,
+        'strval': b'Test \xe2\x9c\x88',
+        'boolval': True,
+        'timestampval': time.struct_time(
+            (2006, 11, 21, 16, 30, 10, 1, 325, 0)),
+        'decval': decimal.Decimal('3.14'),
+        _utf8_key('🐰'): None,
+        'floatval': 3.14,
+        'longval': long(912598613),
+        'dictval': {
+            _utf8_key('f✉'): b'\xe2\x9c\x90'
+        },
+        'arrayval': [1, 2, 3]
+    }
 
     def test_decode_by_type_invalid_data_type(self):
         self.assertRaises(ValueError, decode.by_type, b'Z\x00', b'foobar')
@@ -165,8 +174,7 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_long_long_int_value(self):
         value = b'\x7f\xff\xff\xff\xff\xff\xff\xf8'
-        self.assertEqual(decode.long_long_int(value)[1],
-                         9223372036854775800)
+        self.assertEqual(decode.long_long_int(value)[1], 9223372036854775800)
 
     def test_decode_long_str_bytes_consumed(self):
         value = b'\x00\x00\x00\n0123456789'
@@ -177,10 +185,10 @@ class CodecDecodeTests(unittest.TestCase):
         self.assertIsInstance(decode.long_str(value)[1], basestring)
 
     def test_decode_long_str_data_type_unicode(self):
-        self.assertIsInstance(decode.long_str(b'\x00\x00\x00\x0c\xd8\xa7'
-                                              b'\xd8\xae\xd8\xaa\xd8\xa8'
-                                              b'\xd8\xa7\xd8\xb1')[1],
-                              bytes)
+        self.assertIsInstance(
+            decode.long_str(b'\x00\x00\x00\x0c\xd8\xa7'
+                            b'\xd8\xae\xd8\xaa\xd8\xa8'
+                            b'\xd8\xa7\xd8\xb1')[1], bytes)
 
     def test_decode_long_str_invalid_value(self):
         self.assertRaises(ValueError, decode.long_str, None)
@@ -244,20 +252,20 @@ class CodecDecodeTests(unittest.TestCase):
         self.assertEqual(decode.timestamp(b'\x00\x00\x00\x00Ec)\x92')[0], 8)
 
     def test_decode_timestamp_data_type(self):
-        self.assertIsInstance(decode.timestamp(b'\x00\x00\x00\x00Ec)\x92')[1],
-                              time.struct_time)
+        self.assertIsInstance(
+            decode.timestamp(b'\x00\x00\x00\x00Ec)\x92')[1], time.struct_time)
 
     def test_decode_timestamp_invalid_value(self):
         self.assertRaises(ValueError, decode.timestamp, None)
 
     def test_decode_timestamp_value(self):
-        self.assertEqual(decode.timestamp(b'\x00\x00\x00\x00Ec)\x92')[1],
-                         time.struct_time((2006, 11, 21,
-                                           16, 30, 10, 1, 325, 0)))
+        self.assertEqual(
+            decode.timestamp(b'\x00\x00\x00\x00Ec)\x92')[1],
+            time.struct_time((2006, 11, 21, 16, 30, 10, 1, 325, 0)))
 
     def test_decode_field_array_bytes_consumed(self):
-        self.assertEqual(decode.field_array(self.FIELD_ARR)[0],
-                         len(self.FIELD_ARR))
+        self.assertEqual(
+            decode.field_array(self.FIELD_ARR)[0], len(self.FIELD_ARR))
 
     def test_decode_field_array_data_type(self):
         self.assertIsInstance(decode.field_array(self.FIELD_ARR)[1], list)
@@ -269,20 +277,19 @@ class CodecDecodeTests(unittest.TestCase):
         value = decode.field_array(self.FIELD_ARR)[1]
         for position in range(0, len(value)):
             if isinstance(value[position], float):
-                self.assertAlmostEqual(round(value[position], 3),
-                                       round(self.FIELD_ARR_VALUE[position],
-                                             3))
+                self.assertAlmostEqual(
+                    round(value[position], 3),
+                    round(self.FIELD_ARR_VALUE[position], 3))
             else:
                 self.assertEqual(value[position],
                                  self.FIELD_ARR_VALUE[position])
 
     def test_decode_field_table_bytes_consumed(self):
-        self.assertEqual(decode.field_table(self.FIELD_TBL)[0],
-                         len(self.FIELD_TBL))
+        self.assertEqual(
+            decode.field_table(self.FIELD_TBL)[0], len(self.FIELD_TBL))
 
     def test_decode_field_table_data_type(self):
-        self.assertIsInstance(
-            decode.field_table(self.FIELD_TBL)[1], dict)
+        self.assertIsInstance(decode.field_table(self.FIELD_TBL)[1], dict)
 
     def test_decode_field_table_invalid_value(self):
         self.assertRaises(ValueError, decode.field_table, None)
@@ -332,35 +339,34 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_by_type_byte_array_data_type(self):
         value = b'\x00\x00\x00\t123456789'
-        self.assertIsInstance(decode.by_type(value, 'byte_array')[1],
-                              bytearray)
+        self.assertIsInstance(
+            decode.by_type(value, 'byte_array')[1], bytearray)
 
     def test_decode_by_type_byte_array_value(self):
         value = b'\x00\x00\x00\t123456789'
-        self.assertEqual(decode.by_type(value, 'byte_array')[1],
-                         bytearray(b'123456789'))
+        self.assertEqual(
+            decode.by_type(value, 'byte_array')[1], bytearray(b'123456789'))
 
     def test_decode_by_type_decimal_bytes_consumed(self):
         value = b'\x05\x00\x04\xcb/'
         self.assertEqual(decode.by_type(value, 'decimal')[0], len(value))
 
     def test_decode_by_type_decimal_data_type(self):
-        self.assertIsInstance(decode.by_type(b'\x05\x00\x04\xcb/',
-                                             'decimal')[1],
-                              decimal.Decimal)
+        self.assertIsInstance(
+            decode.by_type(b'\x05\x00\x04\xcb/', 'decimal')[1],
+            decimal.Decimal)
 
     def test_decode_by_type_decimal_value(self):
-        self.assertEqual(round(float(decode.by_type(b'\x05\x00\x04\xcb/',
-                                                    'decimal')[1]), 5),
-                         round(float(decimal.Decimal('3.14159')), 5))
+        self.assertEqual(
+            round(float(decode.by_type(b'\x05\x00\x04\xcb/', 'decimal')[1]),
+                  5), round(float(decimal.Decimal('3.14159')), 5))
 
     def test_decode_by_type_decimal_invalid_value(self):
         self.assertRaises(ValueError, decode.by_type, False, 'decimal')
 
     def test_decode_by_type_double_data_type(self):
         value = b'C\x0f\xd8\x91\x14\xb9\xc3\x98'
-        self.assertIsInstance(decode.by_type(value, 'double')[1],
-                              float)
+        self.assertIsInstance(decode.by_type(value, 'double')[1], float)
 
     def test_decode_by_type_double_bytes_consumed(self):
         value = b'C\x0f\xd8\x91\x14\xb9\xc3\x98'
@@ -368,12 +374,11 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_by_type_double_value(self):
         value = b'C\x0f\xd8\x91\x14\xb9\xc3\x98'
-        self.assertEqual(decode.by_type(value, 'double')[1],
-                         1120480238450803.0)
+        self.assertEqual(
+            decode.by_type(value, 'double')[1], 1120480238450803.0)
 
     def test_decode_by_type_floating_point_data_type(self):
-        self.assertIsInstance(decode.by_type(b'@I\x0f\xd0', 'float')[1],
-                              float)
+        self.assertIsInstance(decode.by_type(b'@I\x0f\xd0', 'float')[1], float)
 
     def test_decode_by_type_float_bytes_consumed(self):
         self.assertEqual(decode.by_type(b'@I\x0f\xd0', 'float')[0], 4)
@@ -420,8 +425,8 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_by_type_long_long_value(self):
         value = b'\x7f\xff\xff\xff\xff\xff\xff\xf8'
-        self.assertEqual(decode.by_type(value, 'longlong')[1],
-                         9223372036854775800)
+        self.assertEqual(
+            decode.by_type(value, 'longlong')[1], 9223372036854775800)
 
     def test_decode_by_type_longstr_bytes_consumed(self):
         value = b'\x00\x00\x00\n0123456789'
@@ -475,28 +480,27 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_by_type_timestamp_data_type(self):
         value = b'\x00\x00\x00\x00Ec)\x92'
-        self.assertIsInstance(decode.by_type(value, 'timestamp')[1],
-                              time.struct_time)
+        self.assertIsInstance(
+            decode.by_type(value, 'timestamp')[1], time.struct_time)
 
     def test_decode_by_type_timestamp_invalid_value(self):
         self.assertRaises(ValueError, decode.by_type, None, 'timestamp')
 
     def test_decode_by_type_timestamp_value(self):
         value = b'\x00\x00\x00\x00Ec)\x92'
-        self.assertEqual(decode.by_type(value, 'timestamp')[1],
-                         time.struct_time((2006, 11, 21,
-                                           16, 30, 10, 1, 325, 0)))
+        self.assertEqual(
+            decode.by_type(value, 'timestamp')[1],
+            time.struct_time((2006, 11, 21, 16, 30, 10, 1, 325, 0)))
 
     def test_decode_by_type_void(self):
         self.assertIsNone(decode.by_type(b'', 'void'))
 
     def test_decode_by_type_field_array_bytes_consumed(self):
-        self.assertEqual(decode.by_type(self.FIELD_ARR, 'array')[0],
-                         len(self.FIELD_ARR))
+        self.assertEqual(
+            decode.by_type(self.FIELD_ARR, 'array')[0], len(self.FIELD_ARR))
 
     def test_decode_by_type_field_array_data_type(self):
-        self.assertIsInstance(decode.by_type(self.FIELD_ARR,
-                                             'array')[1], list)
+        self.assertIsInstance(decode.by_type(self.FIELD_ARR, 'array')[1], list)
 
     def test_decode_by_type_field_array_invalid_value(self):
         self.assertRaises(ValueError, decode.by_type, None, 'array')
@@ -505,20 +509,19 @@ class CodecDecodeTests(unittest.TestCase):
         value = decode.by_type(self.FIELD_ARR, 'array')[1]
         for position in range(0, len(value)):
             if isinstance(value[position], float):
-                self.assertAlmostEqual(round(value[position], 3),
-                                       round(self.FIELD_ARR_VALUE[position],
-                                             3))
+                self.assertAlmostEqual(
+                    round(value[position], 3),
+                    round(self.FIELD_ARR_VALUE[position], 3))
             else:
                 self.assertEqual(value[position],
                                  self.FIELD_ARR_VALUE[position])
 
     def test_decode_by_type_field_table_bytes_consumed(self):
-        self.assertEqual(decode.by_type(self.FIELD_TBL, 'table')[0],
-                         len(self.FIELD_TBL))
+        self.assertEqual(
+            decode.by_type(self.FIELD_TBL, 'table')[0], len(self.FIELD_TBL))
 
     def test_decode_by_type_field_table_data_type(self):
-        self.assertIsInstance(decode.by_type(self.FIELD_TBL,
-                                             'table')[1], dict)
+        self.assertIsInstance(decode.by_type(self.FIELD_TBL, 'table')[1], dict)
 
     def test_decode_by_type_field_table_invalid_value(self):
         self.assertRaises(ValueError, decode.by_type, None, 'table')
@@ -544,8 +547,8 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_embedded_value_decimal_data_type(self):
         value = b'D\x05\x00\x04\xcb/'
-        self.assertIsInstance(decode._embedded_value(value)[1],
-                              decimal.Decimal)
+        self.assertIsInstance(
+            decode._embedded_value(value)[1], decimal.Decimal)
 
     def test_decode_embedded_value_decimal_value(self):
         value = b'D\x05\x00\x04\xcb/'
@@ -558,13 +561,11 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_embedded_value_double_data_type(self):
         value = b'dC\x0f\xd8\x91\x14\xb9\xc3\x98'
-        self.assertIsInstance(decode._embedded_value(value)[1],
-                              float)
+        self.assertIsInstance(decode._embedded_value(value)[1], float)
 
     def test_decode_embedded_value_double_value(self):
         value = b'dC\x0f\xd8\x91\x14\xb9\xc3\x98'
-        self.assertEqual(decode._embedded_value(value)[1],
-                         1120480238450803.0)
+        self.assertEqual(decode._embedded_value(value)[1], 1120480238450803.0)
 
     def test_decode_embedded_value_long_bytes_consumed(self):
         value = b'I\x7f\xff\xff\xff'
@@ -606,8 +607,7 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_embedded_value_long_long_value(self):
         value = b'l\x7f\xff\xff\xff\xff\xff\xff\xf8'
-        self.assertEqual(decode._embedded_value(value)[1],
-                         9223372036854775800)
+        self.assertEqual(decode._embedded_value(value)[1], 9223372036854775800)
 
     def test_decode_embedded_value_longstr_bytes_consumed(self):
         value = b'S\x00\x00\x00\n0123456789'
@@ -616,13 +616,12 @@ class CodecDecodeTests(unittest.TestCase):
     def test_decode_embedded_value_longstr_data_type(self):
         value = b'S\x00\x00\x00\n0123456789'
         expectation = bytes if PYTHON3 else str
-        self.assertIsInstance(decode._embedded_value(value)[1],
-                              expectation)
+        self.assertIsInstance(decode._embedded_value(value)[1], expectation)
 
     def test_decode_embedded_value_byte_array_data(self):
         value = b'x\x00\x00\x00\x03ABC'
-        self.assertEqual(decode._embedded_value(value)[1],
-                         bytearray([65, 66, 67]))
+        self.assertEqual(
+            decode._embedded_value(value)[1], bytearray([65, 66, 67]))
 
     def test_decode_embedded_value_byte_array_data_type(self):
         value = b'x\x00\x00\x00\x03ABC'
@@ -669,42 +668,43 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_embedded_value_timestamp_data_type(self):
         value = b'T\x00\x00\x00\x00Ec)\x92'
-        self.assertIsInstance(decode._embedded_value(value)[1],
-                              time.struct_time)
+        self.assertIsInstance(
+            decode._embedded_value(value)[1], time.struct_time)
 
     def test_decode_embedded_value_timestamp_value(self):
         value = b'T\x00\x00\x00\x00Ec)\x92'
-        self.assertEqual(decode._embedded_value(value)[1],
-                         time.struct_time((2006, 11, 21, 16, 30, 10, 1,
-                                           325, 0)))
+        self.assertEqual(
+            decode._embedded_value(value)[1],
+            time.struct_time((2006, 11, 21, 16, 30, 10, 1, 325, 0)))
 
     def test_decode_embedded_value_field_array_bytes_consumed(self):
-        self.assertEqual(decode._embedded_value(b'A' +
-                                                self.FIELD_ARR)[0],
-                         len(b'A' + self.FIELD_ARR))
+        self.assertEqual(
+            decode._embedded_value(b'A' + self.FIELD_ARR)[0],
+            len(b'A' + self.FIELD_ARR))
 
     def test_decode_embedded_value_field_array_data_type(self):
-        self.assertIsInstance(decode._embedded_value(b'A' +
-                              self.FIELD_ARR)[1], list)
+        self.assertIsInstance(
+            decode._embedded_value(b'A' + self.FIELD_ARR)[1], list)
 
     def test_decode_embedded_value_field_array_value(self):
         value = decode._embedded_value(b'A' + self.FIELD_ARR)[1]
         for position in range(0, len(value)):
             if isinstance(value[position], float):
-                self.assertAlmostEqual(round(value[position], 3),
-                                       round(self.FIELD_ARR_VALUE[position],
-                                             3))
+                self.assertAlmostEqual(
+                    round(value[position], 3),
+                    round(self.FIELD_ARR_VALUE[position], 3))
             else:
                 self.assertEqual(value[position],
                                  self.FIELD_ARR_VALUE[position])
 
     def test_decode_embedded_value_field_table_bytes_consumed(self):
-        self.assertEqual(decode._embedded_value(b'F' + self.FIELD_TBL)[0],
-                         len(b'F' + self.FIELD_TBL))
+        self.assertEqual(
+            decode._embedded_value(b'F' + self.FIELD_TBL)[0],
+            len(b'F' + self.FIELD_TBL))
 
     def test_decode_embedded_value_field_table_data_type(self):
-        self.assertIsInstance(decode._embedded_value(b'F' + self.FIELD_TBL)[1],
-                              dict)
+        self.assertIsInstance(
+            decode._embedded_value(b'F' + self.FIELD_TBL)[1], dict)
 
     def test_decode_embedded_value_field_table_value(self):
         value = decode._embedded_value(b'F' + self.FIELD_TBL)[1]

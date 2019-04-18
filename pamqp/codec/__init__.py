@@ -4,8 +4,8 @@ Deprecating the codec subpackage
 """
 import warnings
 
+from pamqp import decode, encode
+
 warnings.warn('Imports for decode/encode are no longer under codec',
               DeprecationWarning)
-
-from pamqp import decode
-from pamqp import encode
+__all__ = ['decode', 'encode']

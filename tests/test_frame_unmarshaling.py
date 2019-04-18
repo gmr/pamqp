@@ -2,7 +2,7 @@
 import time
 import unittest
 
-from pamqp import body, frame, header, specification, PYTHON3
+from pamqp import body, frame, header, PYTHON3, specification
 
 if PYTHON3:
     long = int
@@ -11,41 +11,39 @@ if PYTHON3:
 
 
 class DemarshalingTests(unittest.TestCase):
-
     def test_protocol_header(self):
         # Decode the frame and validate lengths
         frame_data = b'AMQP\x00\x00\t\x01'
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 8,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 8))
+        self.assertEqual(
+            consumed, 8,
+            'Bytes consumed did not match expectation: %i, %i' % (consumed, 8))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'ProtocolHeader',
                          ('Frame was of wrong type, expected ProtocolHeader, '
                           'received %s' % frame_obj.name))
 
-        self.assertEqual((frame_obj.major_version,
-                          frame_obj.minor_version,
-                          frame_obj.revision),
-                         (0, 9, 1), "Protocol version is incorrect")
+        self.assertEqual((frame_obj.major_version, frame_obj.minor_version,
+                          frame_obj.revision), (0, 9, 1),
+                         'Protocol version is incorrect')
 
     def test_heartbeat(self):
         frame_data = b'\x08\x00\x00\x00\x00\x00\x00\xce'
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 8,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 8))
+        self.assertEqual(
+            consumed, 8,
+            'Bytes consumed did not match expectation: %i, %i' % (consumed, 8))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Heartbeat',
@@ -55,18 +53,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_ack(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00P\x00\x00\x00\x00'
                       b'\x00\x00\x00\x01\x00\xce')
-        expectation = {'multiple':  False, 'delivery_tag':  1}
+        expectation = {'multiple': False, 'delivery_tag': 1}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 21,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 21))
+        self.assertEqual(
+            consumed, 21, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 21))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.Ack',
@@ -79,23 +77,21 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_cancel(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00\x1e\x07ctag1.0\x00'
                       b'\xce')
-        expectation = {'consumer_tag': 'ctag1.0',
-                       'nowait':  False}
+        expectation = {'consumer_tag': 'ctag1.0', 'nowait': False}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 21,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 21))
+        self.assertEqual(
+            consumed, 21, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 21))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
-        self.assertEqual(frame_obj.name,
-                         'Basic.Cancel',
+        self.assertEqual(frame_obj.name, 'Basic.Cancel',
                          ('Frame was of wrong type, expected Basic.Cancel, '
                           'received %s' % frame_obj.name))
 
@@ -105,22 +101,21 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_cancelok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x00<\x00\x1f\x07ctag1.0'
                       b'\xce')
-        expectation = {'consumer_tag':  'ctag1.0'}
+        expectation = {'consumer_tag': 'ctag1.0'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+        self.assertEqual(
+            consumed, 20, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 20))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
-        self.assertEqual(frame_obj.name,
-                         'Basic.CancelOk',
+        self.assertEqual(frame_obj.name, 'Basic.CancelOk',
                          ('Frame was of wrong type, expected Basic.CancelOk, '
                           'received %s' % frame_obj.name))
 
@@ -130,29 +125,30 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_consume(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x18\x00<\x00\x14\x00\x00\x04'
                       b'test\x07ctag1.0\x00\x00\x00\x00\x00\xce')
-        expectation = {'exclusive':  False,
-                       'nowait':  False,
-                       'no_local':  False,
-                       'consumer_tag': 'ctag1.0',
-                       'queue':  'test',
-                       'arguments':  {},
-                       'ticket':  0,
-                       'no_ack':  False}
+        expectation = {
+            'exclusive': False,
+            'nowait': False,
+            'no_local': False,
+            'consumer_tag': 'ctag1.0',
+            'queue': 'test',
+            'arguments': {},
+            'ticket': 0,
+            'no_ack': False
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 32,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 32))
+        self.assertEqual(
+            consumed, 32, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 32))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
-        self.assertEqual(frame_obj.name,
-                         'Basic.Consume',
+        self.assertEqual(frame_obj.name, 'Basic.Consume',
                          ('Frame was of wrong type, expected Basic.Consume, '
                           'received %s' % frame_obj.name))
 
@@ -162,22 +158,21 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_consumeok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x00<\x00\x15\x07ctag1.0'
                       b'\xce')
-        expectation = {'consumer_tag':  'ctag1.0'}
+        expectation = {'consumer_tag': 'ctag1.0'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+        self.assertEqual(
+            consumed, 20, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 20))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
-        self.assertEqual(frame_obj.name,
-                         'Basic.ConsumeOk',
+        self.assertEqual(frame_obj.name, 'Basic.ConsumeOk',
                          ('Frame was of wrong type, expected Basic.ConsumeOk, '
                           'received %s' % frame_obj.name))
 
@@ -188,22 +183,24 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x1b\x00<\x00<\x07ctag1.0'
                       b'\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x04test\xce')
 
-        expectation = {'consumer_tag': 'ctag1.0',
-                       'delivery_tag': 1,
-                       'redelivered': False,
-                       'exchange': '',
-                       'routing_key': 'test'}
+        expectation = {
+            'consumer_tag': 'ctag1.0',
+            'delivery_tag': 1,
+            'redelivered': False,
+            'exchange': '',
+            'routing_key': 'test'
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 35,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 35))
+        self.assertEqual(
+            consumed, 35, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 35))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.Deliver',
@@ -216,18 +213,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_get(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x00<\x00F\x00\x00\x04'
                       b'test\x00\xce')
-        expectation = {'queue':  'test', 'ticket':  0, 'no_ack':  False}
+        expectation = {'queue': 'test', 'ticket': 0, 'no_ack': False}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+        self.assertEqual(
+            consumed, 20, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 20))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.Get',
@@ -239,18 +236,18 @@ class DemarshalingTests(unittest.TestCase):
 
     def test_basic_getempty(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00<\x00H\x00\xce'
-        expectation = {'cluster_id':  ''}
+        expectation = {'cluster_id': ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 13,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 13))
+        self.assertEqual(
+            consumed, 13, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 13))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.GetEmpty',
@@ -263,27 +260,29 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_getok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x17\x00<\x00G\x00\x00\x00\x00'
                       b'\x00\x00\x00\x10\x00\x00\x04test\x00\x00\x12\x06\xce')
-        expectation = {'message_count':  4614,
-                       'redelivered':  False,
-                       'routing_key':  'test',
-                       'delivery_tag':  16,
-                       'exchange': ''}
+        expectation = {
+            'message_count': 4614,
+            'redelivered': False,
+            'routing_key': 'test',
+            'delivery_tag': 16,
+            'exchange': ''
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 31,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 31))
+        self.assertEqual(
+            consumed, 31, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 31))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.GetOk',
-                        ('Frame was of wrong type, expected Basic.GetOk, '
-                         'received %s' % frame_obj.name))
+                         ('Frame was of wrong type, expected Basic.GetOk, '
+                          'received %s' % frame_obj.name))
 
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
@@ -291,20 +290,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_nack(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00x\x00\x00\x00\x00'
                       b'\x00\x00\x00\x01\x00\xce')
-        expectation = {'requeue':  False,
-                       'multiple':  False,
-                       'delivery_tag':  1}
+        expectation = {'requeue': False, 'multiple': False, 'delivery_tag': 1}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 21,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 21))
+        self.assertEqual(
+            consumed, 21, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 21))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.Nack',
@@ -315,13 +312,12 @@ class DemarshalingTests(unittest.TestCase):
         self.assertDictEqual(dict(frame_obj), expectation)
 
     def test_content_header(self):
-        result = frame.unmarshal(
-            frame.marshal(header.ContentHeader(0, 100), 1))
+        result = frame.unmarshal(frame.marshal(header.ContentHeader(0, 100),
+                                               1))
         self.assertEqual(result[2].body_size, 100)
 
     def test_content_body(self):
-        result = frame.unmarshal(
-            frame.marshal(body.ContentBody(b'TEST'), 1))
+        result = frame.unmarshal(frame.marshal(body.ContentBody(b'TEST'), 1))
         self.assertEqual(len(result[2]), 4)
 
     def test_basic_properties(self):
@@ -334,20 +330,23 @@ class DemarshalingTests(unittest.TestCase):
                               b'ttest\x04pika\x18frame_unmarshaling_tests\x00')
         properties = {
             'content_type': 'application/json',
-            'content_encoding':  'gzip',
-            'headers': {'foo': b'bar', 'baz': b'Test \xe2\x9c\x88'},
-            'delivery_mode':  1,
-            'priority':  0,
+            'content_encoding': 'gzip',
+            'headers': {
+                'foo': b'bar',
+                'baz': b'Test \xe2\x9c\x88'
+            },
+            'delivery_mode': 1,
+            'priority': 0,
             'correlation_id': 'a53045ef-f174-4621-9ff2-ac0b8fbe6e4a',
             'reply_to': 'unmarshaling_tests',
             'expiration': '1345274026',
             'message_id': '746a1902-39dc-47cf-9471-9feecda35660',
-            'timestamp': time.struct_time((2012, 10, 2, 9, 51, 3,
-                                           1, 276, 0)),
+            'timestamp': time.struct_time((2012, 10, 2, 9, 51, 3, 1, 276, 0)),
             'message_type': 'unittest',
-            'user_id':   'pika',
+            'user_id': 'pika',
             'app_id': 'frame_unmarshaling_tests',
-            'cluster_id': ''}
+            'cluster_id': ''
+        }
 
         obj = header.ContentHeader()
         offset, flags = obj._get_flags(encoded_properties)
@@ -357,29 +356,32 @@ class DemarshalingTests(unittest.TestCase):
         obj.unmarshal(flags, encoded_properties[offset:])
 
         for key in properties:
-            self.assertEqual(getattr(obj, key), properties[key],
-                             '%r value of %r did not match expectation of %r' %
-                             (key, getattr(obj, key), properties[key]))
+            self.assertEqual(
+                getattr(obj, key), properties[key],
+                '%r value of %r did not match expectation of %r' %
+                (key, getattr(obj, key), properties[key]))
 
     def test_basic_publish(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00(\x00\x00\x00'
                       b'\x04test\x00\xce')
-        expectation = {'ticket':  0,
-                       'mandatory':  False,
-                       'routing_key':  'test',
-                       'immediate':  False,
-                       'exchange':  ''}
+        expectation = {
+            'ticket': 0,
+            'mandatory': False,
+            'routing_key': 'test',
+            'immediate': False,
+            'exchange': ''
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 21,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 21))
+        self.assertEqual(
+            consumed, 21, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 21))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.Publish',
@@ -392,20 +394,22 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_qos(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0b\x00<\x00\n\x00\x00\x00'
                       b'\x00\x00\x01\x00\xce')
-        expectation = {'prefetch_count':  1,
-                       'prefetch_size':  0,
-                       'global_':  False}
+        expectation = {
+            'prefetch_count': 1,
+            'prefetch_size': 0,
+            'global_': False
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 19,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 19))
+        self.assertEqual(
+            consumed, 19, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 19))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.Qos',
@@ -422,13 +426,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.QosOk',
@@ -440,18 +444,18 @@ class DemarshalingTests(unittest.TestCase):
 
     def test_basic_recover(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00<\x00n\x00\xce'
-        expectation = {'requeue':  False}
+        expectation = {'requeue': False}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 13,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 13))
+        self.assertEqual(
+            consumed, 13, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 13))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.Recover',
@@ -467,18 +471,19 @@ class DemarshalingTests(unittest.TestCase):
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
-        self.assertEqual(consumed, 13,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 13))
+        self.assertEqual(
+            consumed, 13, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 13))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
-        self.assertEqual(frame_obj.name, 'Basic.RecoverAsync',
-                         ('Frame was of wrong type, expected Basic.RecoverAsync, '
-                          'received %s' % frame_obj.name))
+        self.assertEqual(
+            frame_obj.name, 'Basic.RecoverAsync',
+            ('Frame was of wrong type, expected Basic.RecoverAsync, '
+             'received %s' % frame_obj.name))
 
         self.assertDictEqual(dict(frame_obj), expectation)
 
@@ -489,13 +494,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.RecoverOk',
@@ -508,18 +513,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_reject(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00Z\x00\x00\x00\x00'
                       b'\x00\x00\x00\x10\x01\xce')
-        expectation = {'requeue':  True, 'delivery_tag':  16}
+        expectation = {'requeue': True, 'delivery_tag': 16}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 21,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 21))
+        self.assertEqual(
+            consumed, 21, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 21))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.Reject',
@@ -532,21 +537,23 @@ class DemarshalingTests(unittest.TestCase):
     def test_basic_return(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00"\x00<\x002\x00\xc8\x0f'
                       b'Normal shutdown\x03foo\x07foo.bar\xce')
-        expectation = {'reply_code':  200,
-                       'reply_text':  'Normal shutdown',
-                       'routing_key': 'foo.bar',
-                       'exchange':  'foo'}
+        expectation = {
+            'reply_code': 200,
+            'reply_text': 'Normal shutdown',
+            'routing_key': 'foo.bar',
+            'exchange': 'foo'
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 42,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 42))
+        self.assertEqual(
+            consumed, 42, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 42))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Basic.Return',
@@ -559,21 +566,23 @@ class DemarshalingTests(unittest.TestCase):
     def test_channel_close(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x1a\x00\x14\x00(\x00\xc8\x0f'
                       b'Normal shutdown\x00\x00\x00\x00\xce')
-        expectation = {'class_id':  0,
-                       'method_id':  0,
-                       'reply_code':  200,
-                       'reply_text':  'Normal shutdown'}
+        expectation = {
+            'class_id': 0,
+            'method_id': 0,
+            'reply_code': 200,
+            'reply_text': 'Normal shutdown'
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 34,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 34))
+        self.assertEqual(
+            consumed, 34, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 34))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Channel.Close',
@@ -590,13 +599,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Channel.CloseOk',
@@ -608,18 +617,18 @@ class DemarshalingTests(unittest.TestCase):
 
     def test_channel_flow(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00\x14\x00\x14\x01\xce'
-        expectation = {'active':  True}
+        expectation = {'active': True}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 13,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 13))
+        self.assertEqual(
+            consumed, 13, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 13))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Channel.Flow',
@@ -631,18 +640,18 @@ class DemarshalingTests(unittest.TestCase):
 
     def test_channel_flowok(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00\x14\x00\x15\x01\xce'
-        expectation = {'active':  True}
+        expectation = {'active': True}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 13,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 13))
+        self.assertEqual(
+            consumed, 13, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 13))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Channel.FlowOk',
@@ -654,18 +663,18 @@ class DemarshalingTests(unittest.TestCase):
 
     def test_channel_open(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00\x14\x00\n\x00\xce'
-        expectation = {'out_of_band':  ''}
+        expectation = {'out_of_band': ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 13,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 13))
+        self.assertEqual(
+            consumed, 13, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 13))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Channel.Open',
@@ -678,18 +687,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_channel_openok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x08\x00\x14\x00\x0b\x00\x00'
                       b'\x00\x00\xce')
-        expectation = {'channel_id':  b''}
+        expectation = {'channel_id': b''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 16,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 16))
+        self.assertEqual(
+            consumed, 16, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 16))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Channel.OpenOk',
@@ -701,18 +710,18 @@ class DemarshalingTests(unittest.TestCase):
 
     def test_confirm_select(self):
         frame_data = b'\x01\x00\x01\x00\x00\x00\x05\x00U\x00\n\x00\xce'
-        expectation = {'nowait':  False}
+        expectation = {'nowait': False}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 13,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 13))
+        self.assertEqual(
+            consumed, 13, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 13))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Confirm.Select',
@@ -729,13 +738,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Confirm.SelectOk',
@@ -748,19 +757,23 @@ class DemarshalingTests(unittest.TestCase):
     def test_connection_close(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x1a\x00\n\x002\x00\xc8\x0f'
                       b'Normal shutdown\x00\x00\x00\x00\xce')
-        expectation = {'class_id':  0, 'method_id':  0, 'reply_code':  200,
-                       'reply_text':  'Normal shutdown'}
+        expectation = {
+            'class_id': 0,
+            'method_id': 0,
+            'reply_code': 200,
+            'reply_text': 'Normal shutdown'
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 34,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 34))
+        self.assertEqual(
+            consumed, 34, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 34))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Connection.Close',
@@ -777,13 +790,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Connection.CloseOk',
@@ -796,20 +809,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_connection_open(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x08\x00\n\x00(\x01/\x00'
                       b'\x01\xce')
-        expectation = {'insist':  True,
-                       'capabilities':  '',
-                       'virtual_host':  '/'}
+        expectation = {'insist': True, 'capabilities': '', 'virtual_host': '/'}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 16,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 16))
+        self.assertEqual(
+            consumed, 16, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 16))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Connection.Open',
@@ -821,18 +832,18 @@ class DemarshalingTests(unittest.TestCase):
 
     def test_connection_openok(self):
         frame_data = b'\x01\x00\x00\x00\x00\x00\x05\x00\n\x00)\x00\xce'
-        expectation = {'known_hosts':  ''}
+        expectation = {'known_hosts': ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 13,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 13))
+        self.assertEqual(
+            consumed, 13, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 13))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Connection.OpenOk',
@@ -845,18 +856,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_connection_secure(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x08\x00\n\x00\x14\x00\x00'
                       b'\x00\x00\xce')
-        expectation = {'challenge':  b''}
+        expectation = {'challenge': b''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 16,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 16))
+        self.assertEqual(
+            consumed, 16, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 16))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Connection.Secure',
@@ -869,18 +880,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_connection_secureok(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x08\x00\n\x00\x15\x00\x00'
                       b'\x00\x00\xce')
-        expectation = {'response':  b''}
+        expectation = {'response': b''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 16,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 16))
+        self.assertEqual(
+            consumed, 16, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 16))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Connection.SecureOk',
@@ -907,30 +918,37 @@ class DemarshalingTests(unittest.TestCase):
             'server_properties': {
                 'information': (b'Licensed under the MPL.  '
                                 b'See http://www.rabbitmq.com/'),
-                'product': b'RabbitMQ',
-                'copyright': b'Copyright (C) 2007-2011 VMware, Inc.',
+                'product':
+                b'RabbitMQ',
+                'copyright':
+                b'Copyright (C) 2007-2011 VMware, Inc.',
                 'capabilities': {
-                    'exchange_exchange_bindings':  True,
-                    'consumer_cancel_notify':  True,
-                    'publisher_confirms':  True,
-                    'basic.nack': True},
-                'platform': b'Erlang/OTP',
-                'version': b'2.6.1'},
+                    'exchange_exchange_bindings': True,
+                    'consumer_cancel_notify': True,
+                    'publisher_confirms': True,
+                    'basic.nack': True
+                },
+                'platform':
+                b'Erlang/OTP',
+                'version':
+                b'2.6.1'
+            },
             'version_minor': 9,
             'mechanisms': b'PLAIN AMQPLAIN',
             'locales': b'en_US',
-            'version_major':  0}
+            'version_major': 0
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 335,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 335))
+        self.assertEqual(
+            consumed, 335, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 335))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Connection.Start',
@@ -956,26 +974,29 @@ class DemarshalingTests(unittest.TestCase):
             'locale': 'en_US',
             'mechanism': 'PLAIN',
             'client_properties': {
-                'platform':  b'Python 2.7.1',
-                'product':  b'Pika Python Client Library',
-                'version':  b'0.9.6-pre0',
+                'platform': b'Python 2.7.1',
+                'product': b'Pika Python Client Library',
+                'version': b'0.9.6-pre0',
                 'capabilities': {
                     'consumer_cancel_notify': True,
-                    'publisher_confirms':  True,
-                    'basic.nack': True},
-                'information':  b'See http://pika.github.com'},
-            'response':  b'\x00guest\x00guest'}
+                    'publisher_confirms': True,
+                    'basic.nack': True
+                },
+                'information': b'See http://pika.github.com'
+            },
+            'response': b'\x00guest\x00guest'
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 252,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 252))
+        self.assertEqual(
+            consumed, 252, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 252))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Connection.StartOk',
@@ -988,20 +1009,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_connection_tune(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x0c\x00\n\x00\x1e\x00\x00'
                       b'\x00\x02\x00\x00\x00\x00\xce')
-        expectation = {'frame_max':  131072,
-                       'channel_max':  0,
-                       'heartbeat':  0}
+        expectation = {'frame_max': 131072, 'channel_max': 0, 'heartbeat': 0}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+        self.assertEqual(
+            consumed, 20, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 20))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Connection.Tune',
@@ -1014,20 +1033,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_connection_tuneok(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x0c\x00\n\x00\x1f\x00\x00'
                       b'\x00\x02\x00\x00\x00\x00\xce')
-        expectation = {'frame_max':  131072,
-                       'channel_max':  0,
-                       'heartbeat':  0}
+        expectation = {'frame_max': 131072, 'channel_max': 0, 'heartbeat': 0}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+        self.assertEqual(
+            consumed, 20, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 20))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Connection.TuneOk',
@@ -1046,13 +1063,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, data = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 42,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 42))
+        self.assertEqual(
+            consumed, 42, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 42))
 
-        self.assertEqual(channel, 0,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 0))
+        self.assertEqual(
+            channel, 0,
+            'Channel number did not match expectation: %i, %i' % (channel, 0))
 
         # Validate the unmarshaled data matches the expectation
         self.assertEqual(data.value, expectation)
@@ -1060,23 +1077,25 @@ class DemarshalingTests(unittest.TestCase):
     def test_exchange_bind(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x15\x00(\x00\x1e\x00\x00'
                       b'\x00\x00\x07foo.bar\x00\x00\x00\x00\x00\xce')
-        expectation = {'arguments':  {},
-                       'source': '',
-                       'ticket': 0,
-                       'destination': '',
-                       'nowait': False,
-                       'routing_key': 'foo.bar'}
+        expectation = {
+            'arguments': {},
+            'source': '',
+            'ticket': 0,
+            'destination': '',
+            'nowait': False,
+            'routing_key': 'foo.bar'
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 29,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 29))
+        self.assertEqual(
+            consumed, 29, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 29))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Exchange.Bind',
@@ -1093,13 +1112,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Exchange.BindOk',
@@ -1112,26 +1131,28 @@ class DemarshalingTests(unittest.TestCase):
     def test_exchange_declare(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00%\x00(\x00\n\x00\x00\x12pika_'
                       b'test_exchange\x06direct\x00\x00\x00\x00\x00\xce')
-        expectation = {'nowait':  False,
-                       'exchange':  'pika_test_exchange',
-                       'durable':  False,
-                       'passive':  False,
-                       'internal':  False,
-                       'arguments':  {},
-                       'ticket':  0,
-                       'exchange_type':  'direct',
-                       'auto_delete':  False}
+        expectation = {
+            'nowait': False,
+            'exchange': 'pika_test_exchange',
+            'durable': False,
+            'passive': False,
+            'internal': False,
+            'arguments': {},
+            'ticket': 0,
+            'exchange_type': 'direct',
+            'auto_delete': False
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 45,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 45))
+        self.assertEqual(
+            consumed, 45, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 45))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Exchange.Declare',
@@ -1148,13 +1169,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Exchange.DeclareOk',
@@ -1167,21 +1188,23 @@ class DemarshalingTests(unittest.TestCase):
     def test_exchange_delete(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x1a\x00(\x00\x14\x00\x00\x12'
                       b'pika_test_exchange\x00\xce')
-        expectation = {'ticket':  0,
-                       'if_unused':  False,
-                       'nowait':  False,
-                       'exchange':  'pika_test_exchange'}
+        expectation = {
+            'ticket': 0,
+            'if_unused': False,
+            'nowait': False,
+            'exchange': 'pika_test_exchange'
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 34,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 34))
+        self.assertEqual(
+            consumed, 34, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 34))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Exchange.Delete',
@@ -1198,13 +1221,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Exchange.DeleteOk',
@@ -1217,23 +1240,25 @@ class DemarshalingTests(unittest.TestCase):
     def test_exchange_unbind(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x15\x00(\x00(\x00\x00\x00'
                       b'\x00\x07foo.bar\x00\x00\x00\x00\x00\xce')
-        expectation = {'arguments':  {},
-                       'source':  '',
-                       'ticket':  0,
-                       'destination':  '',
-                       'nowait':  False,
-                       'routing_key':  'foo.bar'}
+        expectation = {
+            'arguments': {},
+            'source': '',
+            'ticket': 0,
+            'destination': '',
+            'nowait': False,
+            'routing_key': 'foo.bar'
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 29,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 29))
+        self.assertEqual(
+            consumed, 29, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 29))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Exchange.Unbind',
@@ -1250,13 +1275,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Exchange.UnbindOk',
@@ -1271,23 +1296,25 @@ class DemarshalingTests(unittest.TestCase):
                       b'\x00\x0fpika_test_queue\x12pika_test_excha'
                       b'nge\x10test_routing_key\x00\x00\x00\x00\x00'
                       b'\xce')
-        expectation = {'nowait':  False,
-                       'exchange':  'pika_test_exchange',
-                       'routing_key':  'test_routing_key',
-                       'queue':  'pika_test_queue',
-                       'arguments':  {},
-                       'ticket':  0}
+        expectation = {
+            'nowait': False,
+            'exchange': 'pika_test_exchange',
+            'routing_key': 'test_routing_key',
+            'queue': 'pika_test_queue',
+            'arguments': {},
+            'ticket': 0
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 71,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 71))
+        self.assertEqual(
+            consumed, 71, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 71))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.Bind',
@@ -1304,13 +1331,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.BindOk',
@@ -1323,25 +1350,27 @@ class DemarshalingTests(unittest.TestCase):
     def test_queue_declare(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x10\x002\x00\n\x00\x00\x04'
                       b'test\x02\x00\x00\x00\x00\xce')
-        expectation = {'passive':  False,
-                       'nowait':  False,
-                       'exclusive':  False,
-                       'durable':  True,
-                       'queue':  'test',
-                       'arguments':  {},
-                       'ticket':  0,
-                       'auto_delete':  False}
+        expectation = {
+            'passive': False,
+            'nowait': False,
+            'exclusive': False,
+            'durable': True,
+            'queue': 'test',
+            'arguments': {},
+            'ticket': 0,
+            'auto_delete': False
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 24,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 24))
+        self.assertEqual(
+            consumed, 24, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 24))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.Declare',
@@ -1354,19 +1383,22 @@ class DemarshalingTests(unittest.TestCase):
     def test_queue_declareok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x11\x002\x00\x0b\x04test'
                       b'\x00\x00\x12\x07\x00\x00\x00\x00\xce')
-        expectation = {'queue':  'test', 'message_count':  4615,
-                       'consumer_count':  0}
+        expectation = {
+            'queue': 'test',
+            'message_count': 4615,
+            'consumer_count': 0
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 25,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 25))
+        self.assertEqual(
+            consumed, 25, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 25))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.DeclareOk',
@@ -1379,22 +1411,24 @@ class DemarshalingTests(unittest.TestCase):
     def test_queue_delete(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x17\x002\x00(\x00\x00\x0f'
                       b'pika_test_queue\x00\xce')
-        expectation = {'queue':  'pika_test_queue',
-                       'ticket':  0,
-                       'if_empty':  False,
-                       'nowait':  False,
-                       'if_unused':  False}
+        expectation = {
+            'queue': 'pika_test_queue',
+            'ticket': 0,
+            'if_empty': False,
+            'nowait': False,
+            'if_unused': False
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 31,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 31))
+        self.assertEqual(
+            consumed, 31, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 31))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.Delete',
@@ -1407,18 +1441,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_queue_deleteok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x08\x002\x00)\x00\x00\x00'
                       b'\x00\xce')
-        expectation = {'message_count':  0}
+        expectation = {'message_count': 0}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 16,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 16))
+        self.assertEqual(
+            consumed, 16, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 16))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.DeleteOk',
@@ -1431,19 +1465,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_queue_purge(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x0c\x002\x00\x1e\x00\x00'
                       b'\x04test\x00\xce')
-        expectation = {'queue': 'test', 'ticket': 0,
-                       'nowait': False}
+        expectation = {'queue': 'test', 'ticket': 0, 'nowait': False}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 20,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 20))
+        self.assertEqual(
+            consumed, 20, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 20))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.Purge',
@@ -1456,18 +1489,18 @@ class DemarshalingTests(unittest.TestCase):
     def test_queue_purgeok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x08\x002\x00\x1f\x00\x00\x00'
                       b'\x01\xce')
-        expectation = {'message_count':  1}
+        expectation = {'message_count': 1}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 16,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 16))
+        self.assertEqual(
+            consumed, 16, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 16))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.PurgeOk',
@@ -1481,22 +1514,24 @@ class DemarshalingTests(unittest.TestCase):
         frame_data = (b'\x01\x00\x01\x00\x00\x00>\x002\x002\x00\x00\x0f'
                       b'pika_test_queue\x12pika_test_exchange\x10test_routing'
                       b'_key\x00\x00\x00\x00\xce')
-        expectation = {'queue':  'pika_test_queue',
-                       'arguments':  {},
-                       'ticket':  0,
-                       'routing_key':  'test_routing_key',
-                       'exchange':  'pika_test_exchange'}
+        expectation = {
+            'queue': 'pika_test_queue',
+            'arguments': {},
+            'ticket': 0,
+            'routing_key': 'test_routing_key',
+            'exchange': 'pika_test_exchange'
+        }
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 70,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 70))
+        self.assertEqual(
+            consumed, 70, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 70))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.Unbind',
@@ -1513,13 +1548,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Queue.UnbindOk',
@@ -1536,13 +1571,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Tx.Commit',
@@ -1559,13 +1594,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Tx.CommitOk',
@@ -1582,13 +1617,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Tx.Rollback',
@@ -1605,13 +1640,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Tx.RollbackOk',
@@ -1628,13 +1663,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Tx.Select',
@@ -1651,13 +1686,13 @@ class DemarshalingTests(unittest.TestCase):
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
-        self.assertEqual(consumed, 12,
-                         'Bytes consumed did not match expectation: %i, %i' %
-                         (consumed, 12))
+        self.assertEqual(
+            consumed, 12, 'Bytes consumed did not match expectation: %i, %i' %
+            (consumed, 12))
 
-        self.assertEqual(channel, 1,
-                         'Channel number did not match expectation: %i, %i' %
-                         (channel, 1))
+        self.assertEqual(
+            channel, 1,
+            'Channel number did not match expectation: %i, %i' % (channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Tx.SelectOk',

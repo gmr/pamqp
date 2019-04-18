@@ -11,20 +11,15 @@ into a raw byte stream.
 import logging
 import struct
 
-from pamqp import body
-from pamqp import decode
-from pamqp import exceptions
-from pamqp import heartbeat
-from pamqp import header
-from pamqp import specification
-from pamqp import PYTHON3
+from pamqp import (body, decode, exceptions, header, heartbeat, PYTHON3,
+                   specification)
 
 AMQP = b'AMQP'
 FRAME_HEADER_SIZE = 7
 FRAME_END_CHAR = chr(specification.FRAME_END)
 DECODE_FRAME_END_CHAR = FRAME_END_CHAR
 if PYTHON3:
-    FRAME_END_CHAR = bytes((specification.FRAME_END,))
+    FRAME_END_CHAR = bytes((specification.FRAME_END, ))
     DECODE_FRAME_END_CHAR = specification.FRAME_END
 LOGGER = logging.getLogger(__name__)
 UNMARSHAL_FAILURE = 0, 0, None
@@ -62,8 +57,7 @@ def unmarshal(data_in):
         raise exceptions.UnmarshalingException('Unknown',
                                                'Not all data received')
     if data_in[byte_count - 1] != DECODE_FRAME_END_CHAR:
-        raise exceptions.UnmarshalingException('Unknown',
-                                               'Last byte error')
+        raise exceptions.UnmarshalingException('Unknown', 'Last byte error')
 
     frame_data = data_in[FRAME_HEADER_SIZE:byte_count - 1]
 
@@ -204,8 +198,10 @@ def _marshal(frame_type, channel_id, payload):
     :rtype: str or bytes
 
     """
-    return b''.join([struct.pack('>BHI', frame_type, channel_id, len(payload)),
-                     payload, FRAME_END_CHAR])
+    return b''.join([
+        struct.pack('>BHI', frame_type, channel_id, len(payload)), payload,
+        FRAME_END_CHAR
+    ])
 
 
 def _marshal_content_body_frame(frame_value, channel_id):
@@ -240,7 +236,6 @@ def _marshal_method_frame(frame_value, channel_id):
     :rtype: str
 
     """
-    return _marshal(specification.FRAME_METHOD,
-                    channel_id,
-                    struct.pack('>I', frame_value.index) +
-                    frame_value.marshal())
+    return _marshal(
+        specification.FRAME_METHOD, channel_id,
+        struct.pack('>I', frame_value.index) + frame_value.marshal())

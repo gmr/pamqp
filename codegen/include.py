@@ -4,7 +4,7 @@ class Frame(object):
     behavior.
 
     """
-    __slots__ = list()
+    __slots__ = []
     frame_id = 0
     index = 0
     name = 'Frame'
@@ -72,7 +72,7 @@ class Frame(object):
         :rtype: str
 
         """
-        output = list()
+        output = []
         processing_bitset = False
         byte = None
         offset = 0
@@ -160,8 +160,8 @@ class PropertiesBase(object):
 
     """
 
-    __slots__ = list()
-    flags = dict()
+    __slots__ = []
+    flags = {}
     name = 'PropertiesBase'
 
     def __contains__(self, item):
@@ -207,21 +207,21 @@ class PropertiesBase(object):
         return encode.by_type(property_value, self.type(property_name))
 
     def marshal(self):
-        """Take the Basic.Properties data structure and marshal it into the data
-        structure needed for the ContentHeader.
+        """Take the Basic.Properties data structure and marshal it into the
+        data structure needed for the ContentHeader.
 
         :rtype: bytes
 
         """
         flags = 0
-        parts = list()
+        parts = []
         for property_name in self.__slots__:
             property_value = getattr(self, property_name)
             if property_value is not None and property_value != '':
                 flags = flags | self.flags[property_name]
                 parts.append(self.encode_property(property_name,
                                                   property_value))
-        flag_pieces = list()
+        flag_pieces = []
         while True:
             remainder = flags >> 16
             partial_flags = flags & 0xFFFE
@@ -246,7 +246,7 @@ class PropertiesBase(object):
         Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 
-        :param int flags: Flags that indicate if the data has the given property
+        :param int flags: Flags that indicate if the data has the property
         :param bytes data: The binary encoded method data
 
         """

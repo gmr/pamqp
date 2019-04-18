@@ -8,8 +8,7 @@ binary data into AMQP Header frames.
 """
 import struct
 
-from pamqp import decode
-from pamqp import specification
+from pamqp import decode, specification
 
 AMQP = b'AMQP'
 
@@ -38,10 +37,8 @@ class ProtocolHeader(object):
         :rtype: str or bytes
 
         """
-        return AMQP + struct.pack('BBBB', 0,
-                                  self.major_version,
-                                  self.minor_version,
-                                  self.revision)
+        return AMQP + struct.pack('BBBB', 0, self.major_version,
+                                  self.minor_version, self.revision)
 
     def unmarshal(self, data):
         """Dynamically decode the frame data applying the values to the method
@@ -53,8 +50,7 @@ class ProtocolHeader(object):
 
         """
         try:
-            (self.major_version,
-             self.minor_version,
+            (self.major_version, self.minor_version,
              self.revision) = struct.unpack('BBB', data[5:8])
         except struct.error:
             raise ValueError('Data did not match the ProtocolHeader '
@@ -104,8 +100,7 @@ class ContentHeader(object):
 
         """
         # Get the class, weight and body size
-        (self.class_id,
-         self.weight,
+        (self.class_id, self.weight,
          self.body_size) = struct.unpack('>HHQ', data[0:12])
 
         # Get the flags for what properties we have available

@@ -13,7 +13,7 @@ class TestCase(unittest.TestCase):
         except exceptions.UnmarshalingException as err:
             self.assertTrue(str(err).startswith(
                 "Could not unmarshal <class 'pamqp.header.ProtocolHeader'> "
-                "frame: Data did not match the ProtocolHeader format"))
+                'frame: Data did not match the ProtocolHeader format'))
         else:
             assert False, 'Failed to raise exception'
 

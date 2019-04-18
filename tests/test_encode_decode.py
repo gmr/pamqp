@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 import unittest
 
-from pamqp import encode, decode
+from pamqp import decode, encode
 
 
 class EncodeDecodeTests(unittest.TestCase):

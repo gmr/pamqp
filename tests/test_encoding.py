@@ -10,7 +10,6 @@ if PYTHON3:
 
 
 class MarshalingTests(unittest.TestCase):
-
     def test_encode_bool_wrong_type(self):
         self.assertRaises(TypeError, encode.boolean, 'hi')
 
@@ -49,31 +48,27 @@ class MarshalingTests(unittest.TestCase):
         self.assertRaises(TypeError, encode.floating_point, '1234')
 
     def test_encode_float(self):
-        self.assertEqual(encode.floating_point(float(3.14159)),
-                         b'@I\x0f\xd0')
+        self.assertEqual(encode.floating_point(float(3.14159)), b'@I\x0f\xd0')
 
     def test_encode_long_int_wrong_type(self):
         self.assertRaises(TypeError, encode.long_int, 3.141597)
 
     def test_encode_table_integer_bad_value_error(self):
-        self.assertRaises(TypeError, encode.long_int,
-                          9223372036854775808)
+        self.assertRaises(TypeError, encode.long_int, 9223372036854775808)
 
     def test_encode_long_int(self):
         self.assertEqual(encode.long_int(long(2147483647)),
                          b'\x7f\xff\xff\xff')
 
     def test_encode_long_int_error(self):
-        self.assertRaises(TypeError, encode.long_int,
-                          long(21474836449))
+        self.assertRaises(TypeError, encode.long_int, long(21474836449))
 
     def test_encode_long_uint(self):
         self.assertEqual(encode.long_uint(long(4294967295)),
                          b'\xff\xff\xff\xff')
 
     def test_encode_long_uint_error(self):
-        self.assertRaises(TypeError, encode.long_uint,
-                          long(4294967296))
+        self.assertRaises(TypeError, encode.long_uint, long(4294967296))
 
     def test_encode_long_uint_wrong_type(self):
         self.assertRaises(TypeError, encode.long_uint, 3.141597)
@@ -95,15 +90,13 @@ class MarshalingTests(unittest.TestCase):
         self.assertRaises(TypeError, encode.short_int, 3.141597)
 
     def test_encode_short(self):
-        self.assertEqual(encode.short_int(32767),
-                         b'\x7f\xff')
+        self.assertEqual(encode.short_int(32767), b'\x7f\xff')
 
     def test_encode_short_error(self):
         self.assertRaises(TypeError, encode.short_int, 32768)
 
     def test_encode_short_uint(self):
-        self.assertEqual(encode.short_uint(65535),
-                         b'\xff\xff')
+        self.assertEqual(encode.short_uint(65535), b'\xff\xff')
 
     def test_encode_short_uint_error(self):
         self.assertRaises(TypeError, encode.short_uint, 65536)
@@ -112,8 +105,7 @@ class MarshalingTests(unittest.TestCase):
         self.assertRaises(TypeError, encode.short_uint, 'hello')
 
     def test_encode_table_integer_error(self):
-        self.assertRaises(TypeError, encode.table_integer,
-                          9223372036854775808)
+        self.assertRaises(TypeError, encode.table_integer, 9223372036854775808)
 
     def test_encode_short_string(self):
         self.assertEqual(encode.short_string('Hello'), b'\x05Hello')
@@ -129,8 +121,7 @@ class MarshalingTests(unittest.TestCase):
 
     @unittest.skipIf(not PYTHON3, 'Python3 UTF-8 test')
     def test_encode_short_string_utf8_python3(self):
-        self.assertEqual(encode.short_string('🐰'),  b'\x04\xf0\x9f\x90\xb0')
-
+        self.assertEqual(encode.short_string('🐰'), b'\x04\xf0\x9f\x90\xb0')
 
     def test_encode_long_string(self):
         self.assertEqual(encode.long_string(b'0123456789'),
@@ -175,9 +166,12 @@ class MarshalingTests(unittest.TestCase):
                        b'\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02\x00\x00'
                        b'\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00\x00\x00\x00'
                        b'\x00\x08')
-        data = [1, 45000, b'Test', datetime(2006, 11, 21, 16, 30, 10),
-                -1147483648, Decimal('3.14'), 3.14, long(3294967295),
-                -9223372036854775800]
+        data = [
+            1, 45000, b'Test',
+            datetime(2006, 11, 21, 16, 30, 10), -1147483648,
+            Decimal('3.14'), 3.14,
+            long(3294967295), -9223372036854775800
+        ]
         self.assertEqual(encode.field_array(data), expectation)
 
     def test_encode_field_array_error(self):
@@ -220,36 +214,49 @@ class MarshalingTests(unittest.TestCase):
                        b'00000000000000000000\x07longvalI6e&U\x04noneV\x06'
                        b'strvalS\x00\x00\x00\x04Test\x0ctimestampvalT\x00'
                        b'\x00\x00\x00Ec)\x92')
-        data = {'intval': 1,
-                'strval': b'Test',
-                'boolval': True,
-                'timestampval': datetime(2006, 11, 21, 16, 30, 10),
-                'decval': Decimal('3.14'),
-                'floatvla': 3.14,
-                'longval': long(912598613),
-                'dictval': {b'foo': b'bar'},
-                'arrayval': [1, 2, 3],
-                'none': None,
-                'bytearray': bytearray((65, 65, 65)),
-                'longstr': ('0000000000000000000000000000000000000000000000000'
-                            '0001111111111111111111111111111111111111111111111'
-                            '1111112222222222222222222222222222222222222222222'
-                            '2222222221111111111111111111111111111111111111111'
-                            '1111111111112222222222222222222222222222222222222'
-                            '2222222222222221111111111111111111111111111111111'
-                            '1111111111111111112222222222222222222222222222222'
-                            '2222222222222222222221111111111111111111111111111'
-                            '1111111111111111111111112222222222222222222222222'
-                            '2222222222222222222222222221111111111111111111111'
-                            '1111111111111111111111111111112222222222222222222'
-                            '2222222222222222222222222222222221111111111111111'
-                            '1111111111111111111111111111111111112222222222222'
-                            '2222222222222222222222222222222222222221111111111'
-                            '1111111111111111111111111111111111111111112222222'
-                            '2222222222222222222222222222222222222222222221111'
-                            '1111111111111111111111111111111111111111111111110'
-                            '0000000000000000000000000000000000000000000000000'
-                            '00')}
+        data = {
+            'intval':
+            1,
+            'strval':
+            b'Test',
+            'boolval':
+            True,
+            'timestampval':
+            datetime(2006, 11, 21, 16, 30, 10),
+            'decval':
+            Decimal('3.14'),
+            'floatvla':
+            3.14,
+            'longval':
+            long(912598613),
+            'dictval': {
+                b'foo': b'bar'
+            },
+            'arrayval': [1, 2, 3],
+            'none':
+            None,
+            'bytearray':
+            bytearray((65, 65, 65)),
+            'longstr': ('0000000000000000000000000000000000000000000000000'
+                        '0001111111111111111111111111111111111111111111111'
+                        '1111112222222222222222222222222222222222222222222'
+                        '2222222221111111111111111111111111111111111111111'
+                        '1111111111112222222222222222222222222222222222222'
+                        '2222222222222221111111111111111111111111111111111'
+                        '1111111111111111112222222222222222222222222222222'
+                        '2222222222222222222221111111111111111111111111111'
+                        '1111111111111111111111112222222222222222222222222'
+                        '2222222222222222222222222221111111111111111111111'
+                        '1111111111111111111111111111112222222222222222222'
+                        '2222222222222222222222222222222221111111111111111'
+                        '1111111111111111111111111111111111112222222222222'
+                        '2222222222222222222222222222222222222221111111111'
+                        '1111111111111111111111111111111111111111112222222'
+                        '2222222222222222222222222222222222222222222221111'
+                        '1111111111111111111111111111111111111111111111110'
+                        '0000000000000000000000000000000000000000000000000'
+                        '00')
+        }
         self.assertEqual(encode.field_table(data), expectation)
 
     def test_encode_by_type_field_array(self):
@@ -257,11 +264,13 @@ class MarshalingTests(unittest.TestCase):
                        b'\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02\x00\x00'
                        b'\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00\x00\x00\x00'
                        b'\x00\x08')
-        data = [1, 45000, b'Test', datetime(2006, 11, 21, 16, 30, 10),
-                -1147483648, Decimal('3.14'), 3.14, long(3294967295),
-                -9223372036854775800]
-        self.assertEqual(encode.by_type(data, 'field_array'),
-                         expectation)
+        data = [
+            1, 45000, b'Test',
+            datetime(2006, 11, 21, 16, 30, 10), -1147483648,
+            Decimal('3.14'), 3.14,
+            long(3294967295), -9223372036854775800
+        ]
+        self.assertEqual(encode.by_type(data, 'field_array'), expectation)
 
     def test_encode_by_type_byte_array(self):
         self.assertEqual(encode.by_type(bytearray((65, 66, 67)), 'bytearray'),
@@ -290,13 +299,12 @@ class MarshalingTests(unittest.TestCase):
         self.assertEqual(encode.by_type(1, 'octet'), b'\x01')
 
     def test_encode_by_type_short(self):
-        self.assertEqual(encode.by_type(32767, 'short'),
-                         b'\x7f\xff')
+        self.assertEqual(encode.by_type(32767, 'short'), b'\x7f\xff')
 
     def test_encode_by_type_timestamp(self):
-        self.assertEqual(encode.by_type(datetime(2006, 11, 21,  16, 30, 10),
-                                        'timestamp'),
-                         b'\x00\x00\x00\x00Ec)\x92')
+        self.assertEqual(
+            encode.by_type(datetime(2006, 11, 21, 16, 30, 10), 'timestamp'),
+            b'\x00\x00\x00\x00Ec)\x92')
 
     def test_encode_by_type_field_table(self):
         expectation = (b'\x00\x00\x04\x13\x08arrayvalA\x00\x00\x00\ts\x00\x01s'
@@ -322,34 +330,45 @@ class MarshalingTests(unittest.TestCase):
                        b'11111111100000000000000000000000000000000000000000000'
                        b'00000000\x07longvalI6e&U\x06strvalS\x00\x00\x00\x04'
                        b'Test\x0ctimestampvalT\x00\x00\x00\x00Ec)\x92')
-        data = {'intval': 1,
-                'strval': b'Test',
-                'boolval': True,
-                'timestampval': datetime(2006, 11, 21, 16, 30, 10),
-                'decval': Decimal('3.14'),
-                'floatvla': 3.14,
-                'longval': long(912598613),
-                'dictval': {b'foo': b'bar'},
-                'arrayval': [1, 2, 3],
-                'longstr': ('0000000000000000000000000000000000000000000000000'
-                            '0001111111111111111111111111111111111111111111111'
-                            '1111112222222222222222222222222222222222222222222'
-                            '2222222221111111111111111111111111111111111111111'
-                            '1111111111112222222222222222222222222222222222222'
-                            '2222222222222221111111111111111111111111111111111'
-                            '1111111111111111112222222222222222222222222222222'
-                            '2222222222222222222221111111111111111111111111111'
-                            '1111111111111111111111112222222222222222222222222'
-                            '2222222222222222222222222221111111111111111111111'
-                            '1111111111111111111111111111112222222222222222222'
-                            '2222222222222222222222222222222221111111111111111'
-                            '1111111111111111111111111111111111112222222222222'
-                            '2222222222222222222222222222222222222221111111111'
-                            '1111111111111111111111111111111111111111112222222'
-                            '2222222222222222222222222222222222222222222221111'
-                            '1111111111111111111111111111111111111111111111110'
-                            '0000000000000000000000000000000000000000000000000'
-                            '00')}
+        data = {
+            'intval':
+            1,
+            'strval':
+            b'Test',
+            'boolval':
+            True,
+            'timestampval':
+            datetime(2006, 11, 21, 16, 30, 10),
+            'decval':
+            Decimal('3.14'),
+            'floatvla':
+            3.14,
+            'longval':
+            long(912598613),
+            'dictval': {
+                b'foo': b'bar'
+            },
+            'arrayval': [1, 2, 3],
+            'longstr': ('0000000000000000000000000000000000000000000000000'
+                        '0001111111111111111111111111111111111111111111111'
+                        '1111112222222222222222222222222222222222222222222'
+                        '2222222221111111111111111111111111111111111111111'
+                        '1111111111112222222222222222222222222222222222222'
+                        '2222222222222221111111111111111111111111111111111'
+                        '1111111111111111112222222222222222222222222222222'
+                        '2222222222222222222221111111111111111111111111111'
+                        '1111111111111111111111112222222222222222222222222'
+                        '2222222222222222222222222221111111111111111111111'
+                        '1111111111111111111111111111112222222222222222222'
+                        '2222222222222222222222222222222221111111111111111'
+                        '1111111111111111111111111111111111112222222222222'
+                        '2222222222222222222222222222222222222221111111111'
+                        '1111111111111111111111111111111111111111112222222'
+                        '2222222222222222222222222222222222222222222221111'
+                        '1111111111111111111111111111111111111111111111110'
+                        '0000000000000000000000000000000000000000000000000'
+                        '00')
+        }
         self.assertEqual(encode.by_type(data, 'table'), expectation)
 
     def test_encode_by_type_error(self):

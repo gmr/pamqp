@@ -84,7 +84,7 @@ def decimal(value):
     try:
         decimals = Struct.byte.unpack(value[0:1])[0]
         raw = Struct.integer.unpack(value[1:5])[0]
-        return 5, _decimal.Decimal(raw) * (_decimal.Decimal(10) ** -decimals)
+        return 5, _decimal.Decimal(raw) * (_decimal.Decimal(10)**-decimals)
     except TypeError:
         raise ValueError('Could not unpack data')
 
@@ -271,7 +271,7 @@ def field_array(value):
     try:
         length = Struct.integer.unpack(value[0:4])[0]
         offset = 4
-        data = list()
+        data = []
         field_array_end = offset + length
         while offset < field_array_end:
             consumed, result = _embedded_value(value[offset:])
@@ -293,7 +293,7 @@ def field_table(value):
     try:
         length = Struct.integer.unpack(value[0:4])[0]
         offset = 4
-        data = dict()
+        data = {}
         field_table_end = offset + length
         while offset < field_table_end:
             key_length = Struct.byte.unpack_from(value, offset)[0]
@@ -355,7 +355,7 @@ def _embedded_value(value):
     elif value[0:1] == b'\x00':
         return 0, None
     else:
-        raise ValueError('Unknown type: %r' % value[:1])
+        raise ValueError('Unknown type: {!r}'.format(value[:1]))
 
     return bytes_consumed + 1, value
 
@@ -403,7 +403,7 @@ def by_type(value, data_type, offset=0):
     elif data_type == 'void':
         return None
 
-    raise ValueError('Unknown type "%s"' % value)
+    raise ValueError('Unknown type: {}'.format(data_type))
 
 
 def _to_str(value):
@@ -423,18 +423,20 @@ def _to_str(value):
 
 
 # Define a data type mapping to methods
-METHODS = {'array': field_array,
-           'bit': bit,
-           'boolean': boolean,
-           'byte_array': byte_array,
-           'decimal': decimal,
-           'double': double,
-           'float': floating_point,
-           'long': long_uint,
-           'longlong': long_long_int,
-           'longstr': long_str,
-           'octet': octet,
-           'short': short_uint,
-           'shortstr': short_str,
-           'table': field_table,
-           'timestamp': timestamp}
+METHODS = {
+    'array': field_array,
+    'bit': bit,
+    'boolean': boolean,
+    'byte_array': byte_array,
+    'decimal': decimal,
+    'double': double,
+    'float': floating_point,
+    'long': long_uint,
+    'longlong': long_long_int,
+    'longstr': long_str,
+    'octet': octet,
+    'short': short_uint,
+    'shortstr': short_str,
+    'table': field_table,
+    'timestamp': timestamp
+}
