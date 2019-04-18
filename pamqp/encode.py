@@ -433,31 +433,12 @@ def by_type(value, data_type):
 
     """
     # Determine the field type and encode it
-    if data_type == 'field_array':
-        return field_array(value)
-    elif data_type == 'bytearray':
-        return byte_array(value)
-    elif data_type == 'double':
-        return double(value)
-    elif data_type == 'long':
-        return long_uint(value)
-    elif data_type == 'longlong':
-        return long_long_int(value)
-    elif data_type == 'longstr':
-        return long_string(value)
-    elif data_type == 'octet':
-        return octet(value)
-    elif data_type == 'short':
-        return short_uint(value)
-    elif data_type == 'shortstr':
-        return short_string(value)
-    elif data_type == 'table':
-        return field_table(value)
-    elif data_type == 'timestamp':
-        return timestamp(value)
-    elif data_type == 'void':
-        return None
-    raise TypeError('Unknown type: {}'.format(value))
+    encoder = METHODS.get(str(data_type))
+
+    if encoder is None:
+        raise TypeError('Unknown type: {}'.format(value))
+
+    return encoder(value)
 
 
 def _utf8_encode(value):
@@ -473,3 +454,19 @@ def _utf8_encode(value):
     elif not PYTHON3 and isinstance(value, unicode):
         return value.encode('utf-8')
     return value
+
+
+METHODS = {
+    'bytearray': byte_array,
+    'double': double,
+    'field_array': field_array,
+    'long': long_uint,
+    'longlong': long_long_int,
+    'longstr': long_string,
+    'octet': octet,
+    'short': short_uint,
+    'shortstr': short_string,
+    'table': field_table,
+    'timestamp': timestamp,
+    'void': lambda _: None,
+}
