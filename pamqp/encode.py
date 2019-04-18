@@ -235,7 +235,8 @@ def short_string(value):
 def timestamp(value):
     """Encode a datetime.datetime object or time.struct_time.
 
-    :param datetime.datetime or time.struct_time or numeric value value: Value to encode
+    :param value: Value to encode
+    :type value: datetime.datetime, time.struct_time, integer
     :rtype: bytes
     :raises: TypeError
 
