@@ -360,8 +360,8 @@ def encode_table_value(value):
     elif not PYTHON3 and isinstance(value, (str, bytes, unicode)):
         result = b'S' + long_string(value)
 
-    elif (isinstance(value, datetime.datetime)
-          or isinstance(value, time.struct_time)):
+    elif (isinstance(value, datetime.datetime) or
+          isinstance(value, time.struct_time)):
         result = b'T' + timestamp(value)
 
     elif isinstance(value, dict):
