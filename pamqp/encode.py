@@ -320,7 +320,9 @@ def table_integer(value):
 
     """
     # Send the appropriately sized data value
-    if -32768 <= value <= 32767:
+    if 0 <= value <= 255:
+        return b'b' + octet(value)
+    elif -32768 <= value <= 32767:
         return b's' + short_int(value)
     elif 0 <= value <= 65535:
         return b'u' + short_uint(value)

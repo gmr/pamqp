@@ -6,6 +6,7 @@ Version History
 - Change :py:meth:`pamqp.encode.timestamp` to allow for numeric/epoch timestamps (#14 - `mosquito <https://github.com/mosquito>`_)
 - Change :py:meth:`pamqp.frame.frame_parts` to a public method (#15 - `mosquito <https://github.com/mosquito>`_)
 - Cleanup of code to pass configured flake8 tests
+- Add support for 8-bit unsigned integer values in :py:meth:`pamqp.encode.table_integer`
 
 2.1.0 (2018-12-28)
 ------------------
