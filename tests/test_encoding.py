@@ -163,9 +163,12 @@ class MarshalingTests(unittest.TestCase):
             encode.timestamp(datetime(2006, 11, 21, 16, 30, 10).timetuple())
         self.assertEqual(value, b'\x00\x00\x00\x00Ec)\x92')
 
+    def test_encode_timestamp_from_numeric(self):
+        value = encode.timestamp(1555574815)
+        self.assertEqual(value, b'\x00\x00\x00\x00\\\xb80\x1f')
+
     def test_encode_timestamp_error(self):
         self.assertRaises(TypeError, encode.timestamp, 'hi')
-
 
     def test_encode_field_array(self):
         expectation = (b'\x00\x00\x006s\x00\x01u\xaf\xc8S\x00\x00\x00\x04TestT'
