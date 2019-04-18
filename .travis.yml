@@ -11,8 +11,8 @@ env:
   global:
     - PATH=$HOME/.local/bin:$PATH
     - AWS_DEFAULT_REGION=us-east-1
-    - secure: "HwRFY/PT2BkpcaxTpgvcZH7NVzFHB5bITEsdLNnAyyR1p6penesezg3VUnY5Bl91s4vP9sDFBZJC7AkAEOGTNAHJ0h1/2bEH3rQvi8WNnWFIjb5HbpZpfdHch+NO5kyEn7mUkcdyPpkI18JqlJLRcPKqNHpKqTuKt3FhrtfkfFs="
-    - secure: "cE93hguZtiygLXcYAL/twX9zd9ELLmCepUUocYnV9JUxwZJ8s6jj4PXTXShXVl6KNY4pRViKNROfm+l0HzCrfi3C6BiRHBKP0zccGWSYRceEQFmK1irb+idsdz74J1DHA3KF+LNYaSBTSk5eU8o45WOx5p+bJ8P8QMRnIsybTgY="
+    - secure: "H1xbz9QUvgoNtDvY9K72YvUkGGVWiq5qL2IZDfG1y7scIKdUMZqvj2s/aB/UCw95POc1/SSo1vf5rtpvz7D4TTo+YW9y9ZLuHxetbGPnkql+lu/+HTpPJcr91pg4fEz4txhnAlJ+cdp3bITOvbuKYoUZ+toxiTf3wouETBikfGo="
+    - secure: "JZRJyA7fGSHjEx8nIyCzhD9KLWbu4h1R5A+VLDuFN0FjCjALKjJxaIUwT8/xHT97FXbqTbN+xvFyWnKerVpGX1peNGifralm3tMl63QXdATaprsmENmM3fYRWYGqWhy+6a21hrxFZ+MdblFKWsFWq/TNbsLWYM3vahvZDe1eyck="
 
 stages:
   - test
@@ -23,8 +23,10 @@ stages:
 
 install:
   - pip install -r requirements.txt
-  - pip install awscli coverage
-script: PYTHONWARNINGS=always nosetests
+  - pip install awscli
+script:
+  - nosetests
+  - flake8
 after_success: bin/upload-coverage.sh
 
 jobs:
