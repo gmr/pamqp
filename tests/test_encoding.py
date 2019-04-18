@@ -362,3 +362,46 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_by_type_error(self):
         self.assertRaises(TypeError, encode.by_type, 12345.12434, 'foo')
+
+
+class EncodeTableIntegerTestCase(unittest.TestCase):
+
+    def setUp(self):
+        encode.DEPRECATED_RABBITMQ_SUPPORT = False
+
+    def tearDown(self):
+        encode.DEPRECATED_RABBITMQ_SUPPORT = False
+
+    def test_table_integer(self):
+        tests = {
+            'short-short': (32, b'b '),
+            'short': (1024, b's\x04\x00'),
+            'short-negative': (-1024, b's\xfc\x00'),
+            'short-unsigned': (32768, b'u\x80\x00'),
+            'long': (65536, b'I\x00\x01\x00\x00'),
+            'long-negative': (65536, b'I\x00\x01\x00\x00'),
+            'long-unsigned': (4294967295, b'i\xff\xff\xff\xff'),
+            'long-long': (9223372036854775805,
+                          b'l\x7f\xff\xff\xff\xff\xff\xff\xfd'),
+        }
+        for key, value in tests.items():
+            result = encode.table_integer(value[0])
+            self.assertEqual(result, value[1],
+                             'encode {} mismatch ({!r} != {!r})'.format(
+                                 key, result, value[1]))
+
+    def test_deprecated_table_integer(self):
+        tests = {
+            'short-short': (32, b'b '),
+            'short': (1024, b's\x04\x00'),
+            'short-negative': (-1024, b's\xfc\x00'),
+            'long': (65536, b'I\x00\x01\x00\x00'),
+            'long-negative': (65536, b'I\x00\x01\x00\x00'),
+            'long-long': (2147483648, b'l\x00\x00\x00\x00\x80\x00\x00\x00'),
+        }
+        encode.support_deprecated_rabbitmq()
+        for key, value in tests.items():
+            result = encode.table_integer(value[0])
+            self.assertEqual(result, value[1],
+                             'encode {} mismatch ({!r} != {!r})'.format(
+                                 key, result, value[1]))

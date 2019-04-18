@@ -1,6 +1,10 @@
 Version History
 ===============
 
+2.3.0 (2019-04-18)
+------------------
+- Add :py:func:`pamqp.encode.support_deprecated_rabbitmq` function to limit data types available when encoding field-tables for older RabbitMQ versions.
+
 2.2.0 (2019-04-18)
 ------------------
 - Change :py:meth:`pamqp.encode.timestamp` to allow for numeric/epoch timestamps (#14 - `mosquito <https://github.com/mosquito>`_)

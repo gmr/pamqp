@@ -22,6 +22,19 @@ if PYTHON3:
     unicode = None  # Dont throw exceptions as it is not defined
 
 
+DEPRECATED_RABBITMQ_SUPPORT = False
+"""Toggle to support older versions of RabbitMQ."""
+
+
+def support_deprecated_rabbitmq():
+    """Invoke to restrict the data types available in field-tables that are
+    sent to RabbitMQ.
+
+    """
+    global DEPRECATED_RABBITMQ_SUPPORT
+    DEPRECATED_RABBITMQ_SUPPORT = True
+
+
 def bit(value, byte, position):
     """Encode a bit value
 
@@ -319,6 +332,9 @@ def table_integer(value):
     :raises: TypeError
 
     """
+    if DEPRECATED_RABBITMQ_SUPPORT:
+        return _deprecated_table_integer(value)
+
     # Send the appropriately sized data value
     if 0 <= value <= 255:
         return b'b' + octet(value)
@@ -326,11 +342,32 @@ def table_integer(value):
         return b's' + short_int(value)
     elif 0 <= value <= 65535:
         return b'u' + short_uint(value)
-    elif -2147483648 < value < 2147483647:
+    elif -2147483648 <= value <= 2147483647:
         return b'I' + long_int(value)
     elif 0 <= value <= 4294967295:
         return b'i' + long_uint(value)
-    elif -9223372036854775808 < value < 9223372036854775807:
+    elif -9223372036854775808 <= value <= 9223372036854775807:
+        return b'l' + long_long_int(value)
+    raise TypeError('Unsupported numeric value: {}'.format(value))
+
+
+def _deprecated_table_integer(value):
+    """Determines the best type of numeric type to encode value as, preferring
+    the smallest data size first, supporting versions of RabbitMQ < 3.6
+
+    :param int value: Value to encode
+    :rtype: bytes
+    :raises: TypeError
+
+    """
+    # Send the appropriately sized data value
+    if 0 <= value <= 255:
+        return b'b' + octet(value)
+    elif -32768 <= value <= 32767:
+        return b's' + short_int(value)
+    elif -2147483648 <= value <= 2147483647:
+        return b'I' + long_int(value)
+    elif -9223372036854775808 <= value <= 9223372036854775807:
         return b'l' + long_long_int(value)
     raise TypeError('Unsupported numeric value: {}'.format(value))
 
