@@ -243,10 +243,11 @@ def timestamp(value):
     """
     if isinstance(value, datetime.datetime):
         value = value.timetuple()
+    elif isinstance(value, int):
+        value = time.gmtime(value)
+
     if isinstance(value, time.struct_time):
         return struct.pack('>Q', calendar.timegm(value))
-    elif isinstance(value, int):
-        return struct.pack('>Q', value)
     raise TypeError('datetime.datetime or time.struct_time type required')
 
 
