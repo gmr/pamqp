@@ -1,6 +1,12 @@
 Version History
 ===============
 
+2.2.0 (2019-04-18)
+------------------
+- Change :py:meth:`pamqp.encode.timestamp` to allow for numeric/epoch timestamps (#14 - `mosquito <https://github.com/mosquito>`_)
+- Change :py:meth:`pamqp.frame.frame_parts` to a public method (#15 - `mosquito <https://github.com/mosquito>`_)
+- Cleanup of code to pass configured flake8 tests
+
 2.1.0 (2018-12-28)
 ------------------
 - Change raising a DeprecationWarning exception to using warnings.warn for deprecated AMQP methods (#13 - `dzen <https://github.com/dzen>`_)
