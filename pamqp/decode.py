@@ -345,12 +345,10 @@ def _embedded_value(value):
         return 0, None
 
     hdr, payload = value[0:1], value[1:]
-
-    decoder = TABLE_MAPPING.get(hdr)
-    if decoder is None:
+    try:
+        bytes_consumed, value = TABLE_MAPPING[hdr](payload)
+    except KeyError:
         raise ValueError('Unknown type: {!r}'.format(value[:1]))
-
-    bytes_consumed, value = decoder(payload)
     return bytes_consumed + 1, value
 
 

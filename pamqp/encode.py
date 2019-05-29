@@ -432,13 +432,10 @@ def by_type(value, data_type):
     :raises: TypeError
 
     """
-    # Determine the field type and encode it
-    encoder = METHODS.get(str(data_type))
-
-    if encoder is None:
+    try:
+        return METHODS[str(data_type)](value)
+    except KeyError:
         raise TypeError('Unknown type: {}'.format(value))
-
-    return encoder(value)
 
 
 def _utf8_encode(value):
