@@ -308,6 +308,31 @@ def field_table(value):
         raise ValueError('Could not unpack data')
 
 
+def _void(_):
+    return 0, None
+
+
+TABLE_MAPPING = {
+    b'\x00': _void,
+    b'A': field_array,
+    b'b': short_short_int,
+    b'D': decimal,
+    b'd': double,
+    b'F': field_table,
+    b'f': floating_point,
+    b'I': long_int,
+    b'i': long_uint,
+    b'l': long_long_int,
+    b'S': long_str,
+    b's': short_int,
+    b't': boolean,
+    b'T': timestamp,
+    b'u': short_uint,
+    b'V': _void,
+    b'x': byte_array,
+}
+
+
 def _embedded_value(value):
     """Takes in a value looking at the first byte to determine which decoder to
     use
@@ -319,44 +344,13 @@ def _embedded_value(value):
     if not value:
         return 0, None
 
-    # Determine the field type and encode it
-    if value[0:1] == b't':
-        bytes_consumed, value = boolean(value[1:])
-    elif value[0:1] == b'b':
-        bytes_consumed, value = short_short_int(value[1:])
-    elif value[0:1] == b's':
-        bytes_consumed, value = short_int(value[1:])
-    elif value[0:1] == b'u':
-        bytes_consumed, value = short_uint(value[1:])
-    elif value[0:1] == b'I':
-        bytes_consumed, value = long_int(value[1:])
-    elif value[0:1] == b'i':
-        bytes_consumed, value = long_uint(value[1:])
-    elif value[0:1] == b'l':
-        bytes_consumed, value = long_long_int(value[1:])
-    elif value[0:1] == b'f':
-        bytes_consumed, value = floating_point(value[1:])
-    elif value[0:1] == b'd':
-        bytes_consumed, value = double(value[1:])
-    elif value[0:1] == b'D':
-        bytes_consumed, value = decimal(value[1:])
-    elif value[0:1] == b'S':
-        bytes_consumed, value = long_str(value[1:])
-    elif value[0:1] == b'A':
-        bytes_consumed, value = field_array(value[1:])
-    elif value[0:1] == b'T':
-        bytes_consumed, value = timestamp(value[1:])
-    elif value[0:1] == b'F':
-        bytes_consumed, value = field_table(value[1:])
-    elif value[0:1] == b'V':
-        bytes_consumed, value = 0, None
-    elif value[0:1] == b'x':
-        bytes_consumed, value = byte_array(value[1:])
-    elif value[0:1] == b'\x00':
-        return 0, None
-    else:
+    hdr, payload = value[0:1], value[1:]
+
+    decoder = TABLE_MAPPING.get(hdr)
+    if decoder is None:
         raise ValueError('Unknown type: {!r}'.format(value[:1]))
 
+    bytes_consumed, value = decoder(payload)
     return bytes_consumed + 1, value
 
 
@@ -370,40 +364,15 @@ def by_type(value, data_type, offset=0):
     """
     # Determine the field type and encode it
     data_type = str(data_type)
-    if data_type == 'array':
-        return field_array(value)
-    elif data_type == 'bit':
-        return bit(value, offset)
-    elif data_type == 'boolean':
-        return boolean(value)
-    elif data_type == 'byte_array':
-        return byte_array(value)
-    elif data_type == 'decimal':
-        return decimal(value)
-    elif data_type == 'double':
-        return double(value)
-    elif data_type == 'float':
-        return floating_point(value)
-    elif data_type == 'long':
-        return long_uint(value)
-    elif data_type == 'longlong':
-        return long_long_int(value)
-    elif data_type == 'longstr':
-        return long_str(value)
-    elif data_type == 'octet':
-        return octet(value)
-    elif data_type == 'short':
-        return short_uint(value)
-    elif data_type == 'shortstr':
-        return short_str(value)
-    elif data_type == 'table':
-        return field_table(value)
-    elif data_type == 'timestamp':
-        return timestamp(value)
-    elif data_type == 'void':
-        return None
 
-    raise ValueError('Unknown type: {}'.format(data_type))
+    if data_type == 'bit':
+        return bit(value, offset)
+
+    decoder = METHODS.get(data_type)
+    if decoder is None:
+        raise ValueError('Unknown type: {}'.format(data_type))
+
+    return decoder(value)
 
 
 def _to_str(value):
@@ -438,5 +407,6 @@ METHODS = {
     'short': short_uint,
     'shortstr': short_str,
     'table': field_table,
-    'timestamp': timestamp
+    'timestamp': timestamp,
+    'void': lambda _: None,
 }
