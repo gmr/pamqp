@@ -344,9 +344,8 @@ import struct
 import warnings
 
 from pamqp import decode, encode
+from pamqp.exceptions import AMQPHardError, AMQPSoftError
 ''' % (CODEGEN_OUTPUT.split('/')[-1], datetime.date.today().isoformat())]
-
-new_line()
 
 # AMQP Version Header
 comment('AMQP Protocol Version')
@@ -425,7 +424,7 @@ for filename in PREPEND:
         for line in content.split('\n'):
             new_line(line)
 
-# Warnings and Exceptions
+# Exceptions
 new_line()
 comment('AMQP Errors')
 errors = {}
@@ -433,9 +432,9 @@ for constant in amqp['constants']:
     if 'class' in constant:
         class_name = classify(constant['name'])
         if constant['class'] == 'soft-error':
-            extends = 'Warning'
+            extends = 'AMQPSoftError'
         elif constant['class'] == 'hard-error':
-            extends = 'Exception'
+            extends = 'AMQPHardError'
         else:
             raise ValueError('Unexpected class: %s', constant['class'])
         new_line('class AMQP%s(%s):' % (class_name, extends))
@@ -445,7 +444,7 @@ for constant in amqp['constants']:
         if doc:
             comment(doc, 4, '')
         else:
-            if extends == 'Warning':
+            if extends == 'AMQPSoftError':
                 new_line('    Undocumented AMQP Soft Error')
             else:
                 new_line('    Undocumented AMQP Hard Error')
