@@ -9,11 +9,30 @@ Functions for decoding data of various types including field tables and arrays
 import decimal as _decimal
 import struct
 import time
+import typing
 
-from pamqp import PYTHON3
+
+ReturnTypes = typing.Union[
+    bool,
+    bytearray,
+    _decimal.Decimal,
+    float,
+    int,
+    str,
+    None,
+    typing.List[
+        bool,
+        bytearray,
+        _decimal.Decimal,
+        float,
+        int,
+        str,
+        None
+    ]
+]  # Return Types for dynamic decoding
 
 
-class Struct(object):
+class Struct:
     """Simple object for getting to the struct objects"""
 
     byte = struct.Struct('B')
@@ -28,12 +47,9 @@ class Struct(object):
     timestamp = struct.Struct('>Q')
 
 
-def bit(value, position):
-    """Decode a bit value
+def bit(value: bytes, position: int) -> typing.Tuple[int, bool]:
+    """Decode a bit value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :param int position: The bit position to retrieve
-    :return tuple: bytes used, bool value
     :raises: ValueError
 
     """
@@ -41,28 +57,24 @@ def bit(value, position):
     try:
         return 0, (bit_buffer & (1 << position)) != 0
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack bit value')
 
 
-def boolean(value):
-    """Decode a boolean value
+def boolean(value: bytes) -> typing.Tuple[int, bool]:
+    """Decode a boolean value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, bool
     :raises: ValueError
 
     """
     try:
         return 1, bool(Struct.byte.unpack_from(value[0:1])[0])
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack boolean value')
 
 
-def byte_array(value):
-    """Decode a byte_array value
+def byte_array(value: bytes) -> typing.Tuple[int, bytearray]:
+    """Decode a byte_array value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, bool
     :raises: ValueError
 
     """
@@ -70,14 +82,12 @@ def byte_array(value):
         length = Struct.integer.unpack(value[0:4])[0]
         return length + 4, bytearray(value[4:length + 4])
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack byte array value')
 
 
-def decimal(value):
-    """Decode a decimal value
+def decimal(value: bytes) -> typing.Tuple[int, _decimal.Decimal]:
+    """Decode a decimal value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, decimal.Decimal value
     :raises: ValueError
 
     """
@@ -86,170 +96,150 @@ def decimal(value):
         raw = Struct.integer.unpack(value[1:5])[0]
         return 5, _decimal.Decimal(raw) * (_decimal.Decimal(10)**-decimals)
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack decimal value')
 
 
-def double(value):
-    """Decode a double value
+def double(value: bytes) -> typing.Tuple[int, float]:
+    """Decode a double value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, float
     :raises: ValueError
 
     """
     try:
         return 8, Struct.double.unpack_from(value)[0]
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack double value')
 
 
-def floating_point(value):
-    """Decode a floating point value
+def floating_point(value: bytes) -> typing.Tuple[int, float]:
+    """Decode a floating point value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, float
     :raises: ValueError
 
     """
     try:
         return 4, Struct.float.unpack_from(value)[0]
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack floating point value')
 
 
-def long_int(value):
-    """Decode a long integer value
+def long_int(value: bytes) -> typing.Tuple[int, int]:
+    """Decode a long integer value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, int
     :raises: ValueError
 
     """
     try:
         return 4, Struct.long.unpack(value[0:4])[0]
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack long integer value')
 
 
-def long_uint(value):
-    """Decode an unsigned long integer value
+def long_uint(value: bytes) -> typing.Tuple[int, int]:
+    """Decode an unsigned long integer value, returning bytes consumed and
+    the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, int
     :raises: ValueError
 
     """
     try:
         return 4, Struct.ulong.unpack(value[0:4])[0]
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack unsigned long integer value')
 
 
-def long_long_int(value):
-    """Decode a long-long integer value
+def long_long_int(value: bytes) -> typing.Tuple[int, int]:
+    """Decode a long-long integer value, returning bytes consumed and the
+    value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, int
     :raises: ValueError
 
     """
     try:
         return 8, struct.unpack('>q', value[0:8])[0]
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack long-long integer value')
 
 
-def long_str(value):
-    """Decode a string value
+def long_str(value: bytes) -> typing.Tuple[int, str]:
+    """Decode a string value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, bytes|str
     :raises: ValueError
 
     """
     try:
         length = Struct.integer.unpack(value[0:4])[0]
-        return length + 4, value[4:length + 4]
+        return length + 4, value[4:length + 4].decode('utf-8')
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack long string value')
 
 
-def octet(value):
-    """Decode an octet value
+def octet(value: bytes) -> typing.Tuple[int, int]:
+    """Decode an octet value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, int
     :raises: ValueError
 
     """
     try:
         return 1, Struct.byte.unpack(value[0:1])[0]
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack octet value')
 
 
-def short_int(value):
-    """Decode a short integer value
+def short_int(value: bytes) -> typing.Tuple[int, int]:
+    """Decode a short integer value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, int
     :raises: ValueError
 
     """
     try:
         return 2, Struct.short.unpack_from(value[0:2])[0]
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack short integer value')
 
 
-def short_uint(value):
-    """Decode an unsigned short integer value
+def short_uint(value: bytes) -> typing.Tuple[int, int]:
+    """Decode an unsigned short integer value, returning bytes consumed and
+    the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, int
     :raises: ValueError
 
     """
     try:
         return 2, Struct.ushort.unpack_from(value[0:2])[0]
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack unsigned short integer value')
 
 
-def short_short_int(value):
-    """Decode a short, short integer value
+def short_short_int(value: bytes) -> typing.Tuple[int, int]:
+    """Decode a short-short integer value, returning bytes consumed and the
+    value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, int
     :raises: ValueError
 
     """
     try:
         return 1, Struct.short_short.unpack_from(value[0:1])[0]
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack short-short integer value')
 
 
-def short_str(value):
-    """Decode a string value
+def short_str(value: bytes) -> typing.Tuple[int, str]:
+    """Decode a string value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, unicode|str
     :raises: ValueError
 
     """
     try:
         length = Struct.byte.unpack(value[0:1])[0]
-        return length + 1, _to_str(value[1:length + 1])
+        return length + 1, value[1:length + 1].decode('utf-8')
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack short string value')
 
 
-def timestamp(value):
-    """Decode a timestamp value
+def timestamp(value: bytes) -> typing.Tuple[int, time.struct_time]:
+    """Decode a timestamp value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, struct_time
     :raises: ValueError
 
     """
@@ -257,14 +247,12 @@ def timestamp(value):
         value = Struct.timestamp.unpack(value[0:8])
         return 8, time.gmtime(value[0])
     except TypeError:
-        raise ValueError('Could not unpack data')
+        raise ValueError('Could not unpack timestamp value')
 
 
-def field_array(value):
-    """Decode a field array value
+def field_array(value: bytes) -> typing.Tuple[int, typing.List[ReturnTypes]]:
+    """Decode a field array value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, list
     :raises: ValueError
 
     """
@@ -282,11 +270,10 @@ def field_array(value):
         raise ValueError('Could not unpack data')
 
 
-def field_table(value):
-    """Decode a field array value
+def field_table(value: bytes) \
+        -> typing.Tuple[int, typing.Dict[str, ReturnTypes]]:
+    """Decode a field array value, returning bytes consumed and the value.
 
-    :param bytes value: Value to decode
-    :return tuple: bytes used, dict
     :raises: ValueError
 
     """
@@ -298,7 +285,7 @@ def field_table(value):
         while offset < field_table_end:
             key_length = Struct.byte.unpack_from(value, offset)[0]
             offset += 1
-            key = _to_str(value[offset:offset + key_length])
+            key = value[offset:offset + key_length].decode('utf-8')
             offset += key_length
             consumed, result = _embedded_value(value[offset:])
             offset += consumed
@@ -308,12 +295,12 @@ def field_table(value):
         raise ValueError('Could not unpack data')
 
 
-def _void(_):
+def void(_: bytes) -> typing.Tuple[int, None]:
     return 0, None
 
 
 TABLE_MAPPING = {
-    b'\x00': _void,
+    b'\x00': void,
     b'A': field_array,
     b'b': short_short_int,
     b'D': decimal,
@@ -328,22 +315,15 @@ TABLE_MAPPING = {
     b't': boolean,
     b'T': timestamp,
     b'u': short_uint,
-    b'V': _void,
+    b'V': void,
     b'x': byte_array,
 }
 
 
-def _embedded_value(value):
-    """Takes in a value looking at the first byte to determine which decoder to
-    use
-
-    :param bytes value: Value to decode
-    :return tuple: bytes consumed, mixed
-
-    """
+def _embedded_value(value: bytes) -> typing.Tuple[int, ReturnTypes]:
+    """Dynamically decode a value based upon the starting byte"""
     if not value:
         return 0, None
-
     hdr, payload = value[0:1], value[1:]
     try:
         bytes_consumed, value = TABLE_MAPPING[hdr](payload)
@@ -352,41 +332,15 @@ def _embedded_value(value):
     return bytes_consumed + 1, value
 
 
-def by_type(value, data_type, offset=0):
-    """Decodes values using the specified type
-
-    :param bytes value: Value to decode
-    :param str data_type: type of data to decode
-    :return tuple: bytes consumed, mixed based on field type
-
-    """
-    # Determine the field type and encode it
-    data_type = str(data_type)
-
+def by_type(value: bytes, data_type: str, offset: int = 0) \
+        -> typing.Tuple[int, ReturnTypes]:
+    """Decodes values using the specified type"""
     if data_type == 'bit':
         return bit(value, offset)
-
     decoder = METHODS.get(data_type)
     if decoder is None:
         raise ValueError('Unknown type: {}'.format(data_type))
-
     return decoder(value)
-
-
-def _to_str(value):
-    """Ensure the field table keys are strings (unicode or otherwise)
-
-    :param bytes value: The value to try and decode to unicode
-    :rtype: unicode or str
-
-    """
-    if PYTHON3:
-        return value.decode('utf-8')
-
-    try:
-        return str(value.decode('utf-8'))
-    except UnicodeEncodeError:
-        return value.decode('utf-8')
 
 
 # Define a data type mapping to methods
@@ -406,5 +360,5 @@ METHODS = {
     'shortstr': short_str,
     'table': field_table,
     'timestamp': timestamp,
-    'void': lambda _: None,
+    'void': void,
 }
