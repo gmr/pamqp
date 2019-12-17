@@ -12,8 +12,8 @@ import logging
 import struct
 import typing
 
-from pamqp import (base, body, common, commands, constants, decode, exceptions,
-                   header, heartbeat)
+from pamqp import (base, body, commands, common, constants, decode,
+                   exceptions, header, heartbeat)
 
 LOGGER = logging.getLogger(__name__)
 UNMARSHAL_FAILURE = 0, 0, None
