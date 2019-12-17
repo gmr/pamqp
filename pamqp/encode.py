@@ -14,9 +14,23 @@ import struct
 import time
 import typing
 
-from pamqp import common, DEPRECATED_RABBITMQ_SUPPORT
+from pamqp import common
 
 LOGGER = logging.getLogger(__name__)
+
+DEPRECATED_RABBITMQ_SUPPORT = False
+"""Toggle to support older versions of RabbitMQ."""
+
+
+def support_deprecated_rabbitmq(enabled: bool = True):
+    """Toggle the data types available in field-tables
+
+    If called with `True`, than RabbitMQ versions, the field-table integer
+    types will not support the full AMQP spec.
+
+    """
+    global DEPRECATED_RABBITMQ_SUPPORT
+    DEPRECATED_RABBITMQ_SUPPORT = enabled
 
 
 def by_type(value: common.FieldValue, data_type: str) -> bytes:
@@ -111,7 +125,7 @@ def long_int(value: int) -> bytes:
     :raises: TypeError
 
     """
-    if isinstance(value, int):
+    if not isinstance(value, int):
         raise TypeError('int required, received {}'.format(type(value)))
     elif not (-2147483648 <= value <= 2147483647):
         raise TypeError('Long integer range: -2147483648 to 2147483647')
@@ -254,8 +268,7 @@ def field_table(value: common.FieldTable) -> bytes:
         if len(key) > 128:  # field names have 128 char max
             LOGGER.warning('Truncating key %s to 128 bytes', key)
             key = key[0:128]
-        data.append(common.Struct.byte.pack(len(key)))
-        data.append(key)
+        data.append(short_string(key))
         try:
             data.append(encode_table_value(value))
         except TypeError as err:
@@ -306,38 +319,33 @@ def _deprecated_table_integer(value: int) -> bytes:
     raise TypeError('Unsupported numeric value: {}'.format(value))
 
 
-def encode_table_value(value):
+def encode_table_value(value: common.FieldValue) -> bytes:
     """Takes a value of any type and tries to encode it with the proper encoder
 
-    :param any value: Value to encode
-    :rtype: bytes
     :raises: TypeError
 
     """
     if isinstance(value, bool):
-        result = b't' + boolean(value)
+        return b't' + boolean(value)
     elif isinstance(value, int):
-        result = table_integer(value)
+        return table_integer(value)
     elif isinstance(value, _decimal.Decimal):
-        result = b'D' + decimal(value)
+        return b'D' + decimal(value)
     elif isinstance(value, float):
-        result = b'f' + floating_point(value)
+        return b'f' + floating_point(value)
     elif isinstance(value, str):
-        result = b'S' + long_string(value)
-    elif (isinstance(value, datetime.datetime)
-          or isinstance(value, time.struct_time)):
-        result = b'T' + timestamp(value)
+        return b'S' + long_string(value)
+    elif isinstance(value, (datetime.datetime, time.struct_time)):
+        return b'T' + timestamp(value)
     elif isinstance(value, dict):
-        result = b'F' + field_table(value)
+        return b'F' + field_table(value)
     elif isinstance(value, list):
-        result = b'A' + field_array(value)
+        return b'A' + field_array(value)
     elif isinstance(value, bytearray):
-        result = b'x' + byte_array(value)
+        return b'x' + byte_array(value)
     elif value is None:
-        result = b'V'
-    else:
-        raise TypeError('Unknown type: {} ({!r})'.format(type(value), value))
-    return result
+        return b'V'
+    raise TypeError('Unknown type: {} ({!r})'.format(type(value), value))
 
 
 METHODS = {

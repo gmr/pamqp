@@ -11,6 +11,8 @@ import typing
 
 from pamqp import decode, specification
 
+BasicProperties = typing.Optional[specification.Basic.Properties]
+
 
 class ProtocolHeader:
     """Class that represents the AMQP Protocol Header"""
@@ -64,10 +66,10 @@ class ContentHeader:
     name = 'ContentHeader'
 
     def __init__(
-        self,
-        weight: int = 0,
-        body_size: int = 0,
-        properties: typing.Optional[specification.Basic.Properties] = None):
+            self,
+            weight: int = 0,
+            body_size: int = 0,
+            properties: BasicProperties = None):
         """Initialize the Exchange.DeleteOk class
 
          Weight is unused and must be `0`
@@ -107,7 +109,7 @@ class ContentHeader:
             consumed, partial_flags = decode.short_int(data)
             bytes_consumed += consumed
             flags |= (partial_flags << (flagword_index * 16))
-            if not partial_flags & 1:
+            if not partial_flags & 1:  # pragma: nocover
                 break
-            flagword_index += 1
+            flagword_index += 1  # pragma: nocover
         return bytes_consumed, flags

@@ -6,6 +6,7 @@ AMQP Data Decoder
 Functions for decoding data of various types including field tables and arrays
 
 """
+import datetime
 import decimal as _decimal
 import time
 import typing
@@ -13,8 +14,7 @@ import typing
 from pamqp import common
 
 
-def by_type(value: bytes,
-            data_type: str,
+def by_type(value: bytes, data_type: str,
             offset: int = 0) -> typing.Tuple[int, common.FieldValue]:
     """Decodes values using the specified type"""
     if data_type == 'bit':
@@ -215,7 +215,7 @@ def short_str(value: bytes) -> typing.Tuple[int, str]:
         raise ValueError('Could not unpack short string value')
 
 
-def timestamp(value: bytes) -> typing.Tuple[int, time.struct_time]:
+def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
     """Decode a timestamp value, returning bytes consumed and the value.
 
     :raises: ValueError
@@ -223,7 +223,8 @@ def timestamp(value: bytes) -> typing.Tuple[int, time.struct_time]:
     """
     try:
         value = common.Struct.timestamp.unpack(value[0:8])
-        return 8, time.gmtime(value[0])
+        return 8, datetime.datetime.fromtimestamp(
+            time.mktime(time.gmtime(value[0])))
     except TypeError:
         raise ValueError('Could not unpack timestamp value')
 
@@ -232,9 +233,8 @@ def embedded_value(value: bytes) -> typing.Tuple[int, common.FieldValue]:
     """Dynamically decode a value based upon the starting byte"""
     if not value:
         return 0, None
-    hdr, payload = value[0:1], value[1:]
     try:
-        bytes_consumed, value = TABLE_MAPPING[hdr](payload)
+        bytes_consumed, value = TABLE_MAPPING[value[0:1]](value[1:])
     except KeyError:
         raise ValueError('Unknown type: {!r}'.format(value[:1]))
     return bytes_consumed + 1, value

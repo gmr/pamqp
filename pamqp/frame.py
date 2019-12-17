@@ -14,7 +14,7 @@ import logging
 import struct
 import typing
 
-from pamqp import (body, common, decode, encode, exceptions, header, heartbeat,
+from pamqp import (body, base, common, decode, exceptions, header, heartbeat,
                    specification)
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ def marshal(frame_value: FrameTypes, channel_id: int) -> bytes:
     """
     if isinstance(frame_value, header.ProtocolHeader):
         return frame_value.marshal()
-    elif isinstance(frame_value, Frame):
+    elif isinstance(frame_value, base.Frame):
         return _marshal_method_frame(frame_value, channel_id)
     elif isinstance(frame_value, header.ContentHeader):
         return _marshal_content_header_frame(frame_value, channel_id)
@@ -72,7 +72,8 @@ def unmarshal(data_in: bytes) -> typing.Tuple[int, int, FrameTypes]:
     if byte_count > len(data_in):
         raise exceptions.UnmarshalingException('Unknown',
                                                'Not all data received')
-    if data_in[byte_count - 1] != specification.FRAME_END_CHAR:
+
+    if data_in[byte_count - 1] != specification.FRAME_END:
         raise exceptions.UnmarshalingException('Unknown', 'Last byte error')
     frame_data = data_in[specification.FRAME_HEADER_SIZE:byte_count - 1]
     if frame_type == specification.FRAME_METHOD:
@@ -113,7 +114,7 @@ def _marshal_content_header_frame(value: header.ContentHeader,
     return _marshal(specification.FRAME_HEADER, channel_id, value.marshal())
 
 
-def _marshal_method_frame(value: Frame, channel_id: int) -> bytes:
+def _marshal_method_frame(value: base.Frame, channel_id: int) -> bytes:
     """Marshal a method frame"""
     return _marshal(specification.FRAME_METHOD, channel_id,
                     common.Struct.integer.pack(value.index) + value.marshal())
@@ -137,7 +138,7 @@ def _unmarshal_protocol_header_frame(data_in: bytes) \
         return frame
 
 
-def _unmarshal_method_frame(frame_data: bytes) -> Frame:
+def _unmarshal_method_frame(frame_data: bytes) -> base.Frame:
     """Attempt to unmarshal a method frame
 
     :raises: pamqp.exceptions.UnmarshalingException
@@ -175,165 +176,3 @@ def _unmarshal_body_frame(frame_data: bytes) -> body.ContentBody:
     content_body = body.ContentBody()
     content_body.unmarshal(frame_data)
     return content_body
-
-
-class _AMQData:
-    """Base class for AMQ methods and properties for encoding and decoding"""
-    __annotations__ = {}
-    __slots__ = []
-    name = '_AMQData'
-
-    def __contains__(self, item: str) -> bool:
-        """Return if the item is in the attribute list"""
-        return item in self.__slots__
-
-    def __delattr__(self, item: str):
-        setattr(self, item, None)
-
-    def __getitem__(self, item: str) -> common.FieldValue:
-        """Return an attribute as if it were a dict
-
-        :raises: KeyError
-
-        """
-        return getattr(self, item)
-
-    def __iter__(self) -> typing.Tuple[str, common.FieldValue]:
-        """Iterate the attributes and values as key, value pairs"""
-        for attribute in self.__slots__:
-            yield attribute, getattr(self, attribute)
-
-    def __len__(self) -> int:
-        """Return the length of the attribute list"""
-        return len(self.__slots__)
-
-    def __repr__(self) -> str:
-        """Return the representation of the frame object"""
-        return '<{}.{} object at {}>'.format(self.__class__.__name__,
-                                             self.name, hex(id(self)))
-
-    @classmethod
-    def amqp_type(cls, attr: str) -> str:
-        """Return the AMQP data type for an attribute"""
-        return getattr(cls, '_' + attr)
-
-    @classmethod
-    def attributes(cls: _AMQData) -> list:
-        """Return the list of attributes"""
-        return cls.__slots__
-
-
-class Frame(_AMQData):
-    """Base Class for AMQ Methods for encoding and decoding"""
-    frame_id = 0
-    index = 0
-    synchronous = False
-    valid_responses = []
-
-    def marshal(self) -> bytes:
-        """Dynamically encode the frame by taking the list of attributes and
-        encode them item by item getting the value form the object attribute
-        and the data type from the class attribute.
-
-        """
-        byte, offset, output, processing_bitset = None, 0, [], False
-        for argument in self.__slots__:
-            data_type = self.amqp_type(argument)
-            if not processing_bitset and data_type == 'bit':
-                byte = 0
-                offset = 0
-                processing_bitset = True
-            data_value = getattr(self, argument)
-            if processing_bitset:
-                if data_type != 'bit':
-                    processing_bitset = False
-                    output.append(encode.octet(byte))
-                else:
-                    byte = encode.bit(data_value, byte, offset)
-                    offset += 1
-                    if offset == 8:
-                        output.append(encode.octet(byte))
-                        processing_bitset = False
-                    continue
-            output.append(encode.by_type(data_value, data_type))
-        if processing_bitset:
-            output.append(encode.octet(byte))
-        return b''.join(output)
-
-    def unmarshal(self, data: bytes) -> typing.NoReturn:
-        """Dynamically decode the frame data applying the values to the method
-        object by iterating through the attributes in order and decoding them.
-
-        """
-        offset, processing_bitset = 0, False
-        for argument in self.__slots__:
-            data_type = self.amqp_type(argument)
-            if offset == 7 and processing_bitset:
-                data = data[1:]
-                offset = 0
-            if processing_bitset and data_type != 'bit':
-                offset = 0
-                processing_bitset = False
-                data = data[1:]
-            consumed, value = decode.by_type(data, data_type, offset)
-            if data_type == 'bit':
-                offset += 1
-                processing_bitset = True
-                consumed = 0
-            setattr(self, argument, value)
-            if consumed:
-                data = data[consumed:]
-
-
-class BasicProperties(_AMQData):
-    """Provide a base object that marshals and unmarshals the Basic.Properties
-    object values.
-
-    """
-    flags = {}
-    name = 'BasicProperties'
-
-    def encode_property(self, name: str, value: common.FieldValue) -> bytes:
-        """Encode a single property value
-
-        :raises: TypeError
-
-        """
-        return encode.by_type(value, self.amqp_type(name))
-
-    def marshal(self) -> bytes:
-        """Take the Basic.Properties data structure and marshal it into the
-        data structure needed for the ContentHeader.
-
-        """
-        flags = 0
-        parts = []
-        for property_name in self.__slots__:
-            property_value = getattr(self, property_name)
-            if property_value is not None and property_value != '':
-                flags = flags | self.flags[property_name]
-                parts.append(
-                    self.encode_property(property_name, property_value))
-        flag_pieces = []
-        while True:
-            remainder = flags >> 16
-            partial_flags = flags & 0xFFFE
-            if remainder != 0:
-                partial_flags |= 1
-            flag_pieces.append(struct.pack('>H', partial_flags))
-            flags = remainder
-            if not flags:
-                break
-        return b''.join(flag_pieces + parts)
-
-    def unmarshal(self, flags: int, data: bytes) -> typing.NoReturn:
-        """Dynamically decode the frame data applying the values to the method
-        object by iterating through the attributes in order and decoding them.
-
-        """
-        for property_name in self.__slots__:
-            if flags & self.flags[property_name]:
-                data_type = getattr(self.__class__, '_' + property_name)
-                consumed, value = decode.by_type(data, data_type)
-                setattr(self, property_name, value)
-                data = data[consumed:]
