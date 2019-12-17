@@ -1,12 +1,9 @@
 # -*- encoding: utf-8 -*-
-from datetime import datetime
-from decimal import Decimal
+import datetime
+import decimal
 import unittest
 
-from pamqp import encode, PYTHON3
-
-if PYTHON3:
-    long = int
+from pamqp import encode
 
 
 class MarshalingTests(unittest.TestCase):
@@ -30,11 +27,11 @@ class MarshalingTests(unittest.TestCase):
         self.assertRaises(TypeError, encode.decimal, 3.141597)
 
     def test_encode_decimal(self):
-        self.assertEqual(encode.decimal(Decimal('3.14159')),
+        self.assertEqual(encode.decimal(decimal.Decimal('3.14159')),
                          b'\x05\x00\x04\xcb/')
 
     def test_encode_decimal_whole(self):
-        self.assertEqual(encode.decimal(Decimal('314159')),
+        self.assertEqual(encode.decimal(decimal.Decimal('314159')),
                          b'\x00\x00\x04\xcb/')
 
     def test_encode_double_invalid_value(self):
@@ -57,18 +54,18 @@ class MarshalingTests(unittest.TestCase):
         self.assertRaises(TypeError, encode.long_int, 9223372036854775808)
 
     def test_encode_long_int(self):
-        self.assertEqual(encode.long_int(long(2147483647)),
+        self.assertEqual(encode.long_int(2147483647),
                          b'\x7f\xff\xff\xff')
 
     def test_encode_long_int_error(self):
-        self.assertRaises(TypeError, encode.long_int, long(21474836449))
+        self.assertRaises(TypeError, encode.long_int, 21474836449)
 
     def test_encode_long_uint(self):
-        self.assertEqual(encode.long_uint(long(4294967295)),
+        self.assertEqual(encode.long_uint(4294967295),
                          b'\xff\xff\xff\xff')
 
     def test_encode_long_uint_error(self):
-        self.assertRaises(TypeError, encode.long_uint, long(4294967296))
+        self.assertRaises(TypeError, encode.long_uint, 4294967296)
 
     def test_encode_long_uint_wrong_type(self):
         self.assertRaises(TypeError, encode.long_uint, 3.141597)
@@ -78,7 +75,7 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_long_long_int_error(self):
         self.assertRaises(TypeError, encode.long_long_int,
-                          long(9223372036854775808))
+                          9223372036854775808)
 
     def test_encode_octet(self):
         self.assertEqual(encode.octet(1), b'\x01')
@@ -113,31 +110,17 @@ class MarshalingTests(unittest.TestCase):
     def test_encode_short_string_error(self):
         self.assertRaises(TypeError, encode.short_string, 32768)
 
-    @unittest.skipIf(PYTHON3, 'Python2 UTF-8 test')
-    def test_encode_short_string_utf8_python2(self):
-        self.assertEqual(
-            encode.short_string('\xf0\x9f\x90\xb0'.decode('utf-8')),
-            b'\x04\xf0\x9f\x90\xb0')
-
-    @unittest.skipIf(not PYTHON3, 'Python3 UTF-8 test')
     def test_encode_short_string_utf8_python3(self):
         self.assertEqual(encode.short_string('🐰'), b'\x04\xf0\x9f\x90\xb0')
 
     def test_encode_long_string(self):
-        self.assertEqual(encode.long_string(b'0123456789'),
+        self.assertEqual(encode.long_string('0123456789'),
                          b'\x00\x00\x00\n0123456789')
 
     def test_encode_long_string_bytes(self):
         self.assertEqual(encode.long_string('rabbitmq'),
                          b'\x00\x00\x00\x08rabbitmq')
 
-    @unittest.skipIf(PYTHON3, 'Python2 UTF-8 test')
-    def test_encode_long_string_utf8_python2(self):
-        self.assertEqual(
-            encode.long_string('\xf0\x9f\x90\xb0'.decode('utf-8')),
-            b'\x00\x00\x00\x04\xf0\x9f\x90\xb0')
-
-    @unittest.skipIf(not PYTHON3, 'Python3 UTF-8 test')
     def test_encode_long_string_utf8_python3(self):
         self.assertEqual(encode.long_string('🐰'),
                          b'\x00\x00\x00\x04\xf0\x9f\x90\xb0')
@@ -146,17 +129,14 @@ class MarshalingTests(unittest.TestCase):
         self.assertRaises(TypeError, encode.long_string, 100)
 
     def test_encode_timestamp_from_datetime(self):
-        self.assertEqual(encode.timestamp(datetime(2006, 11, 21, 16, 30, 10)),
-                         b'\x00\x00\x00\x00Ec)\x92')
+        self.assertEqual(
+            encode.timestamp(datetime.datetime(2006, 11, 21, 16, 30, 10)),
+            b'\x00\x00\x00\x00Ec)\x92')
 
     def test_encode_timestamp_from_struct_time(self):
-        value = \
-            encode.timestamp(datetime(2006, 11, 21, 16, 30, 10).timetuple())
+        value = encode.timestamp(
+            datetime.datetime(2006, 11, 21, 16, 30, 10).timetuple())
         self.assertEqual(value, b'\x00\x00\x00\x00Ec)\x92')
-
-    def test_encode_timestamp_from_numeric(self):
-        value = encode.timestamp(1555574815)
-        self.assertEqual(value, b'\x00\x00\x00\x00\\\xb80\x1f')
 
     def test_encode_timestamp_error(self):
         self.assertRaises(TypeError, encode.timestamp, 'hi')
@@ -167,10 +147,10 @@ class MarshalingTests(unittest.TestCase):
                        b'\x02\x00\x00\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00'
                        b'\x00\x00\x00\x00\x08')
         data = [
-            1, 45000, 40000000, b'Test',
-            datetime(2006, 11, 21, 16, 30, 10), -1147483648,
-            Decimal('3.14'), 3.14,
-            long(3294967295), -9223372036854775800
+            1, 45000, 40000000, 'Test',
+            datetime.datetime(2006, 11, 21, 16, 30, 10), -1147483648,
+            decimal.Decimal('3.14'), 3.14,
+            3294967295, -9223372036854775800
         ]
         self.assertEqual(encode.field_array(data), expectation)
 
@@ -215,14 +195,14 @@ class MarshalingTests(unittest.TestCase):
                        b'\x00Ec)\x92')
         data = {
             'intval': 1,
-            'strval': b'Test',
+            'strval': 'Test',
             'boolval': True,
-            'timestampval': datetime(2006, 11, 21, 16, 30, 10),
-            'decval': Decimal('3.14'),
+            'timestampval': datetime.datetime(2006, 11, 21, 16, 30, 10),
+            'decval': decimal.Decimal('3.14'),
             'floatval': 3.14,
-            'longval': long(912598613),
+            'longval': 912598613,
             'dictval': {
-                b'foo': b'bar'
+                'foo': 'bar'
             },
             'arrayval': [1, 2, 3],
             'none': None,
@@ -255,10 +235,10 @@ class MarshalingTests(unittest.TestCase):
                        b'\x00\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00\x00\x00'
                        b'\x00\x00\x08')
         data = [
-            1, 17000, 45000, b'Test',
-            datetime(2006, 11, 21, 16, 30, 10), -1147483648,
-            Decimal('3.14'), 3.14,
-            long(3294967295), -9223372036854775800
+            1, 17000, 45000, 'Test',
+            datetime.datetime(2006, 11, 21, 16, 30, 10), -1147483648,
+            decimal.Decimal('3.14'), 3.14,
+            3294967295, -9223372036854775800
         ]
         self.assertEqual(encode.by_type(data, 'field_array'), expectation)
 
@@ -271,15 +251,15 @@ class MarshalingTests(unittest.TestCase):
                          b'A\xef\xff\xff\xff\xe0\x00\x00')
 
     def test_encode_by_type_long_uint(self):
-        self.assertEqual(encode.by_type(long(4294967295), 'long'),
+        self.assertEqual(encode.by_type(4294967295, 'long'),
                          b'\xff\xff\xff\xff')
 
     def test_encode_by_type_long_long_int(self):
-        self.assertEqual(encode.by_type(long(9223372036854775800), 'longlong'),
+        self.assertEqual(encode.by_type(9223372036854775800, 'longlong'),
                          b'\x7f\xff\xff\xff\xff\xff\xff\xf8')
 
     def test_encode_by_type_long_str(self):
-        self.assertEqual(encode.by_type(b'0123456789', 'longstr'),
+        self.assertEqual(encode.by_type('0123456789', 'longstr'),
                          b'\x00\x00\x00\n0123456789')
 
     def test_encode_by_type_none(self):
@@ -293,7 +273,8 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_by_type_timestamp(self):
         self.assertEqual(
-            encode.by_type(datetime(2006, 11, 21, 16, 30, 10), 'timestamp'),
+            encode.by_type(
+                datetime.datetime(2006, 11, 21, 16, 30, 10), 'timestamp'),
             b'\x00\x00\x00\x00Ec)\x92')
 
     def test_encode_by_type_field_table(self):
@@ -328,14 +309,14 @@ class MarshalingTests(unittest.TestCase):
             's32int': -1000000000,
             'u32int': 4000000000,
             's64int': 4000000000000000000,
-            'strval': b'Test',
+            'strval': 'Test',
             'boolval': True,
-            'timestampval': datetime(2006, 11, 21, 16, 30, 10),
-            'decval': Decimal('3.14'),
+            'timestampval': datetime.datetime(2006, 11, 21, 16, 30, 10),
+            'decval': decimal.Decimal('3.14'),
             'floatval': 3.14,
-            'longval': long(912598613),
+            'longval': 912598613,
             'dictval': {
-                b'foo': b'bar'
+                'foo': 'bar'
             },
             'arrayval': [1, 4192, 42000],
             'longstr': ('0000000000000000000000000000000000000000000000000'
@@ -367,10 +348,10 @@ class MarshalingTests(unittest.TestCase):
 class EncodeTableIntegerTestCase(unittest.TestCase):
 
     def setUp(self):
-        encode.DEPRECATED_RABBITMQ_SUPPORT = False
+        encode.support_deprecated_rabbitmq(False)
 
     def tearDown(self):
-        encode.DEPRECATED_RABBITMQ_SUPPORT = False
+        encode.support_deprecated_rabbitmq(False)
 
     def test_table_integer(self):
         tests = {
@@ -391,6 +372,9 @@ class EncodeTableIntegerTestCase(unittest.TestCase):
                                  key, result, value[1]))
 
     def test_deprecated_table_integer(self):
+        self.assertFalse(encode.DEPRECATED_RABBITMQ_SUPPORT)
+        encode.support_deprecated_rabbitmq(True)
+        self.assertTrue(encode.DEPRECATED_RABBITMQ_SUPPORT)
         tests = {
             'short-short': (32, b'b '),
             'short': (1024, b's\x04\x00'),
@@ -399,9 +383,18 @@ class EncodeTableIntegerTestCase(unittest.TestCase):
             'long-negative': (65536, b'I\x00\x01\x00\x00'),
             'long-long': (2147483648, b'l\x00\x00\x00\x00\x80\x00\x00\x00'),
         }
-        encode.support_deprecated_rabbitmq()
         for key, value in tests.items():
             result = encode.table_integer(value[0])
-            self.assertEqual(result, value[1],
-                             'encode {} mismatch ({!r} != {!r})'.format(
-                                 key, result, value[1]))
+            self.assertEqual(
+                result, value[1],
+                'encode {} mismatch of {!r} ({!r} != {!r})'.format(
+                    key, value[0], result, value[1]))
+
+    def test_too_large_int(self):
+        self.assertFalse(encode.DEPRECATED_RABBITMQ_SUPPORT)
+        with self.assertRaises(TypeError):
+            encode.table_integer(9223372036854775809)
+        encode.support_deprecated_rabbitmq(True)
+        self.assertTrue(encode.DEPRECATED_RABBITMQ_SUPPORT)
+        with self.assertRaises(TypeError):
+            encode.table_integer(9223372036854775809)

@@ -7,27 +7,41 @@ import copy
 import datetime
 import json
 import keyword
-from os import path
+import pathlib
+import sys
 import textwrap
-import urllib
 
 import lxml.etree
+import requests
+from yapf import yapf_api
 
 __author__ = 'Gavin M. Roy'
 __email__ = 'gavinmroy@gmail.com'
 __since__ = '2011-03-31'
 
-CODEGEN_DIR = '../codegen/'
+CODEGEN_DIR = pathlib.Path('./codegen/')
 CODEGEN_IGNORE_CLASSES = ['access']
-CODEGEN_JSON = CODEGEN_DIR + 'amqp-rabbitmq-0.9.1.json'
-CODEGEN_XML = CODEGEN_DIR + 'amqp0-9-1.xml'
-CODEGEN_OUTPUT = '../pamqp/specification.py'
+CODEGEN_JSON = CODEGEN_DIR / 'amqp-rabbitmq-0.9.1.json'
+CODEGEN_XML = CODEGEN_DIR / 'amqp0-9-1.xml'
+CODEGEN_OUTPUT = pathlib.Path('./pamqp/specification.py')
 CODEGEN_JSON_URL = ('https://raw.githubusercontent.com/rabbitmq/'
                     'rabbitmq-codegen/master/amqp-rabbitmq-0.9.1.json')
 CODEGEN_XML_URL = 'http://www.rabbitmq.com/resources/specs/amqp0-9-1.xml'
 
 XPATH_ORDER = ['class', 'constant', 'method', 'field']
-PREPEND = [CODEGEN_DIR + 'include.py']
+
+AMQ_TYPE_TO_ANNOTATION = {
+    'bit': 'bool',
+    'long': 'int',
+    'longlong': 'int',
+    'longstr': 'str',
+    'octet': 'int',
+    'short': 'int',
+    'shortstr': 'str',
+    'table': 'common.FieldTable',
+    'timestamp': 'common.Timestamp',
+}
+
 
 # Output buffer list
 output = []
@@ -187,95 +201,47 @@ def argument_name(n):
     return value
 
 
-def get_argument_type_doc(arg):
-    """Get the type of the argument for the doc
-
-    :param arg:
-    :return: str
-    """
-    if 'domain' in arg:
+def get_argument_type(a: dict) -> str:
+    """Get the argument type"""
+    if 'domain' in a:
         for d, dt in amqp['domains']:
-            if arg['domain'] == d:
-                arg['type'] = dt
+            if a['domain'] == d:
+                a['type'] = dt
                 break
-    if 'type' in arg:
-        if arg['type'] == 'bit':
-            return 'bool'
-        elif arg['type'] == 'long':
-            return 'int/long'
-        elif arg['type'] == 'longlong':
-            return 'int/long'
-        elif arg['type'] == 'longstr':
-            return 'str'
-        elif arg['type'] == 'octet':
-            return 'int'
-        elif arg['type'] == 'short':
-            return 'int'
-        elif arg['type'] == 'shortstr':
-            return 'str'
-        elif arg['type'] == 'table':
-            return 'dict'
-        elif arg['type'] == 'timestamp':
-            return 'struct_time'
-    return 'Unknown'
+    if 'type' in a:
+        return a['type']
+    raise ValueError('Unknown argument type')
 
 
-def get_argument_type(arg):
-    """Get the argument type.
-
-    :param arg:
-    :return: str
-
-    """
-    if 'domain' in arg:
-        for d, dt in amqp['domains']:
-            if arg['domain'] == d:
-                arg['type'] = dt
-                break
-    if 'type' in arg:
-        return arg['type']
-    return 'Unknown'
+def arg_annotation(a: dict) -> str:
+    arg_type = AMQ_TYPE_TO_ANNOTATION[get_argument_type(a)]
+    if arg_type.startswith('common.Field'):
+        return 'typing.Optional[{}]'.format(arg_type)
+    return arg_type
 
 
-def new_function(function_name, args_in, indent_value=0):
-    """Create a new function
+def arg_default(a: dict) -> str:
+    arg_type = AMQ_TYPE_TO_ANNOTATION[get_argument_type(a)]
+    if arg_type.startswith('common.Field'):
+        return 'None'
+    elif a.get('default-value') is not None:
+        return '{!r}'.format(a['default-value'])
+    else:
+        print(a)
+        if a['type'][-3:] == 'str':
+            return "''"
+        elif a['type'] in ['short', 'long']:
+            return '0'
+        else:
+            return 'None'
 
-    :param function_name:
-    :param args_in:
-    :param indent_value:
-    :return:
 
-    """
-    global output
-
+def new_function(function_name: str, args_in: list, indent_value: int = 0):
+    """Create a new function"""
     args = ['self']
     for a in args_in:
-        n = argument_name(a['name'])
-        if 'default-value' in a and a['default-value'] != '':
-            if a['default-value'] in keyword.kwlist or \
-                    isinstance(a['default-value'], (bool, int)):
-                value = a['default-value']
-            else:
-                if isinstance(a['default-value'], basestring):
-                    value = "'%s'" % str(a['default-value'])
-                else:
-                    value = '%r' % a['default-value']
-        else:
-            if a['type'][-3:] == 'str':
-                value = "''"
-            elif a['type'] in ['short', 'long']:
-                value = 0
-            else:
-                value = 'None'
-        if value == '{}':
-            if a['type'][-3:] == 'str':
-                value = "''"
-            elif a['type'] in ['short', 'long']:
-                value = 0
-            else:
-                value = 'None'
-
-        args.append('%s=%s' % (n, value))
+        args.append('{}: {} = {}'.format(
+            argument_name(a['name']), arg_annotation(a), arg_default(a)))
 
     # Get the definition line built
     def_line = 'def %s(%s):' % (function_name, ', '.join(args))
@@ -292,71 +258,65 @@ def new_function(function_name, args_in, indent_value=0):
 
 
 # Check to see if we have the codegen json file in this directory
-if not path.exists(CODEGEN_JSON):
-
-    # Retrieve the codegen archive
+if CODEGEN_JSON.exists():
     print('Downloading codegen JSON file to %s.' % CODEGEN_JSON)
-    json_data = urllib.urlopen(CODEGEN_JSON_URL)
+    response = requests.get(CODEGEN_JSON_URL)
+    if not response.ok:
+        print('Error downloading JSON file: {}'.format(response))
+        sys.exit(1)
+    with CODEGEN_JSON.open('w') as handle:
+        handle.write(response.content.decode('utf-8'))
 
-    # Write out the JSON file
-    with open(CODEGEN_JSON, 'w') as handle:
-        handle.write(json_data.read())
-
-    json_data.close()
-
-# Read in the codegen JSON file
-with open(CODEGEN_JSON, 'r') as handle:
+with CODEGEN_JSON.open('r') as handle:
     amqp = json.load(handle)
 
 # Check to see if we have the codegen xml file in this directory
-if not path.exists(CODEGEN_XML):
-
-    # Retrieve the codegen XML definition
+if CODEGEN_XML.exists():
     print('Downloading codegen XML file.')
-    handle = urllib.urlopen(CODEGEN_XML_URL)
-    xml_content = handle.read()
+    response = requests.get(CODEGEN_XML_URL)
+    if not response.ok:
+        print('Error downloading XML file: {}'.format(response))
+        sys.exit(1)
+    with CODEGEN_XML.open('w') as handle:
+        handle.write(response.content.decode('utf-8'))
 
-    # Write out the XML file
-    with open(CODEGEN_XML, 'w') as handle:
-        handle.write(xml_content)
-
-# Read in the codegen XML file
-with open(CODEGEN_XML, 'r') as handle:
+with CODEGEN_XML.open('r') as handle:
     amqp_xml = lxml.etree.parse(handle)
     xml = amqp_xml.xpath('//amqp')[0]
 
-# Read in the codegen RabbitMQ Extension XML file
-with open(CODEGEN_DIR + 'extensions.xml', 'r') as handle:
+# RabbitMQ Extension XML file for comments
+with open(CODEGEN_DIR / 'extensions.xml', 'r') as handle:
     rabbitmq_xml = lxml.etree.parse(handle)
     rabbitmq = rabbitmq_xml.xpath('//rabbitmq')[0]
 
 # Start the output
-output = ['''"""%s
+output = ['''"""AMQ Model Specification
+=======================
 
-Auto-generated AMQP Support Module
-
-WARNING: DO NOT EDIT. To Generate run tools/codegen.py
+Auto-generated, do not edit. To Generate run `.tools/codegen.py`
 
 """
-__since__ = '%s'
+__since__ = '{}'
 
-import struct
+import typing
 import warnings
 
-from pamqp import decode, encode
-from pamqp.exceptions import AMQPHardError, AMQPSoftError
-''' % (CODEGEN_OUTPUT.split('/')[-1], datetime.date.today().isoformat())]
+from pamqp import base, common, exceptions
+'''.format(datetime.date.today().isoformat())]
 
-# AMQP Version Header
-comment('AMQP Protocol Version')
-new_line('VERSION = (%i, %i, %i)' % (
+comment('AMQP Protocol Frame Prefix')  # AMQP Version Header
+new_line("AMQP = b'AMQP'")
+new_line()
+
+comment('AMQP Protocol Version')  # AMQP Version Header
+new_line('VERSION = ({}, {}, {})'.format(
     amqp['major-version'], amqp['minor-version'], amqp['revision']))
 new_line()
 
 # Defaults
 comment('RabbitMQ Defaults')
 new_line("DEFAULT_HOST = 'localhost'")
-new_line('DEFAULT_PORT = %i' % amqp['port'])
+new_line('DEFAULT_PORT = {}'.format(amqp['port']))
 new_line("DEFAULT_USER = 'guest'")
 new_line("DEFAULT_PASS = 'guest'")
 new_line("DEFAULT_VHOST = '/'")
@@ -370,9 +330,12 @@ for constant in amqp['constants']:
         doc = get_documentation({'constant': constant['name'].lower()})
         if doc:
             comment(doc)
-        new_line('%s = %i' % (dashify(constant['name']), constant['value']))
+        new_line('{} = {}'.format(dashify(constant['name']), constant['value']))
 new_line()
+
 comment('Not included in the spec XML or JSON files.')
+new_line("FRAME_END_CHAR = b'\\xce'")
+new_line('FRAME_HEADER_SIZE = 7')
 new_line('FRAME_MAX_SIZE = 131072')
 new_line()
 
@@ -381,48 +344,37 @@ data_types = []
 domains = []
 for domain, data_type in amqp['domains']:
     if domain == data_type:
-        data_types.append("              '%s'," % domain)
+        data_types.append("              '{}',".format(domain))
     else:
         doc = get_documentation({'domain': domain})
         if doc:
             comments = get_comments(doc, 18)
             for line in comments:
                 domains.append(line)
-        domains.append("           '%s': '%s'," % (domain, data_type))
+        domains.append("           '{}': '{}',".format(domain, data_type))
 
 comment('AMQP data types')
-data_types[0] = data_types[0].replace('              ',
-                                      'DATA_TYPES = [')
+data_types[0] = data_types[0].replace('              ', 'DATA_TYPES = [')
 data_types[-1] = data_types[-1].replace(',', ']')
 output += data_types
 new_line()
 
 comment('AMQP domains')
-domains[0] = domains[0].replace('           ',
-                                'DOMAINS = {')
-
+domains[0] = domains[0].replace('           ', 'DOMAINS = {')
 domains[-1] = domains[-1].replace(',', '}')
 output += domains
 new_line()
 
 comment('Other constants')
-# Deprecation Warning
 
+# Deprecation Warning
 AMQP_VERSION = ('-'.join([str(amqp['major-version']),
                           str(amqp['minor-version']),
                           str(amqp['revision'])]))
-DEPRECATION_WARNING = 'This command is deprecated in AMQP %s' % AMQP_VERSION
-
-new_line("DEPRECATION_WARNING = '%s'" % DEPRECATION_WARNING)
+DEPRECATION_WARNING = 'This command is deprecated in AMQP {}'.format(
+        AMQP_VERSION)
+new_line("DEPRECATION_WARNING = '{}'".format(DEPRECATION_WARNING))
 new_line()
-
-
-# Prepend the content from the files specified
-for filename in PREPEND:
-    with open(filename, 'r') as handle:
-        content = handle.read()
-        for line in content.split('\n'):
-            new_line(line)
 
 # Exceptions
 new_line()
@@ -432,12 +384,12 @@ for constant in amqp['constants']:
     if 'class' in constant:
         class_name = classify(constant['name'])
         if constant['class'] == 'soft-error':
-            extends = 'AMQPSoftError'
+            extends = 'exceptions.AMQPSoftError'
         elif constant['class'] == 'hard-error':
-            extends = 'AMQPHardError'
+            extends = 'exceptions.AMQPHardError'
         else:
             raise ValueError('Unexpected class: %s', constant['class'])
-        new_line('class AMQP%s(%s):' % (class_name, extends))
+        new_line('class AMQP{}({}):'.format(class_name, extends))
         new_line('    """')
         # Look to see if documented & if so, provide the doc as a comment
         doc = get_documentation({'constant': constant['name'].lower()})
@@ -460,7 +412,7 @@ for constant in amqp['constants']:
 error_lines = []
 for error_code in errors.keys():
     error_lines.append(
-        '          %i: AMQP%s,' % (error_code, errors[error_code]))
+        '          {}: AMQP{},'.format(error_code, errors[error_code]))
 comment('AMQP Error code to class mapping')
 error_lines[0] = error_lines[0].replace('          ', 'ERRORS = {')
 error_lines[-1] = error_lines[-1].replace(',', '}')
@@ -511,7 +463,7 @@ for class_name in class_list:
     # Build the list of methods
     methods = []
     for method in definition['methods']:
-        new_line('class %s(Frame):' %
+        new_line('class %s(base.Frame):' %
                  pep8_class_name(method['name']), indent)
         indent += 4
 
@@ -569,29 +521,44 @@ for class_name in class_list:
 
         arguments = []
         type_keyword = False
-        for argument in method['arguments']:
-            name = argument_name(argument['name'])
-            if name == 'type' and class_name == 'exchange':
-                name = 'exchange_type'
-                type_keyword = True
-            arguments.append("'%s'," % name)
-
-        if arguments:
-            comment('AMQP Method Attributes', indent)
-            arguments[-1] = arguments[-1].replace(',', ']')
-            new_line('__slots__ = [' + arguments.pop(0), indent)
-            for line in arguments:
-                new_line(line, indent + 13)
-            new_line()
 
         if method['arguments']:
-            comment('Class Attribute Types', indent)
+            comment('AMQ Method Attributes', indent)
+            new_line('__slots__ = [', indent)
+            for arg in method['arguments']:
+                name = argument_name(arg['name'])
+                if name == 'type' and class_name == 'exchange':
+                    name = 'exchange_type'
+                if arg == method['arguments'][-1]:
+                    new_line('{!r}'.format(name), indent + 4)
+                else:
+                    new_line('{!r},'.format(name), indent + 4)
+            new_line(']', indent)
+            new_line()
+
+            comment('Attribute Typing', indent)
+            new_line('__annotations__ = {', indent)
+            for arg in method['arguments']:
+                name = argument_name(arg['name'])
+                if name == 'type' and class_name == 'exchange':
+                    name = 'exchange_type'
+                if arg == method['arguments'][-1]:
+                    new_line("{!r}: {}".format(name, arg_annotation(arg)),
+                             indent + 4)
+                else:
+                    new_line("{!r}: {},".format(name, arg_annotation(arg)),
+                             indent + 4)
+            new_line('}', indent)
+            new_line()
+
+            comment('Attribute AMQ Types', indent)
             for argument in method['arguments']:
                 name = argument_name(argument['name'])
                 if name == 'type' and class_name == 'exchange':
                     name = 'exchange_type'
-                new_line("_%s = '%s'" % (name, get_argument_type(argument)),
-                         indent)
+                new_line(
+                    "_{} = '{}'".format(name, get_argument_type(argument)),
+                    indent)
             new_line()
 
         # Function definition
@@ -620,23 +587,17 @@ for class_name in class_list:
             new_line()
             for argument in method['arguments']:
                 name = argument_name(argument['name'])
-
                 if name == 'type' and class_name == 'exchange':
                     name = 'exchange_type'
-
                 label = get_label({'class': class_name,
                                    'method': method['name'],
                                    'field': argument['name']})
                 if label:
-                    new_line(':param %s %s: %s' %
-                             (get_argument_type_doc(argument), name, label),
+                    new_line(':param {}: {}'.format(name, label),
                              indent, indent + 4)
                 else:
-                    new_line(
-                        ':param %s %s:' % (
-                            get_argument_type_doc(argument),
-                            argument['name']),
-                        indent, indent + 4)
+                    new_line(':param {}:'.format(argument['name']),
+                             indent, indent + 4)
 
             # Note the deprecation warning in the docblock
             if method_xml and 'deprecated' in method_xml[0].attrib and \
@@ -663,14 +624,15 @@ for class_name in class_list:
                                  'method': method['name'],
                                  'field': argument['name']})
                 if doc:
+                    if argument != method['arguments'][0]:
+                        new_line()
                     comment(doc, indent)
-
                 if (isinstance(argument.get('default-value'), dict) and
                         not argument.get('default-value')):
                     new_line('self.%s = %s or {}' % (name, name), indent)
                 else:
                     new_line('self.%s = %s' % (name, name), indent)
-                new_line()
+            new_line()
 
             # Check if we're deprecated and warn if so
             if deprecated:
@@ -686,7 +648,7 @@ for class_name in class_list:
         indent -= 4
 
     if 'properties' in definition and definition['properties']:
-        new_line('class Properties(PropertiesBase):', indent)
+        new_line('class Properties(base.BasicProperties):', indent)
         indent += 4
         comment('"""Content Properties"""', indent, '')
         new_line()
@@ -757,11 +719,9 @@ for class_name in class_list:
             name = argument_name(argument['name'])
             if name == 'type':
                 name = 'message_type'
-            label = get_label({'class': class_name,
-                               'field': argument['name']})
+            label = get_label({'class': class_name, 'field': argument['name']})
             if label:
-                line = ':param %s %s: %s' % (get_argument_type_doc(argument),
-                                             name, label or None)
+                line = ':param {}: {}'.format(name, label or '')
                 new_line(line.strip(), indent)
 
         new_line()
@@ -800,7 +760,6 @@ mapping[-1] = mapping[-1].replace(',', '}')
 output += mapping
 new_line()
 
-# Spit out the file
-output_string = '\n'.join(output)
-with open(CODEGEN_OUTPUT, 'w') as handle:
-    handle.write(output_string)
+code = yapf_api.FormatCode('\n'.join(output), style_config='pep8')
+with CODEGEN_OUTPUT.open('w') as handle:
+    handle.write(code[0])

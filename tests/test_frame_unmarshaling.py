@@ -1,13 +1,9 @@
 # -*- encoding: utf-8 -*-
+import datetime
 import time
 import unittest
 
-from pamqp import body, frame, header, PYTHON3, specification
-
-if PYTHON3:
-    long = int
-    basestring = str
-    unicode = None
+from pamqp import body, frame, header, specification
 
 
 class DemarshalingTests(unittest.TestCase):
@@ -332,8 +328,8 @@ class DemarshalingTests(unittest.TestCase):
             'content_type': 'application/json',
             'content_encoding': 'gzip',
             'headers': {
-                'foo': b'bar',
-                'baz': b'Test \xe2\x9c\x88'
+                'foo': 'bar',
+                'baz': 'Test ✈'
             },
             'delivery_mode': 1,
             'priority': 0,
@@ -341,7 +337,7 @@ class DemarshalingTests(unittest.TestCase):
             'reply_to': 'unmarshaling_tests',
             'expiration': '1345274026',
             'message_id': '746a1902-39dc-47cf-9471-9feecda35660',
-            'timestamp': time.struct_time((2012, 10, 2, 9, 51, 3, 1, 276, 0)),
+            'timestamp': datetime.datetime(2012, 10, 2, 10, 51, 3),
             'message_type': 'unittest',
             'user_id': 'pika',
             'app_id': 'frame_unmarshaling_tests',
@@ -687,18 +683,20 @@ class DemarshalingTests(unittest.TestCase):
     def test_channel_openok(self):
         frame_data = (b'\x01\x00\x01\x00\x00\x00\x08\x00\x14\x00\x0b\x00\x00'
                       b'\x00\x00\xce')
-        expectation = {'channel_id': b''}
+        expectation = {'channel_id': ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
 
         self.assertEqual(
-            consumed, 16, 'Bytes consumed did not match expectation: %i, %i' %
-            (consumed, 16))
+            consumed, 16,
+            'Bytes consumed did not match expectation: {}, {}'.format(
+                consumed, 16))
 
         self.assertEqual(
             channel, 1,
-            'Channel number did not match expectation: %i, %i' % (channel, 1))
+            'Channel number did not match expectation: {}, {}'.format(
+                channel, 1))
 
         # Validate the frame name
         self.assertEqual(frame_obj.name, 'Channel.OpenOk',
@@ -856,7 +854,7 @@ class DemarshalingTests(unittest.TestCase):
     def test_connection_secure(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x08\x00\n\x00\x14\x00\x00'
                       b'\x00\x00\xce')
-        expectation = {'challenge': b''}
+        expectation = {'challenge': ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -880,7 +878,7 @@ class DemarshalingTests(unittest.TestCase):
     def test_connection_secureok(self):
         frame_data = (b'\x01\x00\x00\x00\x00\x00\x08\x00\n\x00\x15\x00\x00'
                       b'\x00\x00\xce')
-        expectation = {'response': b''}
+        expectation = {'response': ''}
 
         # Decode the frame and validate lengths
         consumed, channel, frame_obj = frame.unmarshal(frame_data)
@@ -916,26 +914,22 @@ class DemarshalingTests(unittest.TestCase):
                       b'IN AMQPLAIN\x00\x00\x00\x05en_US\xce')
         expectation = {
             'server_properties': {
-                'information': (b'Licensed under the MPL.  '
-                                b'See http://www.rabbitmq.com/'),
-                'product':
-                b'RabbitMQ',
-                'copyright':
-                b'Copyright (C) 2007-2011 VMware, Inc.',
+                'information': (
+                    'Licensed under the MPL.  See http://www.rabbitmq.com/'),
+                'product': 'RabbitMQ',
+                'copyright': 'Copyright (C) 2007-2011 VMware, Inc.',
                 'capabilities': {
                     'exchange_exchange_bindings': True,
                     'consumer_cancel_notify': True,
                     'publisher_confirms': True,
                     'basic.nack': True
                 },
-                'platform':
-                b'Erlang/OTP',
-                'version':
-                b'2.6.1'
+                'platform': 'Erlang/OTP',
+                'version': '2.6.1'
             },
             'version_minor': 9,
-            'mechanisms': b'PLAIN AMQPLAIN',
-            'locales': b'en_US',
+            'mechanisms': 'PLAIN AMQPLAIN',
+            'locales': 'en_US',
             'version_major': 0
         }
 
@@ -974,17 +968,17 @@ class DemarshalingTests(unittest.TestCase):
             'locale': 'en_US',
             'mechanism': 'PLAIN',
             'client_properties': {
-                'platform': b'Python 2.7.1',
-                'product': b'Pika Python Client Library',
-                'version': b'0.9.6-pre0',
+                'platform': 'Python 2.7.1',
+                'product': 'Pika Python Client Library',
+                'version': '0.9.6-pre0',
                 'capabilities': {
                     'consumer_cancel_notify': True,
                     'publisher_confirms': True,
                     'basic.nack': True
                 },
-                'information': b'See http://pika.github.com'
+                'information': 'See http://pika.github.com'
             },
-            'response': b'\x00guest\x00guest'
+            'response': '\x00guest\x00guest'
         }
 
         # Decode the frame and validate lengths
@@ -1701,3 +1695,23 @@ class DemarshalingTests(unittest.TestCase):
 
         # Validate the unmarshaled data matches the expectation
         self.assertDictEqual(dict(frame_obj), expectation)
+
+    def test_properties(self):
+        props = specification.Basic.Properties(
+            app_id='unittest',
+            content_type='application/json',
+            content_encoding='bzip2',
+            correlation_id='d146482a-42dd-4b8b-a620-63d62ef686f3',
+            delivery_mode=2,
+            expiration='100',
+            headers={'foo': 'Test ✈'},
+            message_id='4b5baed7-66e3-49da-bfe4-20a9651e0db4',
+            message_type='foo',
+            priority=10,
+            reply_to='q1',
+            timestamp=datetime.datetime(2019, 12, 19, 23, 29, 00))
+        ch = frame.marshal(header.ContentHeader(0, 10, props), 1)
+        rt_props = frame.unmarshal(ch)[2].properties
+        print(props.timestamp)
+        print(rt_props.timestamp)
+        self.assertEqual(rt_props, props)
