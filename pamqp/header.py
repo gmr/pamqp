@@ -65,11 +65,10 @@ class ContentHeader:
     """
     name = 'ContentHeader'
 
-    def __init__(
-            self,
-            weight: int = 0,
-            body_size: int = 0,
-            properties: BasicProperties = None):
+    def __init__(self,
+                 weight: int = 0,
+                 body_size: int = 0,
+                 properties: BasicProperties = None):
         """Initialize the Exchange.DeleteOk class
 
          Weight is unused and must be `0`

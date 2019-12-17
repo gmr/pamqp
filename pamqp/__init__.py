@@ -5,7 +5,7 @@ __email__ = 'gavinmroy@gmail.com'
 __since__ = '2011-09-23'
 __version__ = '3.0.0'
 
-
 __all__ = [
     'body', 'decode', 'encode', 'exceptions', 'frame', 'header', 'heartbeat',
-    'specification']
+    'specification'
+]

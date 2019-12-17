@@ -124,8 +124,9 @@ class BasicProperties(_AMQData):
     name = 'BasicProperties'
 
     def __eq__(self, other: BasicProperties):
-        return all(getattr(self, k, None) == getattr(other, k, None)
-                   for k in self.__slots__)
+        return all(
+            getattr(self, k, None) == getattr(other, k, None)
+            for k in self.__slots__)
 
     def encode_property(self, name: str, value: common.FieldValue) -> bytes:
         """Encode a single property value

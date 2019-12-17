@@ -14,7 +14,8 @@ import typing
 from pamqp import common
 
 
-def by_type(value: bytes, data_type: str,
+def by_type(value: bytes,
+            data_type: str,
             offset: int = 0) -> typing.Tuple[int, common.FieldValue]:
     """Decodes values using the specified type"""
     if data_type == 'bit':

@@ -18,6 +18,7 @@ Version History
 - New `pamqp.specifications` build with type annotations and support for `Connection.UpdateSecret` and `Connection.UpdateSecretOk`.
 - Removed the ability to unset a `Basic.Property` by invoking `del properties[key]`
 - Move base classes for frames from `pamqp.specification` to `pamqp.base`
+- Removed the deprecated `pamqp.codec` sub-package
 
 2.3.0 (2019-04-18)
 ------------------

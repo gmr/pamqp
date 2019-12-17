@@ -4,7 +4,6 @@ import struct
 import time
 import typing
 
-
 Timestamp = typing.Union[datetime.datetime, time.struct_time]
 FieldArray = typing.List['FieldValue']
 FieldTable = typing.Union[None, typing.Dict[str, 'FieldValue']]
