@@ -4,17 +4,8 @@ import typing
 
 FieldArray = typing.List['FieldValue']
 FieldTable = typing.Dict[str, 'FieldValue']
-FieldValue = typing.Union[
-    bool,
-    bytearray,
-    decimal.Decimal,
-    float,
-    int,
-    str,
-    None,
-    'FieldArray',
-    'FieldTable'
-]
+FieldValue = typing.Union[bool, bytearray, decimal.Decimal, float, int, str,
+                          None, 'FieldArray', 'FieldTable']
 
 
 class Struct:

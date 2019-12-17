@@ -72,13 +72,13 @@ def decimal(value: _decimal.Decimal) -> bytes:
 
     """
     if not isinstance(value, _decimal.Decimal):
-        raise TypeError(
-            'decimal.Decimal required, received {}'.format(type(value)))
+        raise TypeError('decimal.Decimal required, received {}'.format(
+            type(value)))
     tmp = str(value)
     if '.' in tmp:
         decimals = len(tmp.split('.')[-1])
         value = value.normalize()
-        raw = int(value * (_decimal.Decimal(10) ** decimals))
+        raw = int(value * (_decimal.Decimal(10)**decimals))
         return struct.pack('>Bi', decimals, raw)
     return struct.pack('>Bi', 0, int(value))
 
@@ -230,8 +230,8 @@ def field_array(value: common.FieldArray) -> bytes:
 
     """
     if not isinstance(value, list):
-        raise TypeError(
-            'list of values required, received {}'.format(type(value)))
+        raise TypeError('list of values required, received {}'.format(
+            type(value)))
     data = []
     for item in value:
         data.append(encode_table_value(item))
@@ -324,8 +324,8 @@ def encode_table_value(value):
         result = b'f' + floating_point(value)
     elif isinstance(value, str):
         result = b'S' + long_string(value)
-    elif (isinstance(value, datetime.datetime) or
-          isinstance(value, time.struct_time)):
+    elif (isinstance(value, datetime.datetime)
+          or isinstance(value, time.struct_time)):
         result = b'T' + timestamp(value)
     elif isinstance(value, dict):
         result = b'F' + field_table(value)

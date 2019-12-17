@@ -72,7 +72,7 @@ def decimal(value: bytes) -> typing.Tuple[int, _decimal.Decimal]:
     try:
         decimals = common.Struct.byte.unpack(value[0:1])[0]
         raw = common.Struct.integer.unpack(value[1:5])[0]
-        return 5, _decimal.Decimal(raw) * (_decimal.Decimal(10) ** -decimals)
+        return 5, _decimal.Decimal(raw) * (_decimal.Decimal(10)**-decimals)
     except TypeError:
         raise ValueError('Could not unpack decimal value')
 
