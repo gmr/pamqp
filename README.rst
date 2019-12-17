@@ -20,8 +20,9 @@ Python Versions Supported
 .. |Version| image:: https://img.shields.io/pypi/v/pamqp.svg?
    :target: https://pypi.python.org/pypi/pamqp
 
-.. |Status| image:: https://img.shields.io/travis/gmr/pamqp.svg?
-   :target: https://travis-ci.org/gmr/pamqp
+.. |Status| image:: https://github.com/gmr/pamqp/workflows/Testing/badge.svg?
+   :target: https://github.com/gmr/pamqp/actions?workflow=Testing
+   :alt: Build Status
 
 .. |Coverage| image:: https://img.shields.io/codecov/c/github/gmr/pamqp.svg?
    :target: https://codecov.io/github/gmr/pamqp?branch=master
