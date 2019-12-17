@@ -2,7 +2,7 @@ Version History
 ===============
 
 3.0.0a0 (2019-12-16)
-------------------
+--------------------
 - Update to support Python 3.6+ only
 - Remove convenience exports of `pamqp.headers.ContentHeader` and `pamqp.header.ProtocolHeader`
 - Remove `pamqp.constants`
