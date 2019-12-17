@@ -8,504 +8,561 @@ from pamqp import specification
 
 class ArgumentTypeTests(unittest.TestCase):
     def test_basic_ack_has_delivery_tag(self):
-        self.assertEqual(specification.Basic.Ack.type('delivery_tag'),
+        self.assertEqual(specification.Basic.Ack.amqp_type('delivery_tag'),
                          'longlong')
 
     def test_basic_ack_has_multiple(self):
-        self.assertEqual(specification.Basic.Ack.type('multiple'), 'bit')
+        self.assertEqual(specification.Basic.Ack.amqp_type('multiple'), 'bit')
 
     def test_basic_cancel_has_consumer_tag(self):
-        self.assertEqual(specification.Basic.Cancel.type('consumer_tag'),
+        self.assertEqual(specification.Basic.Cancel.amqp_type('consumer_tag'),
                          'shortstr')
 
     def test_basic_cancel_has_nowait(self):
-        self.assertEqual(specification.Basic.Cancel.type('nowait'), 'bit')
+        self.assertEqual(specification.Basic.Cancel.amqp_type('nowait'), 'bit')
 
     def test_basic_cancelok_has_consumer_tag(self):
-        self.assertEqual(specification.Basic.CancelOk.type('consumer_tag'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Basic.CancelOk.amqp_type('consumer_tag'), 'shortstr')
 
     def test_basic_consume_has_ticket(self):
-        self.assertEqual(specification.Basic.Consume.type('ticket'), 'short')
+        self.assertEqual(specification.Basic.Consume.amqp_type('ticket'),
+                         'short')
 
     def test_basic_consume_has_queue(self):
-        self.assertEqual(specification.Basic.Consume.type('queue'), 'shortstr')
+        self.assertEqual(specification.Basic.Consume.amqp_type('queue'),
+                         'shortstr')
 
     def test_basic_consume_has_consumer_tag(self):
-        self.assertEqual(specification.Basic.Consume.type('consumer_tag'),
+        self.assertEqual(specification.Basic.Consume.amqp_type('consumer_tag'),
                          'shortstr')
 
     def test_basic_consume_has_no_local(self):
-        self.assertEqual(specification.Basic.Consume.type('no_local'), 'bit')
+        self.assertEqual(specification.Basic.Consume.amqp_type('no_local'),
+                         'bit')
 
     def test_basic_consume_has_no_ack(self):
-        self.assertEqual(specification.Basic.Consume.type('no_ack'), 'bit')
+        self.assertEqual(specification.Basic.Consume.amqp_type('no_ack'),
+                         'bit')
 
     def test_basic_consume_has_exclusive(self):
-        self.assertEqual(specification.Basic.Consume.type('exclusive'), 'bit')
+        self.assertEqual(specification.Basic.Consume.amqp_type('exclusive'),
+                         'bit')
 
     def test_basic_consume_has_nowait(self):
-        self.assertEqual(specification.Basic.Consume.type('nowait'), 'bit')
+        self.assertEqual(specification.Basic.Consume.amqp_type('nowait'),
+                         'bit')
 
     def test_basic_consume_has_arguments(self):
-        self.assertEqual(specification.Basic.Consume.type('arguments'),
+        self.assertEqual(specification.Basic.Consume.amqp_type('arguments'),
                          'table')
 
     def test_basic_consumeok_has_consumer_tag(self):
-        self.assertEqual(specification.Basic.ConsumeOk.type('consumer_tag'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Basic.ConsumeOk.amqp_type('consumer_tag'),
+            'shortstr')
 
     def test_basic_deliver_has_consumer_tag(self):
-        self.assertEqual(specification.Basic.Deliver.type('consumer_tag'),
+        self.assertEqual(specification.Basic.Deliver.amqp_type('consumer_tag'),
                          'shortstr')
 
     def test_basic_deliver_has_delivery_tag(self):
-        self.assertEqual(specification.Basic.Deliver.type('delivery_tag'),
+        self.assertEqual(specification.Basic.Deliver.amqp_type('delivery_tag'),
                          'longlong')
 
     def test_basic_deliver_has_redelivered(self):
-        self.assertEqual(specification.Basic.Deliver.type('redelivered'),
+        self.assertEqual(specification.Basic.Deliver.amqp_type('redelivered'),
                          'bit')
 
     def test_basic_deliver_has_exchange(self):
-        self.assertEqual(specification.Basic.Deliver.type('exchange'),
+        self.assertEqual(specification.Basic.Deliver.amqp_type('exchange'),
                          'shortstr')
 
     def test_basic_deliver_has_routing_key(self):
-        self.assertEqual(specification.Basic.Deliver.type('routing_key'),
+        self.assertEqual(specification.Basic.Deliver.amqp_type('routing_key'),
                          'shortstr')
 
     def test_basic_get_has_ticket(self):
-        self.assertEqual(specification.Basic.Get.type('ticket'), 'short')
+        self.assertEqual(specification.Basic.Get.amqp_type('ticket'), 'short')
 
     def test_basic_get_has_queue(self):
-        self.assertEqual(specification.Basic.Get.type('queue'), 'shortstr')
+        self.assertEqual(specification.Basic.Get.amqp_type('queue'),
+                         'shortstr')
 
     def test_basic_get_has_no_ack(self):
-        self.assertEqual(specification.Basic.Get.type('no_ack'), 'bit')
+        self.assertEqual(specification.Basic.Get.amqp_type('no_ack'), 'bit')
 
     def test_basic_getempty_has_cluster_id(self):
-        self.assertEqual(specification.Basic.GetEmpty.type('cluster_id'),
+        self.assertEqual(specification.Basic.GetEmpty.amqp_type('cluster_id'),
                          'shortstr')
 
     def test_basic_getok_has_delivery_tag(self):
-        self.assertEqual(specification.Basic.GetOk.type('delivery_tag'),
+        self.assertEqual(specification.Basic.GetOk.amqp_type('delivery_tag'),
                          'longlong')
 
     def test_basic_getok_has_redelivered(self):
-        self.assertEqual(specification.Basic.GetOk.type('redelivered'), 'bit')
+        self.assertEqual(specification.Basic.GetOk.amqp_type('redelivered'),
+                         'bit')
 
     def test_basic_getok_has_exchange(self):
-        self.assertEqual(specification.Basic.GetOk.type('exchange'),
+        self.assertEqual(specification.Basic.GetOk.amqp_type('exchange'),
                          'shortstr')
 
     def test_basic_getok_has_routing_key(self):
-        self.assertEqual(specification.Basic.GetOk.type('routing_key'),
+        self.assertEqual(specification.Basic.GetOk.amqp_type('routing_key'),
                          'shortstr')
 
     def test_basic_getok_has_message_count(self):
-        self.assertEqual(specification.Basic.GetOk.type('message_count'),
+        self.assertEqual(specification.Basic.GetOk.amqp_type('message_count'),
                          'long')
 
     def test_basic_nack_has_delivery_tag(self):
-        self.assertEqual(specification.Basic.Nack.type('delivery_tag'),
+        self.assertEqual(specification.Basic.Nack.amqp_type('delivery_tag'),
                          'longlong')
 
     def test_basic_nack_has_multiple(self):
-        self.assertEqual(specification.Basic.Nack.type('multiple'), 'bit')
+        self.assertEqual(specification.Basic.Nack.amqp_type('multiple'), 'bit')
 
     def test_basic_nack_has_requeue(self):
-        self.assertEqual(specification.Basic.Nack.type('requeue'), 'bit')
+        self.assertEqual(specification.Basic.Nack.amqp_type('requeue'), 'bit')
 
     def test_basic_publish_has_ticket(self):
-        self.assertEqual(specification.Basic.Publish.type('ticket'), 'short')
+        self.assertEqual(specification.Basic.Publish.amqp_type('ticket'),
+                         'short')
 
     def test_basic_publish_has_exchange(self):
-        self.assertEqual(specification.Basic.Publish.type('exchange'),
+        self.assertEqual(specification.Basic.Publish.amqp_type('exchange'),
                          'shortstr')
 
     def test_basic_publish_has_routing_key(self):
-        self.assertEqual(specification.Basic.Publish.type('routing_key'),
+        self.assertEqual(specification.Basic.Publish.amqp_type('routing_key'),
                          'shortstr')
 
     def test_basic_publish_has_mandatory(self):
-        self.assertEqual(specification.Basic.Publish.type('mandatory'), 'bit')
+        self.assertEqual(specification.Basic.Publish.amqp_type('mandatory'),
+                         'bit')
 
     def test_basic_publish_has_immediate(self):
-        self.assertEqual(specification.Basic.Publish.type('immediate'), 'bit')
+        self.assertEqual(specification.Basic.Publish.amqp_type('immediate'),
+                         'bit')
 
     def test_basic_qos_has_prefetch_size(self):
-        self.assertEqual(specification.Basic.Qos.type('prefetch_size'), 'long')
+        self.assertEqual(specification.Basic.Qos.amqp_type('prefetch_size'),
+                         'long')
 
     def test_basic_qos_has_prefetch_count(self):
-        self.assertEqual(specification.Basic.Qos.type('prefetch_count'),
+        self.assertEqual(specification.Basic.Qos.amqp_type('prefetch_count'),
                          'short')
 
     def test_basic_qos_has_global_(self):
-        self.assertEqual(specification.Basic.Qos.type('global_'), 'bit')
+        self.assertEqual(specification.Basic.Qos.amqp_type('global_'), 'bit')
 
     def test_basic_recover_has_requeue(self):
-        self.assertEqual(specification.Basic.Recover.type('requeue'), 'bit')
+        self.assertEqual(specification.Basic.Recover.amqp_type('requeue'),
+                         'bit')
 
     def test_basic_recoverasync_has_requeue(self):
-        self.assertEqual(specification.Basic.RecoverAsync.type('requeue'),
+        self.assertEqual(specification.Basic.RecoverAsync.amqp_type('requeue'),
                          'bit')
 
     def test_basic_reject_has_delivery_tag(self):
-        self.assertEqual(specification.Basic.Reject.type('delivery_tag'),
+        self.assertEqual(specification.Basic.Reject.amqp_type('delivery_tag'),
                          'longlong')
 
     def test_basic_reject_has_requeue(self):
-        self.assertEqual(specification.Basic.Reject.type('requeue'), 'bit')
+        self.assertEqual(specification.Basic.Reject.amqp_type('requeue'),
+                         'bit')
 
     def test_basic_return_has_reply_code(self):
-        self.assertEqual(specification.Basic.Return.type('reply_code'),
+        self.assertEqual(specification.Basic.Return.amqp_type('reply_code'),
                          'short')
 
     def test_basic_return_has_reply_text(self):
-        self.assertEqual(specification.Basic.Return.type('reply_text'),
+        self.assertEqual(specification.Basic.Return.amqp_type('reply_text'),
                          'shortstr')
 
     def test_basic_return_has_exchange(self):
-        self.assertEqual(specification.Basic.Return.type('exchange'),
+        self.assertEqual(specification.Basic.Return.amqp_type('exchange'),
                          'shortstr')
 
     def test_basic_return_has_routing_key(self):
-        self.assertEqual(specification.Basic.Return.type('routing_key'),
+        self.assertEqual(specification.Basic.Return.amqp_type('routing_key'),
                          'shortstr')
 
     def test_channel_close_has_reply_code(self):
-        self.assertEqual(specification.Channel.Close.type('reply_code'),
+        self.assertEqual(specification.Channel.Close.amqp_type('reply_code'),
                          'short')
 
     def test_channel_close_has_reply_text(self):
-        self.assertEqual(specification.Channel.Close.type('reply_text'),
+        self.assertEqual(specification.Channel.Close.amqp_type('reply_text'),
                          'shortstr')
 
     def test_channel_close_has_class_id(self):
-        self.assertEqual(specification.Channel.Close.type('class_id'), 'short')
+        self.assertEqual(specification.Channel.Close.amqp_type('class_id'),
+                         'short')
 
     def test_channel_close_has_method_id(self):
-        self.assertEqual(specification.Channel.Close.type('method_id'),
+        self.assertEqual(specification.Channel.Close.amqp_type('method_id'),
                          'short')
 
     def test_channel_flow_has_active(self):
-        self.assertEqual(specification.Channel.Flow.type('active'), 'bit')
+        self.assertEqual(specification.Channel.Flow.amqp_type('active'), 'bit')
 
     def test_channel_flowok_has_active(self):
-        self.assertEqual(specification.Channel.FlowOk.type('active'), 'bit')
+        self.assertEqual(specification.Channel.FlowOk.amqp_type('active'),
+                         'bit')
 
     def test_channel_open_has_out_of_band(self):
-        self.assertEqual(specification.Channel.Open.type('out_of_band'),
+        self.assertEqual(specification.Channel.Open.amqp_type('out_of_band'),
                          'shortstr')
 
     def test_channel_openok_has_channel_id(self):
-        self.assertEqual(specification.Channel.OpenOk.type('channel_id'),
+        self.assertEqual(specification.Channel.OpenOk.amqp_type('channel_id'),
                          'longstr')
 
     def test_confirm_select_has_nowait(self):
-        self.assertEqual(specification.Confirm.Select.type('nowait'), 'bit')
+        self.assertEqual(specification.Confirm.Select.amqp_type('nowait'),
+                         'bit')
 
     def test_connection_blocked_has_reason(self):
-        self.assertEqual(specification.Connection.Blocked.type('reason'),
+        self.assertEqual(specification.Connection.Blocked.amqp_type('reason'),
                          'shortstr')
 
     def test_connection_close_has_reply_code(self):
-        self.assertEqual(specification.Connection.Close.type('reply_code'),
-                         'short')
+        self.assertEqual(
+            specification.Connection.Close.amqp_type('reply_code'), 'short')
 
     def test_connection_close_has_reply_text(self):
-        self.assertEqual(specification.Connection.Close.type('reply_text'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Connection.Close.amqp_type('reply_text'), 'shortstr')
 
     def test_connection_close_has_class_id(self):
-        self.assertEqual(specification.Connection.Close.type('class_id'),
+        self.assertEqual(specification.Connection.Close.amqp_type('class_id'),
                          'short')
 
     def test_connection_close_has_method_id(self):
-        self.assertEqual(specification.Connection.Close.type('method_id'),
+        self.assertEqual(specification.Connection.Close.amqp_type('method_id'),
                          'short')
 
     def test_connection_open_has_virtual_host(self):
-        self.assertEqual(specification.Connection.Open.type('virtual_host'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Connection.Open.amqp_type('virtual_host'),
+            'shortstr')
 
     def test_connection_open_has_capabilities(self):
-        self.assertEqual(specification.Connection.Open.type('capabilities'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Connection.Open.amqp_type('capabilities'),
+            'shortstr')
 
     def test_connection_open_has_insist(self):
-        self.assertEqual(specification.Connection.Open.type('insist'), 'bit')
+        self.assertEqual(specification.Connection.Open.amqp_type('insist'),
+                         'bit')
 
     def test_connection_openok_has_known_hosts(self):
-        self.assertEqual(specification.Connection.OpenOk.type('known_hosts'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Connection.OpenOk.amqp_type('known_hosts'),
+            'shortstr')
 
     def test_connection_secure_has_challenge(self):
-        self.assertEqual(specification.Connection.Secure.type('challenge'),
-                         'longstr')
+        self.assertEqual(
+            specification.Connection.Secure.amqp_type('challenge'), 'longstr')
 
     def test_connection_secureok_has_response(self):
-        self.assertEqual(specification.Connection.SecureOk.type('response'),
-                         'longstr')
+        self.assertEqual(
+            specification.Connection.SecureOk.amqp_type('response'), 'longstr')
 
     def test_connection_start_has_version_major(self):
-        self.assertEqual(specification.Connection.Start.type('version_major'),
-                         'octet')
+        self.assertEqual(
+            specification.Connection.Start.amqp_type('version_major'), 'octet')
 
     def test_connection_start_has_version_minor(self):
-        self.assertEqual(specification.Connection.Start.type('version_minor'),
-                         'octet')
+        self.assertEqual(
+            specification.Connection.Start.amqp_type('version_minor'), 'octet')
 
     def test_connection_start_has_server_properties(self):
         self.assertEqual(
-            specification.Connection.Start.type('server_properties'), 'table')
+            specification.Connection.Start.amqp_type('server_properties'),
+            'table')
 
     def test_connection_start_has_mechanisms(self):
-        self.assertEqual(specification.Connection.Start.type('mechanisms'),
-                         'longstr')
+        self.assertEqual(
+            specification.Connection.Start.amqp_type('mechanisms'), 'longstr')
 
     def test_connection_start_has_locales(self):
-        self.assertEqual(specification.Connection.Start.type('locales'),
+        self.assertEqual(specification.Connection.Start.amqp_type('locales'),
                          'longstr')
 
     def test_connection_startok_has_client_properties(self):
         self.assertEqual(
-            specification.Connection.StartOk.type('client_properties'),
+            specification.Connection.StartOk.amqp_type('client_properties'),
             'table')
 
     def test_connection_startok_has_mechanism(self):
-        self.assertEqual(specification.Connection.StartOk.type('mechanism'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Connection.StartOk.amqp_type('mechanism'),
+            'shortstr')
 
     def test_connection_startok_has_response(self):
-        self.assertEqual(specification.Connection.StartOk.type('response'),
-                         'longstr')
+        self.assertEqual(
+            specification.Connection.StartOk.amqp_type('response'), 'longstr')
 
     def test_connection_startok_has_locale(self):
-        self.assertEqual(specification.Connection.StartOk.type('locale'),
+        self.assertEqual(specification.Connection.StartOk.amqp_type('locale'),
                          'shortstr')
 
+    def test_connection_update_secret(self):
+        self.assertEqual(
+            specification.Connection.UpdateSecret.amqp_type('new_secret'),
+            'longstr')
+
     def test_connection_tune_has_channel_max(self):
-        self.assertEqual(specification.Connection.Tune.type('channel_max'),
-                         'short')
+        self.assertEqual(
+            specification.Connection.Tune.amqp_type('channel_max'), 'short')
 
     def test_connection_tune_has_frame_max(self):
-        self.assertEqual(specification.Connection.Tune.type('frame_max'),
+        self.assertEqual(specification.Connection.Tune.amqp_type('frame_max'),
                          'long')
 
     def test_connection_tune_has_heartbeat(self):
-        self.assertEqual(specification.Connection.Tune.type('heartbeat'),
+        self.assertEqual(specification.Connection.Tune.amqp_type('heartbeat'),
                          'short')
 
     def test_connection_tuneok_has_channel_max(self):
-        self.assertEqual(specification.Connection.TuneOk.type('channel_max'),
-                         'short')
+        self.assertEqual(
+            specification.Connection.TuneOk.amqp_type('channel_max'), 'short')
 
     def test_connection_tuneok_has_frame_max(self):
-        self.assertEqual(specification.Connection.TuneOk.type('frame_max'),
-                         'long')
+        self.assertEqual(
+            specification.Connection.TuneOk.amqp_type('frame_max'), 'long')
 
     def test_connection_tuneok_has_heartbeat(self):
-        self.assertEqual(specification.Connection.TuneOk.type('heartbeat'),
-                         'short')
+        self.assertEqual(
+            specification.Connection.TuneOk.amqp_type('heartbeat'), 'short')
 
     def test_exchange_bind_has_ticket(self):
-        self.assertEqual(specification.Exchange.Bind.type('ticket'), 'short')
+        self.assertEqual(specification.Exchange.Bind.amqp_type('ticket'),
+                         'short')
 
     def test_exchange_bind_has_destination(self):
-        self.assertEqual(specification.Exchange.Bind.type('destination'),
+        self.assertEqual(specification.Exchange.Bind.amqp_type('destination'),
                          'shortstr')
 
     def test_exchange_bind_has_source(self):
-        self.assertEqual(specification.Exchange.Bind.type('source'),
+        self.assertEqual(specification.Exchange.Bind.amqp_type('source'),
                          'shortstr')
 
     def test_exchange_bind_has_routing_key(self):
-        self.assertEqual(specification.Exchange.Bind.type('routing_key'),
+        self.assertEqual(specification.Exchange.Bind.amqp_type('routing_key'),
                          'shortstr')
 
     def test_exchange_bind_has_nowait(self):
-        self.assertEqual(specification.Exchange.Bind.type('nowait'), 'bit')
+        self.assertEqual(specification.Exchange.Bind.amqp_type('nowait'),
+                         'bit')
 
     def test_exchange_bind_has_arguments(self):
-        self.assertEqual(specification.Exchange.Bind.type('arguments'),
+        self.assertEqual(specification.Exchange.Bind.amqp_type('arguments'),
                          'table')
 
     def test_exchange_declare_has_ticket(self):
-        self.assertEqual(specification.Exchange.Declare.type('ticket'),
+        self.assertEqual(specification.Exchange.Declare.amqp_type('ticket'),
                          'short')
 
     def test_exchange_declare_has_exchange(self):
-        self.assertEqual(specification.Exchange.Declare.type('exchange'),
+        self.assertEqual(specification.Exchange.Declare.amqp_type('exchange'),
                          'shortstr')
 
     def test_exchange_declare_has_exchange_type(self):
-        self.assertEqual(specification.Exchange.Declare.type('exchange_type'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Exchange.Declare.amqp_type('exchange_type'),
+            'shortstr')
 
     def test_exchange_declare_has_passive(self):
-        self.assertEqual(specification.Exchange.Declare.type('passive'), 'bit')
-
-    def test_exchange_declare_has_durable(self):
-        self.assertEqual(specification.Exchange.Declare.type('durable'), 'bit')
-
-    def test_exchange_declare_has_auto_delete(self):
-        self.assertEqual(specification.Exchange.Declare.type('auto_delete'),
+        self.assertEqual(specification.Exchange.Declare.amqp_type('passive'),
                          'bit')
 
+    def test_exchange_declare_has_durable(self):
+        self.assertEqual(specification.Exchange.Declare.amqp_type('durable'),
+                         'bit')
+
+    def test_exchange_declare_has_auto_delete(self):
+        self.assertEqual(
+            specification.Exchange.Declare.amqp_type('auto_delete'), 'bit')
+
     def test_exchange_declare_has_internal(self):
-        self.assertEqual(specification.Exchange.Declare.type('internal'),
+        self.assertEqual(specification.Exchange.Declare.amqp_type('internal'),
                          'bit')
 
     def test_exchange_declare_has_nowait(self):
-        self.assertEqual(specification.Exchange.Declare.type('nowait'), 'bit')
+        self.assertEqual(specification.Exchange.Declare.amqp_type('nowait'),
+                         'bit')
 
     def test_exchange_declare_has_arguments(self):
-        self.assertEqual(specification.Exchange.Declare.type('arguments'),
+        self.assertEqual(specification.Exchange.Declare.amqp_type('arguments'),
                          'table')
 
     def test_exchange_delete_has_ticket(self):
-        self.assertEqual(specification.Exchange.Delete.type('ticket'), 'short')
+        self.assertEqual(specification.Exchange.Delete.amqp_type('ticket'),
+                         'short')
 
     def test_exchange_delete_has_exchange(self):
-        self.assertEqual(specification.Exchange.Delete.type('exchange'),
+        self.assertEqual(specification.Exchange.Delete.amqp_type('exchange'),
                          'shortstr')
 
     def test_exchange_delete_has_if_unused(self):
-        self.assertEqual(specification.Exchange.Delete.type('if_unused'),
+        self.assertEqual(specification.Exchange.Delete.amqp_type('if_unused'),
                          'bit')
 
     def test_exchange_delete_has_nowait(self):
-        self.assertEqual(specification.Exchange.Delete.type('nowait'), 'bit')
+        self.assertEqual(specification.Exchange.Delete.amqp_type('nowait'),
+                         'bit')
 
     def test_exchange_unbind_has_ticket(self):
-        self.assertEqual(specification.Exchange.Unbind.type('ticket'), 'short')
+        self.assertEqual(specification.Exchange.Unbind.amqp_type('ticket'),
+                         'short')
 
     def test_exchange_unbind_has_destination(self):
-        self.assertEqual(specification.Exchange.Unbind.type('destination'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Exchange.Unbind.amqp_type('destination'), 'shortstr')
 
     def test_exchange_unbind_has_source(self):
-        self.assertEqual(specification.Exchange.Unbind.type('source'),
+        self.assertEqual(specification.Exchange.Unbind.amqp_type('source'),
                          'shortstr')
 
     def test_exchange_unbind_has_routing_key(self):
-        self.assertEqual(specification.Exchange.Unbind.type('routing_key'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Exchange.Unbind.amqp_type('routing_key'), 'shortstr')
 
     def test_exchange_unbind_has_nowait(self):
-        self.assertEqual(specification.Exchange.Unbind.type('nowait'), 'bit')
+        self.assertEqual(specification.Exchange.Unbind.amqp_type('nowait'),
+                         'bit')
 
     def test_exchange_unbind_has_arguments(self):
-        self.assertEqual(specification.Exchange.Unbind.type('arguments'),
+        self.assertEqual(specification.Exchange.Unbind.amqp_type('arguments'),
                          'table')
 
     def test_queue_bind_has_ticket(self):
-        self.assertEqual(specification.Queue.Bind.type('ticket'), 'short')
+        self.assertEqual(specification.Queue.Bind.amqp_type('ticket'), 'short')
 
     def test_queue_bind_has_queue(self):
-        self.assertEqual(specification.Queue.Bind.type('queue'), 'shortstr')
+        self.assertEqual(specification.Queue.Bind.amqp_type('queue'),
+                         'shortstr')
 
     def test_queue_bind_has_exchange(self):
-        self.assertEqual(specification.Queue.Bind.type('exchange'), 'shortstr')
+        self.assertEqual(specification.Queue.Bind.amqp_type('exchange'),
+                         'shortstr')
 
     def test_queue_bind_has_routing_key(self):
-        self.assertEqual(specification.Queue.Bind.type('routing_key'),
+        self.assertEqual(specification.Queue.Bind.amqp_type('routing_key'),
                          'shortstr')
 
     def test_queue_bind_has_nowait(self):
-        self.assertEqual(specification.Queue.Bind.type('nowait'), 'bit')
+        self.assertEqual(specification.Queue.Bind.amqp_type('nowait'), 'bit')
 
     def test_queue_bind_has_arguments(self):
-        self.assertEqual(specification.Queue.Bind.type('arguments'), 'table')
+        self.assertEqual(specification.Queue.Bind.amqp_type('arguments'),
+                         'table')
 
     def test_queue_declare_has_ticket(self):
-        self.assertEqual(specification.Queue.Declare.type('ticket'), 'short')
+        self.assertEqual(specification.Queue.Declare.amqp_type('ticket'),
+                         'short')
 
     def test_queue_declare_has_queue(self):
-        self.assertEqual(specification.Queue.Declare.type('queue'), 'shortstr')
+        self.assertEqual(specification.Queue.Declare.amqp_type('queue'),
+                         'shortstr')
 
     def test_queue_declare_has_passive(self):
-        self.assertEqual(specification.Queue.Declare.type('passive'), 'bit')
+        self.assertEqual(specification.Queue.Declare.amqp_type('passive'),
+                         'bit')
 
     def test_queue_declare_has_durable(self):
-        self.assertEqual(specification.Queue.Declare.type('durable'), 'bit')
+        self.assertEqual(specification.Queue.Declare.amqp_type('durable'),
+                         'bit')
 
     def test_queue_declare_has_exclusive(self):
-        self.assertEqual(specification.Queue.Declare.type('exclusive'), 'bit')
+        self.assertEqual(specification.Queue.Declare.amqp_type('exclusive'),
+                         'bit')
 
     def test_queue_declare_has_auto_delete(self):
-        self.assertEqual(specification.Queue.Declare.type('auto_delete'),
+        self.assertEqual(specification.Queue.Declare.amqp_type('auto_delete'),
                          'bit')
 
     def test_queue_declare_has_nowait(self):
-        self.assertEqual(specification.Queue.Declare.type('nowait'), 'bit')
+        self.assertEqual(specification.Queue.Declare.amqp_type('nowait'),
+                         'bit')
 
     def test_queue_declare_has_arguments(self):
-        self.assertEqual(specification.Queue.Declare.type('arguments'),
+        self.assertEqual(specification.Queue.Declare.amqp_type('arguments'),
                          'table')
 
     def test_queue_declareok_has_queue(self):
-        self.assertEqual(specification.Queue.DeclareOk.type('queue'),
+        self.assertEqual(specification.Queue.DeclareOk.amqp_type('queue'),
                          'shortstr')
 
     def test_queue_declareok_has_message_count(self):
-        self.assertEqual(specification.Queue.DeclareOk.type('message_count'),
-                         'long')
+        self.assertEqual(
+            specification.Queue.DeclareOk.amqp_type('message_count'), 'long')
 
     def test_queue_declareok_has_consumer_count(self):
-        self.assertEqual(specification.Queue.DeclareOk.type('consumer_count'),
-                         'long')
+        self.assertEqual(
+            specification.Queue.DeclareOk.amqp_type('consumer_count'), 'long')
 
     def test_queue_delete_has_ticket(self):
-        self.assertEqual(specification.Queue.Delete.type('ticket'), 'short')
+        self.assertEqual(specification.Queue.Delete.amqp_type('ticket'),
+                         'short')
 
     def test_queue_delete_has_queue(self):
-        self.assertEqual(specification.Queue.Delete.type('queue'), 'shortstr')
+        self.assertEqual(specification.Queue.Delete.amqp_type('queue'),
+                         'shortstr')
 
     def test_queue_delete_has_if_unused(self):
-        self.assertEqual(specification.Queue.Delete.type('if_unused'), 'bit')
+        self.assertEqual(specification.Queue.Delete.amqp_type('if_unused'),
+                         'bit')
 
     def test_queue_delete_has_if_empty(self):
-        self.assertEqual(specification.Queue.Delete.type('if_empty'), 'bit')
+        self.assertEqual(specification.Queue.Delete.amqp_type('if_empty'),
+                         'bit')
 
     def test_queue_delete_has_nowait(self):
-        self.assertEqual(specification.Queue.Delete.type('nowait'), 'bit')
+        self.assertEqual(specification.Queue.Delete.amqp_type('nowait'), 'bit')
 
     def test_queue_deleteok_has_message_count(self):
-        self.assertEqual(specification.Queue.DeleteOk.type('message_count'),
-                         'long')
+        self.assertEqual(
+            specification.Queue.DeleteOk.amqp_type('message_count'), 'long')
 
     def test_queue_purge_has_ticket(self):
-        self.assertEqual(specification.Queue.Purge.type('ticket'), 'short')
+        self.assertEqual(specification.Queue.Purge.amqp_type('ticket'),
+                         'short')
 
     def test_queue_purge_has_queue(self):
-        self.assertEqual(specification.Queue.Purge.type('queue'), 'shortstr')
+        self.assertEqual(specification.Queue.Purge.amqp_type('queue'),
+                         'shortstr')
 
     def test_queue_purge_has_nowait(self):
-        self.assertEqual(specification.Queue.Purge.type('nowait'), 'bit')
+        self.assertEqual(specification.Queue.Purge.amqp_type('nowait'), 'bit')
 
     def test_queue_purgeok_has_message_count(self):
-        self.assertEqual(specification.Queue.PurgeOk.type('message_count'),
-                         'long')
+        self.assertEqual(
+            specification.Queue.PurgeOk.amqp_type('message_count'), 'long')
 
     def test_queue_unbind_has_ticket(self):
-        self.assertEqual(specification.Queue.Unbind.type('ticket'), 'short')
+        self.assertEqual(specification.Queue.Unbind.amqp_type('ticket'),
+                         'short')
 
     def test_queue_unbind_has_queue(self):
-        self.assertEqual(specification.Queue.Unbind.type('queue'), 'shortstr')
+        self.assertEqual(specification.Queue.Unbind.amqp_type('queue'),
+                         'shortstr')
 
     def test_queue_unbind_has_exchange(self):
-        self.assertEqual(specification.Queue.Unbind.type('exchange'),
+        self.assertEqual(specification.Queue.Unbind.amqp_type('exchange'),
                          'shortstr')
 
     def test_queue_unbind_has_routing_key(self):
-        self.assertEqual(specification.Queue.Unbind.type('routing_key'),
+        self.assertEqual(specification.Queue.Unbind.amqp_type('routing_key'),
                          'shortstr')
 
     def test_queue_unbind_has_arguments(self):
-        self.assertEqual(specification.Queue.Unbind.type('arguments'), 'table')
+        self.assertEqual(specification.Queue.Unbind.amqp_type('arguments'),
+                         'table')
 
 
 class AttributeInMethodTests(unittest.TestCase):
@@ -920,6 +977,12 @@ class AttributeInMethodTests(unittest.TestCase):
     def test_queue_unbind_has_arguments(self):
         self.assertIn('arguments', specification.Queue.Unbind())
 
+    def test_connection_update_secret_has_new_secret(self):
+        self.assertIn('new_secret', specification.Connection.UpdateSecret())
+
+    def test_connection_update_secret_has_reason(self):
+        self.assertIn('reason', specification.Connection.UpdateSecret())
+
 
 class DeprecationWarningTests(unittest.TestCase):
     def test_basic_recoverasync_raises_deprecation_error(self):
@@ -929,61 +992,64 @@ class DeprecationWarningTests(unittest.TestCase):
 
 class BasicPropertiesTests(unittest.TestCase):
     def test_basic_properties_has_content_type(self):
-        self.assertEqual(specification.Basic.Properties.type('content_type'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Basic.Properties.amqp_type('content_type'),
+            'shortstr')
 
     def test_basic_properties_has_content_encoding(self):
         self.assertEqual(
-            specification.Basic.Properties.type('content_encoding'),
+            specification.Basic.Properties.amqp_type('content_encoding'),
             'shortstr')
 
     def test_basic_properties_has_headers(self):
-        self.assertEqual(specification.Basic.Properties.type('headers'),
+        self.assertEqual(specification.Basic.Properties.amqp_type('headers'),
                          'table')
 
     def test_basic_properties_has_delivery_mode(self):
-        self.assertEqual(specification.Basic.Properties.type('delivery_mode'),
-                         'octet')
+        self.assertEqual(
+            specification.Basic.Properties.amqp_type('delivery_mode'), 'octet')
 
     def test_basic_properties_has_priority(self):
-        self.assertEqual(specification.Basic.Properties.type('priority'),
+        self.assertEqual(specification.Basic.Properties.amqp_type('priority'),
                          'octet')
 
     def test_basic_properties_has_correlation_id(self):
-        self.assertEqual(specification.Basic.Properties.type('correlation_id'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Basic.Properties.amqp_type('correlation_id'),
+            'shortstr')
 
     def test_basic_properties_has_reply_to(self):
-        self.assertEqual(specification.Basic.Properties.type('reply_to'),
+        self.assertEqual(specification.Basic.Properties.amqp_type('reply_to'),
                          'shortstr')
 
     def test_basic_properties_has_expiration(self):
-        self.assertEqual(specification.Basic.Properties.type('expiration'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Basic.Properties.amqp_type('expiration'), 'shortstr')
 
     def test_basic_properties_has_message_id(self):
-        self.assertEqual(specification.Basic.Properties.type('message_id'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Basic.Properties.amqp_type('message_id'), 'shortstr')
 
     def test_basic_properties_has_timestamp(self):
-        self.assertEqual(specification.Basic.Properties.type('timestamp'),
+        self.assertEqual(specification.Basic.Properties.amqp_type('timestamp'),
                          'timestamp')
 
     def test_basic_properties_has_message_type(self):
-        self.assertEqual(specification.Basic.Properties.type('message_type'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Basic.Properties.amqp_type('message_type'),
+            'shortstr')
 
     def test_basic_properties_has_user_id(self):
-        self.assertEqual(specification.Basic.Properties.type('user_id'),
+        self.assertEqual(specification.Basic.Properties.amqp_type('user_id'),
                          'shortstr')
 
     def test_basic_properties_has_app_id(self):
-        self.assertEqual(specification.Basic.Properties.type('app_id'),
+        self.assertEqual(specification.Basic.Properties.amqp_type('app_id'),
                          'shortstr')
 
     def test_basic_properties_has_cluster_id(self):
-        self.assertEqual(specification.Basic.Properties.type('cluster_id'),
-                         'shortstr')
+        self.assertEqual(
+            specification.Basic.Properties.amqp_type('cluster_id'), 'shortstr')
 
 
 class MethodAttributeLengthTests(unittest.TestCase):
@@ -1715,3 +1781,18 @@ class MethodAttributeDefaultTests(unittest.TestCase):
     def test_queue_unbind_default_for_arguments(self):
         obj = specification.Queue.Unbind()
         self.assertDictEqual(obj['arguments'], {})
+
+    def test_basic_properties_repr(self):
+        self.assertTrue(repr(
+            specification.Basic.Properties()).startswith(
+            '<Basic.Properties object'))
+
+    def test_basic_properties_list(self):
+        self.assertEqual(
+            specification.Basic.Properties.attributes(),
+            [
+                'content_type', 'content_encoding', 'headers', 'delivery_mode',
+                'priority', 'correlation_id', 'reply_to', 'expiration',
+                'message_id', 'timestamp', 'message_type', 'user_id', 'app_id',
+                'cluster_id'
+            ])
