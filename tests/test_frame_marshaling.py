@@ -3,7 +3,7 @@ import datetime
 import unittest
 import uuid
 
-from pamqp import body, frame, header, heartbeat, specification
+from pamqp import body, commands, frame, header, heartbeat
 
 
 class MarshalingTests(unittest.TestCase):
@@ -16,7 +16,7 @@ class MarshalingTests(unittest.TestCase):
     def test_basic_ack(self):
         expectation = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00P\x00\x00\x00'
                        b'\x00\x00\x00\x00\x01\x00\xce')
-        frame_obj = specification.Basic.Ack(1, False)
+        frame_obj = commands.Basic.Ack(1, False)
         response = frame.marshal(frame_obj, 1)
         self.assertEqual(response, expectation,
                          'Basic.Ack did not match expectation')
@@ -24,7 +24,7 @@ class MarshalingTests(unittest.TestCase):
     def test_basic_cancel(self):
         expectation = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00\x1e\x07'
                        b'ctag1.0\x00\xce')
-        frame_obj = specification.Basic.Cancel(consumer_tag='ctag1.0')
+        frame_obj = commands.Basic.Cancel(consumer_tag='ctag1.0')
         response = frame.marshal(frame_obj, 1)
         self.assertEqual(response, expectation,
                          'Basic.Cancel did not match expectation')
@@ -32,7 +32,7 @@ class MarshalingTests(unittest.TestCase):
     def test_basic_cancelok(self):
         expectation = (b'\x01\x00\x01\x00\x00\x00\x0c\x00<\x00\x1f\x07'
                        b'ctag1.0\xce')
-        frame_obj = specification.Basic.CancelOk(consumer_tag='ctag1.0')
+        frame_obj = commands.Basic.CancelOk(consumer_tag='ctag1.0')
         response = frame.marshal(frame_obj, 1)
         self.assertEqual(response, expectation,
                          'Basic.Cancel did not match expectation')
@@ -40,7 +40,7 @@ class MarshalingTests(unittest.TestCase):
     def test_basic_consume(self):
         expectation = (b'\x01\x00\x01\x00\x00\x00\x15\x00<\x00\x14\x00'
                        b'\x00\x03bar\x05ctag0\x00\x00\x00\x00\x00\xce')
-        frame_obj = specification.Basic.Consume(0, 'bar', 'ctag0', False,
+        frame_obj = commands.Basic.Consume(0, 'bar', 'ctag0', False,
                                                 False, False, False)
         response = frame.marshal(frame_obj, 1)
         self.assertEqual(response, expectation,
@@ -65,7 +65,7 @@ class MarshalingTests(unittest.TestCase):
                          expectation)
 
     def test_content_header_with_basic_properties(self):
-        props = specification.Basic.Properties(
+        props = commands.Basic.Properties(
             app_id='unittest',
             content_type='application/json',
             content_encoding='bzip2',

@@ -12,8 +12,8 @@ import logging
 import struct
 import typing
 
-from pamqp import (base, body, common, decode, exceptions, header, heartbeat,
-                   specification)
+from pamqp import (base, body, common, commands, constants, decode, exceptions,
+                   header, heartbeat)
 
 LOGGER = logging.getLogger(__name__)
 UNMARSHAL_FAILURE = 0, 0, None
@@ -46,7 +46,7 @@ def unmarshal(data_in: bytes) -> typing.Tuple[int, int, FrameTypes]:
     returning a frame object.
 
     :returns: tuple of  bytes consumed, channel, and a frame object
-    :raises: specification.FrameError
+    :raises: exceptions.UnmarshalingException
 
     """
     try:  # Look to see if it's a protocol header frame
@@ -60,25 +60,25 @@ def unmarshal(data_in: bytes) -> typing.Tuple[int, int, FrameTypes]:
     frame_type, channel_id, frame_size = _frame_parts(data_in)
 
     # Heartbeats do not have frame length indicators
-    if frame_type == specification.FRAME_HEARTBEAT and frame_size == 0:
+    if frame_type == constants.FRAME_HEARTBEAT and frame_size == 0:
         return 8, channel_id, heartbeat.Heartbeat()
 
     if not frame_size:
         raise exceptions.UnmarshalingException('Unknown', 'No frame size')
 
-    byte_count = specification.FRAME_HEADER_SIZE + frame_size + 1
+    byte_count = constants.FRAME_HEADER_SIZE + frame_size + 1
     if byte_count > len(data_in):
         raise exceptions.UnmarshalingException('Unknown',
                                                'Not all data received')
 
-    if data_in[byte_count - 1] != specification.FRAME_END:
+    if data_in[byte_count - 1] != constants.FRAME_END:
         raise exceptions.UnmarshalingException('Unknown', 'Last byte error')
-    frame_data = data_in[specification.FRAME_HEADER_SIZE:byte_count - 1]
-    if frame_type == specification.FRAME_METHOD:
+    frame_data = data_in[constants.FRAME_HEADER_SIZE:byte_count - 1]
+    if frame_type == constants.FRAME_METHOD:
         return byte_count, channel_id, _unmarshal_method_frame(frame_data)
-    elif frame_type == specification.FRAME_HEADER:
+    elif frame_type == constants.FRAME_HEADER:
         return byte_count, channel_id, _unmarshal_header_frame(frame_data)
-    elif frame_type == specification.FRAME_BODY:
+    elif frame_type == constants.FRAME_BODY:
         return byte_count, channel_id, _unmarshal_body_frame(frame_data)
     raise exceptions.UnmarshalingException(
         'Unknown', 'Unknown frame type: {}'.format(frame_type))
@@ -87,7 +87,7 @@ def unmarshal(data_in: bytes) -> typing.Tuple[int, int, FrameTypes]:
 def _frame_parts(data: bytes) -> typing.Tuple[int, int, typing.Optional[int]]:
     """Attempt to decode a low-level frame, returning frame parts"""
     try:  # Get the Frame Type, Channel Number and Frame Size
-        return struct.unpack('>BHI', data[0:specification.FRAME_HEADER_SIZE])
+        return struct.unpack('>BHI', data[0:constants.FRAME_HEADER_SIZE])
     except struct.error:  # Did not receive a full frame
         return UNMARSHAL_FAILURE
 
@@ -96,25 +96,25 @@ def _marshal(frame_type: int, channel_id: int, payload: bytes) -> bytes:
     """Marshal the low-level AMQ frame"""
     return b''.join([
         struct.pack('>BHI', frame_type, channel_id, len(payload)), payload,
-        specification.FRAME_END_CHAR
+        constants.FRAME_END_CHAR
     ])
 
 
 def _marshal_content_body_frame(value: body.ContentBody,
                                 channel_id: int) -> bytes:
     """Marshal as many content body frames as needed to transmit the content"""
-    return _marshal(specification.FRAME_BODY, channel_id, value.marshal())
+    return _marshal(constants.FRAME_BODY, channel_id, value.marshal())
 
 
 def _marshal_content_header_frame(value: header.ContentHeader,
                                   channel_id: int) -> bytes:
     """Marshal a content header frame"""
-    return _marshal(specification.FRAME_HEADER, channel_id, value.marshal())
+    return _marshal(constants.FRAME_HEADER, channel_id, value.marshal())
 
 
 def _marshal_method_frame(value: base.Frame, channel_id: int) -> bytes:
     """Marshal a method frame"""
-    return _marshal(specification.FRAME_METHOD, channel_id,
+    return _marshal(constants.FRAME_METHOD, channel_id,
                     common.Struct.integer.pack(value.index) + value.marshal())
 
 
@@ -130,7 +130,7 @@ def _unmarshal_protocol_header_frame(data_in: bytes) \
     :raises: ValueError
 
     """
-    if data_in[0:4] == specification.AMQP:  # Do the first four bytes match?
+    if data_in[0:4] == constants.AMQP:  # Do the first four bytes match?
         frame = header.ProtocolHeader()
         frame.unmarshal(data_in)
         return frame
@@ -144,7 +144,7 @@ def _unmarshal_method_frame(frame_data: bytes) -> base.Frame:
     """
     bytes_used, method_index = decode.long_int(frame_data[0:4])
     try:
-        method = specification.INDEX_MAPPING[method_index]()
+        method = commands.INDEX_MAPPING[method_index]()
     except KeyError:
         raise exceptions.UnmarshalingException(
             'Unknown', 'Unknown method index: {}'.format(str(method_index)))

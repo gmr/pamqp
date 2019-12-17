@@ -2,7 +2,7 @@
 import datetime
 import unittest
 
-from pamqp import body, frame, header, specification
+from pamqp import body, commands, frame, header
 
 
 class DemarshalingTests(unittest.TestCase):
@@ -347,7 +347,7 @@ class DemarshalingTests(unittest.TestCase):
         offset, flags = obj._get_flags(encoded_properties)
 
         # Decode the frame and validate lengths
-        obj = specification.Basic.Properties()
+        obj = commands.Basic.Properties()
         obj.unmarshal(flags, encoded_properties[offset:])
 
         for key in properties:
@@ -1696,7 +1696,7 @@ class DemarshalingTests(unittest.TestCase):
         self.assertDictEqual(dict(frame_obj), expectation)
 
     def test_properties(self):
-        props = specification.Basic.Properties(
+        props = commands.Basic.Properties(
             app_id='unittest',
             content_type='application/json',
             content_encoding='bzip2',

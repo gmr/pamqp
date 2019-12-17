@@ -1,290 +1,17 @@
-"""AMQ Model Specification
-=======================
+"""
+AMQP Classes & Methods
+======================
 
 Auto-generated, do not edit. To Generate run `.tools/codegen.py`
 
 """
-__since__ = '2019-12-16'
-
 import typing
 import warnings
 
-from pamqp import base, common, exceptions
+from pamqp import base, common, constants
 
-# AMQP Protocol Frame Prefix
-AMQP = b'AMQP'
 
-# AMQP Protocol Version
-VERSION = (0, 9, 1)
-
-# RabbitMQ Defaults
-DEFAULT_HOST = 'localhost'
-DEFAULT_PORT = 5672
-DEFAULT_USER = 'guest'
-DEFAULT_PASS = 'guest'
-DEFAULT_VHOST = '/'
-
-# AMQP Constants
-FRAME_METHOD = 1
-FRAME_HEADER = 2
-FRAME_BODY = 3
-FRAME_HEARTBEAT = 8
-FRAME_MIN_SIZE = 4096
-FRAME_END = 206
-# Indicates that the method completed successfully. This reply code is reserved
-# for future use - the current protocol design does not use positive
-# confirmation and reply codes are sent only in case of an error.
-REPLY_SUCCESS = 200
-
-# Not included in the spec XML or JSON files.
-FRAME_END_CHAR = b'\xce'
-FRAME_HEADER_SIZE = 7
-FRAME_MAX_SIZE = 131072
-
-# AMQP data types
-DATA_TYPES = [
-    'bit', 'long', 'longlong', 'longstr', 'octet', 'short', 'shortstr',
-    'table', 'timestamp'
-]
-
-# AMQP domains
-DOMAINS = {
-    'channel-id': 'longstr',
-    'class-id': 'short',
-    'consumer-tag': 'shortstr',
-    'delivery-tag': 'longlong',
-    'destination': 'shortstr',
-    'duration': 'longlong',
-    'exchange-name': 'shortstr',
-    'method-id': 'short',
-    'no-ack': 'bit',
-    'no-local': 'bit',
-    'offset': 'longlong',
-    'path': 'shortstr',
-    'peer-properties': 'table',
-    'queue-name': 'shortstr',
-    'redelivered': 'bit',
-    'reference': 'longstr',
-    'reject-code': 'short',
-    'reject-text': 'shortstr',
-    'reply-code': 'short',
-    'reply-text': 'shortstr',
-    'security-token': 'longstr'
-}
-
-# Other constants
-DEPRECATION_WARNING = 'This command is deprecated in AMQP 0-9-1'
-
-
-# AMQP Errors
-class AMQPContentTooLarge(exceptions.AMQPSoftError):
-    """
-    The client attempted to transfer content larger than the server could
-    accept at the present time. The client may retry at a later time.
-
-    """
-    name = 'CONTENT-TOO-LARGE'
-    value = 311
-
-
-class AMQPNoRoute(exceptions.AMQPSoftError):
-    """
-    Undocumented AMQP Hard Error
-
-    """
-    name = 'NO-ROUTE'
-    value = 312
-
-
-class AMQPNoConsumers(exceptions.AMQPSoftError):
-    """
-    When the exchange cannot deliver to a consumer when the immediate flag is
-    set. As a result of pending data on the queue or the absence of any
-    consumers of the queue.
-
-    """
-    name = 'NO-CONSUMERS'
-    value = 313
-
-
-class AMQPAccessRefused(exceptions.AMQPSoftError):
-    """
-    The client attempted to work with a server entity to which it has no access
-    due to security settings.
-
-    """
-    name = 'ACCESS-REFUSED'
-    value = 403
-
-
-class AMQPNotFound(exceptions.AMQPSoftError):
-    """
-    The client attempted to work with a server entity that does not exist.
-
-    """
-    name = 'NOT-FOUND'
-    value = 404
-
-
-class AMQPResourceLocked(exceptions.AMQPSoftError):
-    """
-    The client attempted to work with a server entity to which it has no access
-    because another client is working with it.
-
-    """
-    name = 'RESOURCE-LOCKED'
-    value = 405
-
-
-class AMQPPreconditionFailed(exceptions.AMQPSoftError):
-    """
-    The client requested a method that was not allowed because some
-    precondition failed.
-
-    """
-    name = 'PRECONDITION-FAILED'
-    value = 406
-
-
-class AMQPConnectionForced(exceptions.AMQPHardError):
-    """
-    An operator intervened to close the connection for some reason. The client
-    may retry at some later date.
-
-    """
-    name = 'CONNECTION-FORCED'
-    value = 320
-
-
-class AMQPInvalidPath(exceptions.AMQPHardError):
-    """
-    The client tried to work with an unknown virtual host.
-
-    """
-    name = 'INVALID-PATH'
-    value = 402
-
-
-class AMQPFrameError(exceptions.AMQPHardError):
-    """
-    The sender sent a malformed frame that the recipient could not decode. This
-    strongly implies a programming error in the sending peer.
-
-    """
-    name = 'FRAME-ERROR'
-    value = 501
-
-
-class AMQPSyntaxError(exceptions.AMQPHardError):
-    """
-    The sender sent a frame that contained illegal values for one or more
-    fields. This strongly implies a programming error in the sending peer.
-
-    """
-    name = 'SYNTAX-ERROR'
-    value = 502
-
-
-class AMQPCommandInvalid(exceptions.AMQPHardError):
-    """
-    The client sent an invalid sequence of frames, attempting to perform an
-    operation that was considered invalid by the server. This usually implies a
-    programming error in the client.
-
-    """
-    name = 'COMMAND-INVALID'
-    value = 503
-
-
-class AMQPChannelError(exceptions.AMQPHardError):
-    """
-    The client attempted to work with a channel that had not been correctly
-    opened. This most likely indicates a fault in the client layer.
-
-    """
-    name = 'CHANNEL-ERROR'
-    value = 504
-
-
-class AMQPUnexpectedFrame(exceptions.AMQPHardError):
-    """
-    The peer sent a frame that was not expected, usually in the context of a
-    content header and body.  This strongly indicates a fault in the peer's
-    content processing.
-
-    """
-    name = 'UNEXPECTED-FRAME'
-    value = 505
-
-
-class AMQPResourceError(exceptions.AMQPHardError):
-    """
-    The server could not complete the method because it lacked sufficient
-    resources. This may be due to the client creating too many of some type of
-    entity.
-
-    """
-    name = 'RESOURCE-ERROR'
-    value = 506
-
-
-class AMQPNotAllowed(exceptions.AMQPHardError):
-    """
-    The client tried to work with some entity in a manner that is prohibited by
-    the server, due to security settings or by some other criteria.
-
-    """
-    name = 'NOT-ALLOWED'
-    value = 530
-
-
-class AMQPNotImplemented(exceptions.AMQPHardError):
-    """
-    The client tried to use functionality that is not implemented in the
-    server.
-
-    """
-    name = 'NOT-IMPLEMENTED'
-    value = 540
-
-
-class AMQPInternalError(exceptions.AMQPHardError):
-    """
-    The server could not complete the method because of an internal error. The
-    server may require intervention by an operator in order to resume normal
-    operations.
-
-    """
-    name = 'INTERNAL-ERROR'
-    value = 541
-
-
-# AMQP Error code to class mapping
-ERRORS = {
-    311: AMQPContentTooLarge,
-    312: AMQPNoRoute,
-    313: AMQPNoConsumers,
-    403: AMQPAccessRefused,
-    404: AMQPNotFound,
-    405: AMQPResourceLocked,
-    406: AMQPPreconditionFailed,
-    320: AMQPConnectionForced,
-    402: AMQPInvalidPath,
-    501: AMQPFrameError,
-    502: AMQPSyntaxError,
-    503: AMQPCommandInvalid,
-    504: AMQPChannelError,
-    505: AMQPUnexpectedFrame,
-    506: AMQPResourceError,
-    530: AMQPNotAllowed,
-    540: AMQPNotImplemented,
-    541: AMQPInternalError
-}
-
-# AMQP Classes and Methods
-
-
-class Connection(object):
+class Connection:
     """Work with socket connections
 
     The connection class provides methods for a client to establish a network
@@ -857,7 +584,7 @@ class Connection(object):
         synchronous = False
 
 
-class Channel(object):
+class Channel:
     """Work with channels
 
     The channel class provides methods for a client to establish a channel to a
@@ -1088,7 +815,7 @@ class Channel(object):
         synchronous = False
 
 
-class Exchange(object):
+class Exchange:
     """Work with exchanges
 
     Exchanges match and distribute messages across queues. Exchanges can be
@@ -1430,7 +1157,7 @@ class Exchange(object):
         synchronous = False
 
 
-class Queue(object):
+class Queue:
     """Work with queues
 
     Queues store and forward messages. Queues can be configured in the server
@@ -1925,7 +1652,7 @@ class Queue(object):
         synchronous = False
 
 
-class Basic(object):
+class Basic:
     """Work with basic content
 
     The Basic class provides methods that support an industry-standard
@@ -2660,7 +2387,8 @@ class Basic(object):
             self.requeue = requeue
 
             # This command is deprecated in AMQP 0-9-1
-            warnings.warn(DEPRECATION_WARNING, category=DeprecationWarning)
+            warnings.warn(constants.DEPRECATION_WARNING,
+                          category=DeprecationWarning)
 
     class Recover(base.Frame):
         """Redeliver unacknowledged messages
@@ -2881,7 +2609,7 @@ class Basic(object):
             self.cluster_id = cluster_id
 
 
-class Tx(object):
+class Tx:
     """Work with transactions
 
     The Tx class allows publish and ack operations to be batched into atomic
@@ -3006,7 +2734,7 @@ class Tx(object):
         synchronous = False
 
 
-class Confirm(object):
+class Confirm:
     __slots__ = []
 
     # AMQP Class Number and Mapping Index

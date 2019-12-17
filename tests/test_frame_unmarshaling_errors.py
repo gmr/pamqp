@@ -2,7 +2,7 @@
 import struct
 import unittest
 
-from pamqp import exceptions, frame, specification
+from pamqp import constants, exceptions, frame
 
 
 class TestCase(unittest.TestCase):
@@ -50,7 +50,7 @@ class TestCase(unittest.TestCase):
     def test_malformed_frame_content(self):
         payload = struct.pack('>HxxQ', 8192, 32768)
         frame_value = b''.join([struct.pack('>BHI', 5, 0, len(payload)),
-                                payload, specification.FRAME_END_CHAR])
+                                payload, constants.FRAME_END_CHAR])
         with self.assertRaises(exceptions.UnmarshalingException) as err:
             frame.unmarshal(frame_value)
             self.assertEqual(
@@ -60,7 +60,7 @@ class TestCase(unittest.TestCase):
     def test_invalid_method_frame_index(self):
         payload = struct.pack('>L', 42949)
         frame_value = b''.join([struct.pack('>BHI', 1, 0, len(payload)),
-                                payload, specification.FRAME_END_CHAR])
+                                payload, constants.FRAME_END_CHAR])
         with self.assertRaises(exceptions.UnmarshalingException) as err:
             frame.unmarshal(frame_value)
             self.assertEqual(
@@ -71,7 +71,7 @@ class TestCase(unittest.TestCase):
     def test_invalid_method_frame_content(self):
         payload = struct.pack('>L', 0x000A0029)
         frame_value = b''.join([struct.pack('>BHI', 1, 0, len(payload)),
-                                payload, specification.FRAME_END_CHAR])
+                                payload, constants.FRAME_END_CHAR])
         with self.assertRaises(exceptions.UnmarshalingException) as err:
             frame.unmarshal(frame_value)
             self.assertTrue(str(err).startswith(
@@ -80,7 +80,7 @@ class TestCase(unittest.TestCase):
     def test_invalid_content_header_frame(self):
         payload = struct.pack('>L', 0x000A0029)
         frame_value = b''.join([struct.pack('>BHI', 2, 0, len(payload)),
-                                payload, specification.FRAME_END_CHAR])
+                                payload, constants.FRAME_END_CHAR])
         with self.assertRaises(exceptions.UnmarshalingException) as err:
             frame.unmarshal(frame_value)
             self.assertTrue(str(err).startswith(

@@ -4,20 +4,21 @@ Version History
 3.0.0a0 (2019-12-16)
 --------------------
 - Update to support Python 3.6+ only
-- Remove convenience exports of `pamqp.headers.ContentHeader` and `pamqp.header.ProtocolHeader`
-- Remove `pamqp.constants`
 - Add typing annotations to all modules, callables, and classes
+- Moved exceptions from `pamqp.specification` to `pamqp.exceptions`
+- Moved constants from `pamqp.specification` to `pamqp.constants`
+- Moved base classes out of `pamqp.specification` to `pamqp.base`
+- Changed the structure of nested classes for AMQP Commands (Classes & Methods) in `pamqp.specification` to functions in `pamqp.commands`
+- Renamed `pamqp.specification.ERRORS` to `pamqp.exceptions.CLASS_MAPPING`
+- Remove convenience exports of `pamqp.headers.ContentHeader` and `pamqp.header.ProtocolHeader`
 - pamqp.body.ContentBody.value now only supports `bytes`
 - Changed `pamqp.decode.timestamp` to return a `datetime.datetime` instance instead of `time.struct_time`.
 - Updated `pamqp.encode.support_deprecated_rabbitmq()` to allow for toggling support.
 - Changed `pamqp.encode.timestamp` to only support `datetime.datetime` and `time.struct_time` values, dropping epoch (`int`) support.
-- Moved `pamqp.specification.Frame` to `pamqp.frame.Frame`
-- Moved `pamqp.specification.PropertiesBase` to `pamqp.frame.BasicProperties`
 - Removed `pamqp.frame.BasicProperties.to_dict()` in favor of behavior allowing for `dict(pamqp.frame.BasicProperties)`
 - Optimized `pamqp.heartbeat.Heartbeat` to marshal the static frame value as a predefined class attribute.
-- New `pamqp.specifications` build with type annotations and support for `Connection.UpdateSecret` and `Connection.UpdateSecretOk`.
+- Add support for `Connection.UpdateSecret` and `Connection.UpdateSecretOk`.
 - Removed the ability to unset a `Basic.Property` by invoking `del properties[key]`
-- Move base classes for frames from `pamqp.specification` to `pamqp.base`
 - Removed the deprecated `pamqp.codec` sub-package
 
 2.3.0 (2019-04-18)

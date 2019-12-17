@@ -23,7 +23,11 @@ CODEGEN_DIR = pathlib.Path('./codegen/')
 CODEGEN_IGNORE_CLASSES = ['access']
 CODEGEN_JSON = CODEGEN_DIR / 'amqp-rabbitmq-0.9.1.json'
 CODEGEN_XML = CODEGEN_DIR / 'amqp0-9-1.xml'
-CODEGEN_OUTPUT = pathlib.Path('./pamqp/specification.py')
+
+COMMANDS = pathlib.Path('./pamqp/commands.py')
+CONSTANTS = pathlib.Path('./pamqp/constants.py')
+EXCEPTIONS = pathlib.Path('./pamqp/exceptions.py')
+
 CODEGEN_JSON_URL = ('https://raw.githubusercontent.com/rabbitmq/'
                     'rabbitmq-codegen/master/amqp-rabbitmq-0.9.1.json')
 CODEGEN_XML_URL = 'http://www.rabbitmq.com/resources/specs/amqp0-9-1.xml'
@@ -289,21 +293,14 @@ with open(CODEGEN_DIR / 'extensions.xml', 'r') as handle:
     rabbitmq_xml = lxml.etree.parse(handle)
     rabbitmq = rabbitmq_xml.xpath('//rabbitmq')[0]
 
-# Start the output
-output = ['''"""AMQ Model Specification
-=======================
+# pamqp.constants
+output = ['''"""
+AMQP Constants
+==============
 
 Auto-generated, do not edit. To Generate run `.tools/codegen.py`
 
-"""
-__since__ = '{}'
-
-import typing
-import warnings
-
-from pamqp import base, common, exceptions
-'''.format(datetime.date.today().isoformat())]
-
+"""''']
 comment('AMQP Protocol Frame Prefix')  # AMQP Version Header
 new_line("AMQP = b'AMQP'")
 new_line()
@@ -376,17 +373,54 @@ DEPRECATION_WARNING = 'This command is deprecated in AMQP {}'.format(
 new_line("DEPRECATION_WARNING = '{}'".format(DEPRECATION_WARNING))
 new_line()
 
-# Exceptions
-new_line()
-comment('AMQP Errors')
+code = yapf_api.FormatCode('\n'.join(output), style_config='pep8')
+with CONSTANTS.open('w') as handle:
+    handle.write(code[0])
+
+
+# pamqp.exceptions
+
+output = ['''"""
+AMQP Exceptions
+===============
+
+Auto-generated, do not edit. To Generate run `.tools/codegen.py`
+
+"""
+
+
+class PAMQPException(Exception):
+    """Base exception for all pamqp specific exceptions."""
+
+
+class UnmarshalingException(PAMQPException):
+    """Raised when a frame is not able to be unmarshaled."""
+    def __str__(self):  # pragma: nocover
+        return 'Could not unmarshal {} frame: {}'.format(
+            self.args[0], self.args[1])
+
+
+class AMQPError(PAMQPException):
+    """Base exception for all AMQP errors."""
+
+
+class AMQPSoftError(AMQPError):
+    """Base exception for all AMQP soft errors."""
+
+
+class AMQPHardError(AMQPError):
+    """Base exception for all AMQP hard errors."""
+
+''']
+
 errors = {}
 for constant in amqp['constants']:
     if 'class' in constant:
         class_name = classify(constant['name'])
         if constant['class'] == 'soft-error':
-            extends = 'exceptions.AMQPSoftError'
+            extends = 'AMQPSoftError'
         elif constant['class'] == 'hard-error':
-            extends = 'exceptions.AMQPHardError'
+            extends = 'AMQPHardError'
         else:
             raise ValueError('Unexpected class: %s', constant['class'])
         new_line('class AMQP{}({}):'.format(class_name, extends))
@@ -414,9 +448,30 @@ for error_code in errors.keys():
     error_lines.append(
         '          {}: AMQP{},'.format(error_code, errors[error_code]))
 comment('AMQP Error code to class mapping')
-error_lines[0] = error_lines[0].replace('          ', 'ERRORS = {')
+error_lines[0] = error_lines[0].replace('          ', 'CLASS_MAPPING = {')
 error_lines[-1] = error_lines[-1].replace(',', '}')
 output += error_lines
+
+
+code = yapf_api.FormatCode('\n'.join(output), style_config='pep8')
+with EXCEPTIONS.open('w') as handle:
+    handle.write(code[0])
+
+
+# pamqp.methods
+
+output = ['''"""
+AMQP Classes & Methods
+======================
+
+Auto-generated, do not edit. To Generate run `.tools/codegen.py`
+
+"""
+import typing
+import warnings
+
+from pamqp import base, common, constants
+''']
 
 # Get the pamqp class list so we can sort it
 class_list = []
@@ -424,12 +479,6 @@ for amqp_class in amqp['classes']:
     if amqp_class['name'] not in CODEGEN_IGNORE_CLASSES:
         class_list.append(amqp_class['name'])
 
-# Sort them alphabetically
-# class_list.sort()
-
-new_line()
-comment('AMQP Classes and Methods')
-new_line()
 
 for class_name in class_list:
 
@@ -438,7 +487,7 @@ for class_name in class_list:
     # Get the class from our JSON file
     definition = get_class_definition(class_name, amqp['classes'])
     new_line()
-    new_line('class %s(object):' % pep8_class_name(class_name))
+    new_line('class %s:' % pep8_class_name(class_name))
 
     doc = get_documentation({'class': class_name})
     label = get_label({'class': class_name}) or 'Undefined label'
@@ -637,7 +686,7 @@ for class_name in class_list:
             # Check if we're deprecated and warn if so
             if deprecated:
                 comment(DEPRECATION_WARNING, indent)
-                new_line('warnings.warn(DEPRECATION_WARNING, '
+                new_line('warnings.warn(constants.DEPRECATION_WARNING, '
                          'category=DeprecationWarning)', indent)
                 new_line()
 
@@ -761,5 +810,5 @@ output += mapping
 new_line()
 
 code = yapf_api.FormatCode('\n'.join(output), style_config='pep8')
-with CODEGEN_OUTPUT.open('w') as handle:
+with COMMANDS.open('w') as handle:
     handle.write(code[0])

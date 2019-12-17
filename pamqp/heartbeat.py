@@ -5,7 +5,7 @@ AMQP Heartbeat Frame, used to create new Heartbeat frames for sending to a peer
 """
 import struct
 
-from pamqp import specification
+from pamqp import constants
 
 
 class Heartbeat(object):
@@ -15,8 +15,8 @@ class Heartbeat(object):
 
     """
     name: str = 'Heartbeat'
-    value = struct.pack('>BHI', specification.FRAME_HEARTBEAT, 0, 0) + \
-        specification.FRAME_END_CHAR
+    value = struct.pack('>BHI', constants.FRAME_HEARTBEAT, 0, 0) + \
+        constants.FRAME_END_CHAR
 
     @classmethod
     def marshal(cls) -> bytes:

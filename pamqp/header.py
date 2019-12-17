@@ -9,9 +9,9 @@ binary data into AMQP Header frames.
 import struct
 import typing
 
-from pamqp import decode, specification
+from pamqp import commands, constants, decode
 
-BasicProperties = typing.Optional[specification.Basic.Properties]
+BasicProperties = typing.Optional[commands.Basic.Properties]
 
 
 class ProtocolHeader:
@@ -27,16 +27,16 @@ class ProtocolHeader:
         :param int revision: Revision number
 
         """
-        self.major_version = major_version or specification.VERSION[0]
-        self.minor_version = minor_version or specification.VERSION[1]
-        self.revision = revision or specification.VERSION[2]
+        self.major_version = major_version or constants.VERSION[0]
+        self.minor_version = minor_version or constants.VERSION[1]
+        self.revision = revision or constants.VERSION[2]
 
     def marshal(self) -> bytes:
         """Return the full AMQP wire protocol frame data representation of the
         ProtocolHeader frame.
 
         """
-        return specification.AMQP + struct.pack(
+        return constants.AMQP + struct.pack(
             'BBBB', 0, self.major_version, self.minor_version, self.revision)
 
     def unmarshal(self, data: bytes) -> int:
@@ -77,11 +77,11 @@ class ContentHeader:
         self.class_id = None
         self.weight = weight
         self.body_size = body_size
-        self.properties = properties or specification.Basic.Properties()
+        self.properties = properties or commands.Basic.Properties()
 
     def marshal(self) -> bytes:
         """Return the AMQP binary encoded value of the frame"""
-        return struct.pack('>HxxQ', specification.Basic.frame_id,
+        return struct.pack('>HxxQ', commands.Basic.frame_id,
                            self.body_size) + self.properties.marshal()
 
     def unmarshal(self, data: bytes) -> typing.NoReturn:
