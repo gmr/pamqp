@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 import datetime
-import time
 import unittest
 
 from pamqp import body, frame, header, specification
@@ -1712,6 +1711,4 @@ class DemarshalingTests(unittest.TestCase):
             timestamp=datetime.datetime(2019, 12, 19, 23, 29, 00))
         ch = frame.marshal(header.ContentHeader(0, 10, props), 1)
         rt_props = frame.unmarshal(ch)[2].properties
-        print(props.timestamp)
-        print(rt_props.timestamp)
         self.assertEqual(rt_props, props)

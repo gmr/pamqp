@@ -2,7 +2,6 @@
 import datetime
 import decimal
 import struct
-import time
 import unittest
 
 from pamqp import decode

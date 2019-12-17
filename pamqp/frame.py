@@ -8,13 +8,11 @@ marshal will take an object created from the specification file and turn it
 into a raw byte stream.
 
 """
-from __future__ import annotations
-
 import logging
 import struct
 import typing
 
-from pamqp import (body, base, common, decode, exceptions, header, heartbeat,
+from pamqp import (base, body, common, decode, exceptions, header, heartbeat,
                    specification)
 
 LOGGER = logging.getLogger(__name__)

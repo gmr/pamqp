@@ -340,12 +340,12 @@ class Connection(object):
         _locales = 'longstr'
 
         def __init__(
-            self,
-            version_major: int = 0,
-            version_minor: int = 9,
-            server_properties: typing.Optional[common.FieldTable] = None,
-            mechanisms: str = 'PLAIN',
-            locales: str = 'en_US'):
+                self,
+                version_major: int = 0,
+                version_minor: int = 9,
+                server_properties: typing.Optional[common.FieldTable] = None,
+                mechanisms: str = 'PLAIN',
+                locales: str = 'en_US'):
             """Initialize the Connection.Start class
 
             :param version_major: Protocol major version
@@ -402,11 +402,11 @@ class Connection(object):
         _locale = 'shortstr'
 
         def __init__(
-            self,
-            client_properties: typing.Optional[common.FieldTable] = None,
-            mechanism: str = 'PLAIN',
-            response: str = '',
-            locale: str = 'en_US'):
+                self,
+                client_properties: typing.Optional[common.FieldTable] = None,
+                mechanism: str = 'PLAIN',
+                response: str = '',
+                locale: str = 'en_US'):
             """Initialize the Connection.StartOk class
 
             :param client_properties: Client properties

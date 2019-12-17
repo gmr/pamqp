@@ -1,9 +1,5 @@
-from __future__ import annotations
-
-import datetime
 import logging
 import struct
-import time
 import typing
 
 from pamqp import common, decode, encode
@@ -48,7 +44,7 @@ class _AMQData:
         return getattr(cls, '_' + attr)
 
     @classmethod
-    def attributes(cls: _AMQData) -> list:
+    def attributes(cls: '_AMQData') -> list:
         """Return the list of attributes"""
         return cls.__slots__
 
@@ -123,7 +119,7 @@ class BasicProperties(_AMQData):
     flags = {}
     name = 'BasicProperties'
 
-    def __eq__(self, other: BasicProperties):
+    def __eq__(self, other: 'BasicProperties'):
         return all(
             getattr(self, k, None) == getattr(other, k, None)
             for k in self.__slots__)
