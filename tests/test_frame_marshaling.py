@@ -41,7 +41,7 @@ class MarshalingTests(unittest.TestCase):
         expectation = (b'\x01\x00\x01\x00\x00\x00\x15\x00<\x00\x14\x00'
                        b'\x00\x03bar\x05ctag0\x00\x00\x00\x00\x00\xce')
         frame_obj = commands.Basic.Consume(0, 'bar', 'ctag0', False,
-                                                False, False, False)
+                                           False, False, False)
         response = frame.marshal(frame_obj, 1)
         self.assertEqual(response, expectation,
                          'Basic.Consume did not match expectation')
