@@ -16,7 +16,7 @@ BSD
 
 Python Versions Supported
 -------------------------
-2.7, 3.4+
+2.7, 3.5+
 
 Roadmap
 -------
