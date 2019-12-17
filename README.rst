@@ -1,6 +1,5 @@
 pamqp
 =====
-
 pamqp is a pure-python AMQP 0-9-1 frame encoder and decoder. The aim is to create a
 client agnostic python encoder and decoder for general purpose use.
 
@@ -16,15 +15,7 @@ BSD
 
 Python Versions Supported
 -------------------------
-2.7, 3.5+
-
-Roadmap
--------
-pamqp 3.0 will drop support for Python 2.7 and will be released after January 1st, 2020.
-
-Requirements
-------------
-codegen (not required for use) requires lxml.
+3.6+
 
 .. |Version| image:: https://img.shields.io/pypi/v/pamqp.svg?
    :target: https://pypi.python.org/pypi/pamqp
