@@ -18,18 +18,17 @@ class ProtocolHeader:
     """Class that represents the AMQP Protocol Header"""
     name = 'ProtocolHeader'
 
-    def __init__(self, major_version=None, minor_version=None, revision=None):
+    def __init__(self,
+                 major_version: int = constants.VERSION[0],
+                 minor_version: int = constants.VERSION[1],
+                 revision: int = constants.VERSION[2]):
         """Construct a Protocol Header frame object for the specified AMQP
         version.
 
-        :param int major_version: Major version number
-        :param int minor_version: Minor version number
-        :param int revision: Revision number
-
         """
-        self.major_version = major_version or constants.VERSION[0]
-        self.minor_version = minor_version or constants.VERSION[1]
-        self.revision = revision or constants.VERSION[2]
+        self.major_version = major_version
+        self.minor_version = minor_version
+        self.revision = revision
 
     def marshal(self) -> bytes:
         """Return the full AMQP wire protocol frame data representation of the
@@ -68,7 +67,7 @@ class ContentHeader:
     def __init__(self,
                  weight: int = 0,
                  body_size: int = 0,
-                 properties: BasicProperties = None):
+                 properties: typing.Optional[BasicProperties] = None):
         """Initialize the Exchange.DeleteOk class
 
          Weight is unused and must be `0`
