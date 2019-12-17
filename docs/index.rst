@@ -29,12 +29,13 @@ pamqp module documentation
    :maxdepth: 2
 
    body
+   commands
    decode
    encode
+   exceptions
    frame
    header
    heartbeat
-   specification
 
 Version History
 ---------------
