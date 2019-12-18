@@ -1,8 +1,12 @@
 languages:
-    Python: true
+  Python: true
 exclude_paths: 
-    - codegen/*
-    - docs/*
-    - pamqp/specification.py
-    - tests/*
-    - tools/*
+  - codegen/*
+  - docs/*
+  - tests/*
+  - tools/*
+checks:
+  file-lines:
+    enabled: false
+  similar-code:
+    enabled: false
