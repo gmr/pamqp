@@ -3,7 +3,7 @@ pamqp
 pamqp is a pure-python AMQP 0-9-1 frame encoder and decoder. The aim is to create a
 client agnostic python encoder and decoder for general purpose use.
 
-|Version| |Status| |Coverage| |License| |Maintainability|
+|Version| |Status| |Coverage| |License| |Maintainability| |Downloads|
 
 Documentation
 -------------
@@ -32,3 +32,6 @@ Python Versions Supported
 
 .. |Maintainability| image:: https://api.codeclimate.com/v1/badges/9efbb0957abb036254a1/maintainability
    :target: https://codeclimate.com/github/gmr/pamqp
+
+.. |Downloads| image:: https://img.shields.io/pypi/dm/pamqp
+   :target: https://pypi.org/project/pamqp/
