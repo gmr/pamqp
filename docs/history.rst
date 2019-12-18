@@ -1,5 +1,8 @@
 Version History
 ===============
+3.0.0a1 (2019-12-19)
+--------------------
+- Revert the removal of `pamqp.body.ContentBody.name`
 
 3.0.0a0 (2019-12-16)
 --------------------

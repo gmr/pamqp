@@ -10,6 +10,8 @@ import typing
 
 class ContentBody:
     """ContentBody carries the value for an AMQP message body frame"""
+    name = 'ContentBody'
+
     def __init__(self, value: typing.Optional[bytes] = None):
         """Create a new instance of a ContentBody object"""
         self.value = value
