@@ -66,9 +66,7 @@ class Frame(_AMQData):
         for argument in self.__slots__:
             data_type = self.amqp_type(argument)
             if not processing_bitset and data_type == 'bit':
-                byte = 0
-                offset = 0
-                processing_bitset = True
+                byte, offset, processing_bitset = 0, 0, True
             data_value = getattr(self, argument)
             if processing_bitset:
                 if data_type != 'bit':
