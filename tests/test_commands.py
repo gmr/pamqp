@@ -1796,3 +1796,126 @@ class MethodAttributeDefaultTests(unittest.TestCase):
                 'message_id', 'timestamp', 'message_type', 'user_id', 'app_id',
                 'cluster_id'
             ])
+
+    def test_basic_properties_eq_error(self):
+        with self.assertRaises(NotImplementedError):
+            self.assertEqual(commands.Basic.Properties(), {})
+
+
+class ValidationErrorTestCase(unittest.TestCase):
+
+    def test_basic_get_queue_length(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Get(queue=str.ljust('A', 128))
+
+    def test_basic_get_queue_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Get(queue='*')
+
+    def test_basic_getok_exchange_length(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.GetOk(exchange=str.ljust('A', 128))
+
+    def test_basic_getok_exchange_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.GetOk(exchange='*')
+
+    def test_basic_publish_exchange_length(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Publish(exchange=str.ljust('A', 128))
+
+    def test_basic_publish_exchange_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Publish(exchange='*')
+
+    def test_basic_return_exchange_length(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Return(exchange=str.ljust('A', 128))
+
+    def test_basic_return_exchange_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Return(exchange='*')
+
+    def test_connection_open_vhost(self):
+        with self.assertRaises(ValueError):
+            commands.Connection.Open(str.ljust('A', 128))
+
+    def test_exchange_declare_exchange_length(self):
+        with self.assertRaises(ValueError):
+            commands.Exchange.Declare(exchange=str.ljust('A', 128))
+
+    def test_exchange_declare_exchange_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Exchange.Declare(exchange='***')
+
+    def test_exchange_delete_exchange_length(self):
+        with self.assertRaises(ValueError):
+            commands.Exchange.Delete(exchange=str.ljust('A', 128))
+
+    def test_exchange_delete_exchange_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Exchange.Delete(exchange='***')
+
+    def test_queue_bind_queue_length(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Bind(queue=str.ljust('A', 128), exchange='B')
+
+    def test_queue_bind_queue_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Bind(queue='***', exchange='B')
+
+    def test_queue_bind_exchange_length(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Bind(exchange=str.ljust('A', 128), queue='B')
+
+    def test_queue_bind_exchange_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Bind(exchange='***', queue='B')
+
+    def test_queue_declare_queue_length(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Declare(queue=str.ljust('A', 128))
+
+    def test_queue_declare_queue_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Declare(queue='***')
+
+    def test_queue_declareok_queue_length(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.DeclareOk(queue=str.ljust('A', 128))
+
+    def test_queue_declareok_queue_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.DeclareOk(queue='***')
+
+    def test_queue_delete_queue_length(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Delete(queue=str.ljust('A', 128))
+
+    def test_queue_delete_queue_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Delete(queue='***')
+
+    def test_queue_purge_queue_length(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Purge(queue=str.ljust('A', 128))
+
+    def test_queue_purge_queue_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Purge(queue='***')
+
+    def test_queue_unbind_queue_length(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Unbind(queue=str.ljust('A', 128), exchange='B')
+
+    def test_queue_unbind_queue_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Unbind(queue='***', exchange='B')
+
+    def test_queue_unbind_exchange_length(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Unbind(exchange=str.ljust('A', 128), queue='B')
+
+    def test_queue_unbind_exchange_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Queue.Unbind(exchange='***', queue='B')

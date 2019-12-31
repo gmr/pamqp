@@ -1,7 +1,12 @@
 Version History
 ===============
 
-3.0.0a2 (2019-12-27)
+3.0.0a3 (2019-12-31)
+--------------------
+- Make comparison of Basic.Properties against other object types raise `NotImplementedError`
+- Return test coverage to 100%
+
+3.0.0a2 (2019-12-31)
 --------------------
 - Added mypy as part of the test pipeline and made updates based upon its findings.
 - Added length checking and regex checking for values specified in AMQP spec

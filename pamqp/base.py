@@ -121,7 +121,7 @@ class BasicProperties(_AMQData):
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BasicProperties):
-            return NotImplemented
+            raise NotImplementedError
         return all(getattr(self, k, None) == getattr(other, k, None)
                    for k in self.__slots__)
 
