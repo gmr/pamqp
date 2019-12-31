@@ -20,10 +20,10 @@ def by_type(value: bytes,
     """Decodes values using the specified type"""
     if data_type == 'bit':
         return bit(value, offset)
-    decoder = METHODS.get(data_type)
+    decoder = METHODS.get(data_type)  # type: ignore
     if decoder is None:
         raise ValueError('Unknown type: {}'.format(data_type))
-    return decoder(value)
+    return decoder(value)  # type: ignore
 
 
 def bit(value: bytes, position: int) -> typing.Tuple[int, bool]:
@@ -223,9 +223,9 @@ def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
 
     """
     try:
-        value = common.Struct.timestamp.unpack(value[0:8])
+        temp = common.Struct.timestamp.unpack(value[0:8])
         return 8, datetime.datetime.fromtimestamp(
-            time.mktime(time.gmtime(value[0])))
+            time.mktime(time.gmtime(temp[0])))
     except TypeError:
         raise ValueError('Could not unpack timestamp value')
 
@@ -235,10 +235,10 @@ def embedded_value(value: bytes) -> typing.Tuple[int, common.FieldValue]:
     if not value:
         return 0, None
     try:
-        bytes_consumed, value = TABLE_MAPPING[value[0:1]](value[1:])
+        bytes_consumed, temp = TABLE_MAPPING[value[0:1]](value[1:])
     except KeyError:
         raise ValueError('Unknown type: {!r}'.format(value[:1]))
-    return bytes_consumed + 1, value
+    return bytes_consumed + 1, temp
 
 
 def field_array(value: bytes) -> typing.Tuple[int, common.FieldArray]:

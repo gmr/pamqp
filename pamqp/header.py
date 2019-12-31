@@ -83,7 +83,7 @@ class ContentHeader:
         return struct.pack('>HxxQ', commands.Basic.frame_id,
                            self.body_size) + self.properties.marshal()
 
-    def unmarshal(self, data: bytes) -> typing.NoReturn:
+    def unmarshal(self, data: bytes) -> None:
         """Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 

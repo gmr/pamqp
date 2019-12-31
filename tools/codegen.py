@@ -4,12 +4,14 @@ communication.
 
 """
 import copy
-import datetime
+import dataclasses
 import json
 import keyword
 import pathlib
+import re
 import sys
 import textwrap
+import typing
 
 import lxml.etree
 import requests
@@ -47,27 +49,57 @@ AMQ_TYPE_TO_ANNOTATION = {
 }
 
 
+@dataclasses.dataclass
+class Domain:
+    name: str
+    type: str
+    documentation: typing.Optional[str]
+    label: typing.Optional[str]
+    nullable: bool
+    regex: typing.Optional[str]
+    max_length: typing.Optional[int]
+
+
 # Output buffer list
 output = []
 
+def arg_annotation(a: dict, required_arg: bool) -> str:
+    arg_type = AMQ_TYPE_TO_ANNOTATION[get_argument_type(a)]
+    if arg_type == 'common.FieldTable':
+        return 'typing.Optional[typing.Dict[str, common.FieldValue]]'
+    elif a.get('default-value') is None and not required_arg:
+        return 'typing.Optional[{}]'.format(arg_type)
+    elif arg_type in ['common.Timestamp',
+                      'common.FieldArray',
+                      'common.FieldValue'] and not required_arg:
+        return 'typing.Optional[{}]'.format(arg_type)
+    return arg_type
 
-def new_line(text='', indent_value=0, secondary_indent=0):
-    """Append a new line to the output buffer"""
-    global output
 
-    if not text:
-        output.append(text)
-        return
+def arg_default(a: dict, required_arg: bool) -> str:
+    if a.get('default-value') is not None:
+        return '{!r}'.format(a['default-value'])
+    arg_domain = get_domain(a.get('domain', a['name']))
+    if required_arg or (arg_domain and not arg_domain.nullable):
+        if arg_domain and arg_domain.type == 'table' or a['type'] == 'table':
+            return 'None'
+        elif a['type'][-3:] == 'str':
+            return "''"
+        elif a['type'] in ['short', 'long', 'longlong']:
+            return '0'
+    return 'None'
 
-    initial = ''.rjust(indent_value)
-    secondary = ''.rjust(secondary_indent or indent_value)
 
-    wrapper = textwrap.TextWrapper(
-        width=79, drop_whitespace=True, initial_indent=initial,
-        subsequent_indent=secondary)
+def argument_name(n):
+    """Returns a valid python argument name for the AMQP argument passed in
 
-    for value in wrapper.wrap(text.rstrip()):
-        output.append(value)
+    :param str n: The argument name
+
+    """
+    value = n.replace('-', '_')
+    if value in keyword.kwlist:
+        value += '_'
+    return value
 
 
 def classify(text):
@@ -83,15 +115,6 @@ def comment(text, indent_value=0, prefix='# '):
     """Append a comment to the output buffer"""
     for value in get_comments(text, indent_value + len(prefix), prefix):
         new_line(value)
-
-
-def get_comments(text, indent_value=0, prefix='# '):
-    """Return a list of lines for a given comment with the comment prefix"""
-    indent_text = prefix.rjust(indent_value)
-    values = []
-    for value in textwrap.wrap(text, 79 - len(indent_text)):
-        values.append(indent_text + value)
-    return values
 
 
 def dashify(text):
@@ -115,7 +138,20 @@ def get_class_definition(cls_name, cls_list):
     """
     for cls_def in cls_list:
         if cls_def['name'] == cls_name:
+            for meth in cls_def['methods']:
+                for offset, arg in enumerate(meth['arguments']):
+                    meth['arguments'][offset].update(
+                        get_field(cls_name, meth['name'], arg['name']))
             return cls_def
+
+
+def get_comments(text, indent_value=0, prefix='# '):
+    """Return a list of lines for a given comment with the comment prefix"""
+    indent_text = prefix.rjust(indent_value)
+    values = []
+    for value in textwrap.wrap(text, 79 - len(indent_text)):
+        values.append(indent_text + value)
+    return values
 
 
 def get_documentation(search_path):
@@ -129,23 +165,85 @@ def get_documentation(search_path):
         if k in search_path:
             search.append('%s[@name="%s"]' % (k, search_path[k]))
 
-    node = xml.xpath('%s/doc' % '/'.join(search))
+    nv = xml.xpath('%s/doc' % '/'.join(search))
 
     # Did we not find it? Look for a RabbitMQ extension
-    if not node:
-        node = rabbitmq.xpath('%s/doc' % '/'.join(search))
+    if not nv:
+        nv = rabbitmq.xpath('%s/doc' % '/'.join(search))
 
     # Look for RabbitMQ extensions of methods
-    if not node and 'field' in search_path:
-        node = rabbitmq.xpath('field[@name="%s"]/doc' % search_path['method'])
+    if not nv and 'field' in search_path:
+        nv = rabbitmq.xpath(
+            'field[@name="%s"]/doc' % search_path['method'])
 
     # Look for RabbitMQ extensions of fields
-    if not node and 'field' in search_path:
-        node = rabbitmq.xpath('field[@name="%s"]/doc' % search_path['field'])
+    if not nv and 'field' in search_path:
+        nv = rabbitmq.xpath(
+            'field[@name="%s"]/doc' % search_path['field'])
 
-    # if we found it, strip all the whitespace
-    if node:
-        return ' '.join([l.strip() for l in node[0].text.split('\n')]).strip()
+    if nv:  # if we found it, strip all the whitespace
+        return ' '.join([dl.strip() for dl in nv[0].text.split('\n')]).strip()
+
+
+def get_domain(value: str) -> typing.Optional[Domain]:
+    for domain_value in DOMAINS:
+        if domain_value.name == value:
+            return domain_value
+
+
+def get_domains(xml_in) -> typing.List[Domain]:
+    values = []
+    for value in xml_in:
+        dn = xml.xpath('//amqp/domain[@name="%s"]/doc' % value[0])
+        ln = xml.xpath('//amqp/domain[@name="%s"]/label' % value[0])
+        kwargs = {
+            'name': value[0],
+            'type': value[1],
+            'documentation': remove_extra_whitespace(dn[0].text) if dn else None,
+            'label': remove_extra_whitespace(ln[0].text) if ln else None,
+            'nullable': True,
+            'regex': None,
+            'max_length': None
+        }
+        asserts = xml.xpath('//amqp/domain[@name="%s"]/assert' % value[0])
+        for assertion in asserts:
+            if assertion.attrib.get('check') == 'length':
+                kwargs['max_length'] = int(assertion.attrib['value'])
+            elif assertion.attrib.get('check') == 'notnull':
+                kwargs['nullable'] = False
+            elif assertion.attrib.get('check') == 'regexp':
+                kwargs['regex'] = assertion.attrib['value']
+        values.append(Domain(**kwargs))
+    return values
+
+
+def get_domain_output(values: typing.List[Domain]) \
+        -> typing.Tuple[typing.List[str], typing.List[str]]:
+    dt_output = []
+    d_output = []
+    for domain in values:
+        if domain.name == domain.type:
+            dt_output.append("              '{}',".format(domain.name))
+        else:
+            d_output.append("           '{}': '{}',".format(
+                domain.name, domain.type))
+    dt_output[0] = dt_output[0].replace('              ', 'DATA_TYPES = [')
+    dt_output[-1] = dt_output[-1].replace(',', ']')
+    d_output[0] = d_output[0].replace('           ', 'DOMAINS = {')
+    d_output[-1] = d_output[-1].replace(',', '}')
+    return dt_output, d_output
+
+
+def get_field(cn: str, mn: str, fn: str) -> dict:
+    result = xml.xpath(
+        '//amqp/class[@name="{}"]/method[@name="{}"]/field[@name="{}"]'.format(
+            cn, mn, fn))
+    if not result:
+        return {}
+    field_def = {}
+    for attribute in result[0].attrib:
+        field_def[attribute] = result[0].attrib[attribute]
+    return field_def
 
 
 def get_label(search_path):
@@ -160,49 +258,35 @@ def get_label(search_path):
         if k in search_path:
             search.append('%s[@name="%s"]' % (k, search_path[k]))
 
-    node = xml.xpath('%s' % '/'.join(search))
+    nv = xml.xpath('%s' % '/'.join(search))
 
-    if not node:
-        node = rabbitmq.xpath('%s' % '/'.join(search))
+    if not nv:
+        nv = rabbitmq.xpath('%s' % '/'.join(search))
 
     # Did it have a value by default?
-    if node and 'label' in node[0].attrib:
-        return (node[0].attrib['label'][0:1].upper() +
-                node[0].attrib['label'][1:])
-    elif node and node[0].text:
-        return (node[0].text.strip()[0:1].upper() +
-                node[0].text.strip()[1:].strip())
+    if nv and 'label' in nv[0].attrib:
+        return nv[0].attrib['label'][0:1].upper() + nv[0].attrib['label'][1:]
+    elif nv and nv[0].text:
+        return nv[0].text.strip()[0:1].upper() + nv[0].text.strip()[1:].strip()
 
     # Look in domains
     if 'field' in search_path:
-        node = xml.xpath('//amqp/domain[@name="%s"]' % search_path['field'])
-        if node and 'label' in node[0].attrib:
-            return (node[0].attrib['label'][0:1].upper() +
-                    node[0].attrib['label'][1:])
+        nv = xml.xpath('//amqp/domain[@name="%s"]' % search_path['field'])
+        if nv and 'label' in nv[0].attrib:
+            return (nv[0].attrib['label'][0:1].upper() +
+                    nv[0].attrib['label'][1:])
 
     # Look for RabbitMQ extensions of fields
     if 'field' in search_path:
-        node = rabbitmq.xpath('field[@name="%s"]' % search_path['field'])
-        if node and 'label' in node[0].attrib:
-            return (node[0].attrib['label'][0:1].upper() +
-                    node[0].attrib['label'][1:])
-        elif node and node[0].text:
-            return (node[0].text.strip()[0:1].upper() +
-                    node[0].text.strip()[1:].strip())
+        nv = rabbitmq.xpath('field[@name="%s"]' % search_path['field'])
+        if nv and 'label' in nv[0].attrib:
+            return (nv[0].attrib['label'][0:1].upper() +
+                    nv[0].attrib['label'][1:])
+        elif nv and nv[0].text:
+            return (nv[0].text.strip()[0:1].upper() +
+                    nv[0].text.strip()[1:].strip())
 
     print('Label could not find %r' % search_path)
-
-
-def argument_name(n):
-    """Returns a valid python argument name for the AMQP argument passed in
-
-    :param str n: The argument name
-
-    """
-    value = n.replace('-', '_')
-    if value in keyword.kwlist:
-        value += '_'
-    return value
 
 
 def get_argument_type(a: dict) -> str:
@@ -217,35 +301,17 @@ def get_argument_type(a: dict) -> str:
     raise ValueError('Unknown argument type')
 
 
-def arg_annotation(a: dict) -> str:
-    arg_type = AMQ_TYPE_TO_ANNOTATION[get_argument_type(a)]
-    if arg_type.startswith('common.Field'):
-        return 'typing.Optional[{}]'.format(arg_type)
-    return arg_type
-
-
-def arg_default(a: dict) -> str:
-    arg_type = AMQ_TYPE_TO_ANNOTATION[get_argument_type(a)]
-    if arg_type.startswith('common.Field'):
-        return 'None'
-    elif a.get('default-value') is not None:
-        return '{!r}'.format(a['default-value'])
-    else:
-        print(a)
-        if a['type'][-3:] == 'str':
-            return "''"
-        elif a['type'] in ['short', 'long']:
-            return '0'
-        else:
-            return 'None'
-
-
-def new_function(function_name: str, args_in: list, indent_value: int = 0):
+def new_function(function_name: str, args_in: list, required_args: set,
+                 indent_value: int = 0):
     """Create a new function"""
     args = ['self']
     for a in args_in:
+        default = arg_default(a, a['name'] in required_args)
+        if a['name'] == 'arguments' and default == '{}':
+            default = 'None'
         args.append('{}: {} = {}'.format(
-            argument_name(a['name']), arg_annotation(a), arg_default(a)))
+            argument_name(a['name']),
+            arg_annotation(a, a['name'] in required_args), default))
 
     # Get the definition line built
     def_line = 'def %s(%s):' % (function_name, ', '.join(args))
@@ -256,13 +322,34 @@ def new_function(function_name: str, args_in: list, indent_value: int = 0):
     lines = textwrap.wrap(
         ''.join([' ' for _x in range(indent_value)]) + def_line, 79,
         subsequent_indent=indent_str)
+    [new_line(nl) for nl in lines]
 
-    for l in lines:
-        new_line(l)
+
+def new_line(text='', indent_value=0, secondary_indent=0):
+    """Append a new line to the output buffer"""
+    global output
+
+    if not text:
+        output.append(text)
+        return
+
+    initial = ''.rjust(indent_value)
+    secondary = ''.rjust(secondary_indent or indent_value)
+
+    wrapper = textwrap.TextWrapper(
+        width=79, drop_whitespace=True, initial_indent=initial,
+        subsequent_indent=secondary)
+
+    for value in wrapper.wrap(text.rstrip()):
+        output.append(value)
+
+
+def remove_extra_whitespace(value):
+    return ' '.join([dl.strip() for dl in value.split('\n')]).strip()
 
 
 # Check to see if we have the codegen json file in this directory
-if CODEGEN_JSON.exists():
+if not CODEGEN_JSON.exists():
     print('Downloading codegen JSON file to %s.' % CODEGEN_JSON)
     response = requests.get(CODEGEN_JSON_URL)
     if not response.ok:
@@ -275,7 +362,7 @@ with CODEGEN_JSON.open('r') as handle:
     amqp = json.load(handle)
 
 # Check to see if we have the codegen xml file in this directory
-if CODEGEN_XML.exists():
+if not CODEGEN_XML.exists():
     print('Downloading codegen XML file.')
     response = requests.get(CODEGEN_XML_URL)
     if not response.ok:
@@ -337,29 +424,15 @@ new_line('FRAME_MAX_SIZE = 131072')
 new_line()
 
 # Data types
-data_types = []
-domains = []
-for domain, data_type in amqp['domains']:
-    if domain == data_type:
-        data_types.append("              '{}',".format(domain))
-    else:
-        doc = get_documentation({'domain': domain})
-        if doc:
-            comments = get_comments(doc, 18)
-            for line in comments:
-                domains.append(line)
-        domains.append("           '{}': '{}',".format(domain, data_type))
+DOMAINS = get_domains(amqp['domains'])
+data_type_output, domain_output = get_domain_output(DOMAINS)
 
 comment('AMQP data types')
-data_types[0] = data_types[0].replace('              ', 'DATA_TYPES = [')
-data_types[-1] = data_types[-1].replace(',', ']')
-output += data_types
+output += data_type_output
 new_line()
 
 comment('AMQP domains')
-domains[0] = domains[0].replace('           ', 'DOMAINS = {')
-domains[-1] = domains[-1].replace(',', '}')
-output += domains
+output += domain_output
 new_line()
 
 comment('Other constants')
@@ -394,7 +467,7 @@ class PAMQPException(Exception):
 
 class UnmarshalingException(PAMQPException):
     """Raised when a frame is not able to be unmarshaled."""
-    def __str__(self):  # pragma: nocover
+    def __str__(self) -> str:  # pragma: nocover
         return 'Could not unmarshal {} frame: {}'.format(
             self.args[0], self.args[1])
 
@@ -466,6 +539,7 @@ AMQP Classes & Methods
 """
 # Auto-generated, do not edit this file. To Generate run `./tools/codegen.py`
 
+import re
 import typing
 import warnings
 
@@ -497,7 +571,7 @@ for class_name in class_list:
         new_line()
         new_line('"""', indent)
 
-    new_line('__slots__ = []', indent)
+    new_line('__slots__: typing.List[str] = []', indent)
     new_line()
     comment('AMQP Class Number and Mapping Index', indent)
     new_line('frame_id = %i' % definition['id'], indent)
@@ -517,10 +591,11 @@ for class_name in class_list:
 
         # No Confirm in AMQP spec
         if class_xml:
-            doc = get_documentation({'class': class_name,
-                                     'method': method['name']})
-            label = get_label({'class': class_name,
-                               'method': method['name']}) or 'Undefined label'
+            doc = get_documentation(
+                {'class': class_name, 'method': method['name']})
+            label = get_label(
+                {'class': class_name, 'method': method['name']}) or \
+                'Undefined label'
             if doc:
                 new_line('"""%s' % label, indent)
                 new_line()
@@ -530,9 +605,22 @@ for class_name in class_list:
 
         # Get the method's XML node
         method_xml = None
+        required = set({})
         if class_xml:
-            method_xml = class_xml[0].xpath('method[@name="%s"]' %
-                                            method['name'])
+            method_xml = class_xml[0].xpath('method[@name="{}"]'.format(
+                method['name']))
+            if method_xml:
+                for node in method_xml[0].iter('field'):
+                    domain = get_domain(node.attrib.get('name'))
+                    if domain and not domain.nullable:
+                        required.add(node.attrib.get('name'))
+                    else:
+                        for stmt in node.iter('assert'):
+                            if stmt.attrib.get('check') == 'notnull':
+                                required.add(node.attrib.get('name'))
+
+        if required:
+            print(method['name'], required)
 
         comment('AMQP Method Number and Mapping Index', indent)
         new_line('frame_id = %i' % method['id'], indent)
@@ -572,7 +660,7 @@ for class_name in class_list:
 
         if method['arguments']:
             comment('AMQ Method Attributes', indent)
-            new_line('__slots__ = [', indent)
+            new_line('__slots__: typing.List[str] = [', indent)
             for arg in method['arguments']:
                 name = argument_name(arg['name'])
                 if name == 'type' and class_name == 'exchange':
@@ -585,17 +673,20 @@ for class_name in class_list:
             new_line()
 
             comment('Attribute Typing', indent)
-            new_line('__annotations__ = {', indent)
+            new_line('__annotations__: typing.Dict[str, object] = {', indent)
             for arg in method['arguments']:
                 name = argument_name(arg['name'])
                 if name == 'type' and class_name == 'exchange':
                     name = 'exchange_type'
                 if arg == method['arguments'][-1]:
-                    new_line("{!r}: {}".format(name, arg_annotation(arg)),
-                             indent + 4)
+                    new_line("{!r}: {}".format(
+                            name, arg_annotation(arg, name in required)),
+                        indent + 4)
                 else:
-                    new_line("{!r}: {},".format(name, arg_annotation(arg)),
-                             indent + 4)
+                    new_line(
+                        "{!r}: {},".format(
+                            name, arg_annotation(arg, name in required)),
+                        indent + 4)
             new_line('}', indent)
             new_line()
 
@@ -617,7 +708,7 @@ for class_name in class_list:
                 arguments[offset]['name'] = 'exchange_type'
 
         if arguments:
-            new_function('__init__', arguments, indent)
+            new_function('__init__', arguments, required, indent)
             indent += 4
             new_line('"""Initialize the %s.%s class' %
                      (pep8_class_name(class_name),
@@ -633,19 +724,33 @@ for class_name in class_list:
 
             # List the arguments in the docblock
             new_line()
+            raises = []
             for argument in method['arguments']:
                 name = argument_name(argument['name'])
                 if name == 'type' and class_name == 'exchange':
                     name = 'exchange_type'
-                label = get_label({'class': class_name,
-                                   'method': method['name'],
-                                   'field': argument['name']})
+                domain = get_domain(argument.get('domain', argument['name']))
+                label = (get_label(
+                    {'class': class_name, 'method': method['name'],
+                     'field': argument['name']})
+                    or (domain.label or domain.documentation
+                        if domain else None))
                 if label:
                     new_line(':param {}: {}'.format(name, label),
                              indent, indent + 4)
                 else:
                     new_line(':param {}:'.format(argument['name']),
                              indent, indent + 4)
+                if domain:
+                    if domain.max_length and 'ValueError' not in raises:
+                        raises.append('ValueError')
+                    if domain.regex and 'ValueError' not in raises:
+                        raises.append('ValueError')
+
+            if raises:
+                for exc_name in raises:
+                    new_line(
+                        ':raises: {}'.format(exc_name), indent, indent + 4)
 
             # Note the deprecation warning in the docblock
             if method_xml and 'deprecated' in method_xml[0].attrib and \
@@ -668,15 +773,24 @@ for class_name in class_list:
                 if name == 'type' and class_name == 'exchange':
                     name = 'exchange_type'
 
-                doc = get_label({'class': class_name,
-                                 'method': method['name'],
-                                 'field': argument['name']})
-                if doc:
-                    if argument != method['arguments'][0]:
-                        new_line()
-                    comment(doc, indent)
-                if (isinstance(argument.get('default-value'), dict) and
-                        not argument.get('default-value')):
+                domain = get_domain(argument.get('domain', argument['name']))
+                if domain and domain.max_length is not None:
+                    new_line('if {} and len({}) > {}:'.format(
+                        name, name, domain.max_length), indent)
+                    exc_value = "".format(name, domain.max_length)
+                    new_line("raise ValueError('Max length exceeded"
+                             " for {}')".format(name), indent + 4)
+                if domain and domain.regex is not None:
+                    new_line("if {} and not re.fullmatch(r'{}', {}):".format(
+                        name, domain.regex, name), indent)
+                    exc_value = "".format(name, domain.max_length)
+                    new_line("raise ValueError('Invalid value for {}')".format(
+                        name), indent + 4)
+
+                if ((domain and not domain.nullable
+                        and domain.type == 'table')
+                        or (argument['type'] == 'table'
+                            and not argument.get('default-value'))):
                     new_line('self.%s = %s or {}' % (name, name), indent)
                 else:
                     new_line('self.%s = %s' % (name, name), indent)
@@ -752,7 +866,7 @@ for class_name in class_list:
             if properties[offset]['name'] == 'type':
                 properties[offset]['name'] = 'message_type'
 
-        new_function('__init__', properties, indent)
+        new_function('__init__', properties, set({}), indent)
         indent += 4
         new_line('"""Initialize the %s.Properties class' %
                  pep8_class_name(class_name),
@@ -780,11 +894,6 @@ for class_name in class_list:
             name = argument_name(argument['name'])
             if name == 'type':
                 name = 'message_type'
-            doc = get_label({'class': class_name,
-                             'field': argument['name']})
-            if doc:
-                comment(doc, indent)
-
             new_line('self.%s = %s' % (name, name), indent)
             new_line()
 

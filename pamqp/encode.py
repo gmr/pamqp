@@ -22,7 +22,7 @@ DEPRECATED_RABBITMQ_SUPPORT = False
 """Toggle to support older versions of RabbitMQ."""
 
 
-def support_deprecated_rabbitmq(enabled: bool = True):
+def support_deprecated_rabbitmq(enabled: bool = True) -> None:
     """Toggle the data types available in field-tables
 
     If called with `True`, than RabbitMQ versions, the field-table integer
@@ -30,6 +30,7 @@ def support_deprecated_rabbitmq(enabled: bool = True):
 
     """
     global DEPRECATED_RABBITMQ_SUPPORT
+
     DEPRECATED_RABBITMQ_SUPPORT = enabled
 
 
@@ -41,7 +42,7 @@ def by_type(value: common.FieldValue, data_type: str) -> bytes:
 
     """
     try:
-        return METHODS[str(data_type)](value)
+        return METHODS[str(data_type)](value)  # type: ignore
     except KeyError:
         raise TypeError('Unknown type: {}'.format(value))
 
@@ -145,11 +146,10 @@ def long_uint(value: int) -> bytes:
     return common.Struct.ulong.pack(value)
 
 
-def long_long_int(value) -> bytes:
+def long_long_int(value: int) -> bytes:
     """Encode a long-long int.
 
-    :param long or int value: Value to encode
-    :rtype: bytes
+    :raises: TypeError
 
     """
     if not isinstance(value, int):
@@ -166,10 +166,7 @@ def long_string(value: str) -> bytes:
     :raises: TypeError
 
     """
-    if not isinstance(value, str):
-        raise TypeError('str required, received {}'.format(type(value)))
-    value = value.encode('utf-8')
-    return common.Struct.integer.pack(len(value)) + value
+    return _string(common.Struct.integer, value)
 
 
 def octet(value: int) -> bytes:
@@ -196,7 +193,7 @@ def short_int(value: int) -> bytes:
     return common.Struct.short.pack(value)
 
 
-def short_uint(value) -> bytes:
+def short_uint(value: int) -> bytes:
     """Encode an unsigned short integer
 
     :raises: TypeError
@@ -215,10 +212,7 @@ def short_string(value: str) -> bytes:
     :raises: TypeError
 
     """
-    if not isinstance(value, str):
-        raise TypeError('str required, received {}'.format(type(value)))
-    value = value.encode('utf-8')
-    return common.Struct.byte.pack(len(value)) + value
+    return _string(common.Struct.byte, value)
 
 
 def timestamp(value: typing.Union[datetime.datetime, time.struct_time]) \
@@ -319,7 +313,21 @@ def _deprecated_table_integer(value: int) -> bytes:
     raise TypeError('Unsupported numeric value: {}'.format(value))
 
 
-def encode_table_value(value: common.FieldValue) -> bytes:
+def _string(encoder: struct.Struct, value: str) -> bytes:
+    """Reduce a small amount of duplication in string handling
+
+    :raises: TypeError
+
+    """
+    if not isinstance(value, str):
+        raise TypeError('str required, received {}'.format(type(value)))
+    temp = value.encode('utf-8')
+    return encoder.pack(len(temp)) + temp
+
+
+def encode_table_value(value: typing.Union[common.FieldArray,
+                                           common.FieldTable,
+                                           common.FieldValue]) -> bytes:
     """Takes a value of any type and tries to encode it with the proper encoder
 
     :raises: TypeError
