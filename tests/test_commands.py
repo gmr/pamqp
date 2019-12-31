@@ -1804,6 +1804,22 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
 class ValidationErrorTestCase(unittest.TestCase):
 
+    def test_basic_consume_queue_length(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Consume(queue=str.ljust('A', 128))
+
+    def test_basic_consume_queue_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Consume(queue='*')
+
+    def test_basic_deliver_exchange_length(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Deliver(exchange=str.ljust('A', 128))
+
+    def test_basic_deliver_exchange_characters(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Deliver(exchange='*')
+
     def test_basic_get_queue_length(self):
         with self.assertRaises(ValueError):
             commands.Basic.Get(queue=str.ljust('A', 128))
