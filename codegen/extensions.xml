@@ -59,16 +59,6 @@
             Deprecated value that must be zero.
         </doc>
     </field>
-    <field name="auto-delete" type="bit"
-           label="Automatically delete when not in use">
-        <doc>
-            If set, the queue is deleted when all consumers have finished using
-            it. The last consumer can be cancelled either explicitly or because
-            its channel is closed. If there was no consumer ever on the queue,
-            it won't be deleted. Applications can explicitly delete auto-delete
-            queues using the Delete method as normal.
-        </doc>
-    </field>
     <field name="channel-id" type="short" label="Deprecated, must be empty" requred="0">
         <doc>
             Deprecated value that must be empty.

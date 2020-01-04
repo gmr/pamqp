@@ -1300,7 +1300,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_deliver_default_for_delivery_tag(self):
         obj = commands.Basic.Deliver()
-        self.assertEqual(obj['delivery_tag'], None)
+        self.assertEqual(obj['delivery_tag'], 0)
 
     def test_basic_deliver_default_for_redelivered(self):
         obj = commands.Basic.Deliver()
@@ -1332,7 +1332,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_getok_default_for_delivery_tag(self):
         obj = commands.Basic.GetOk()
-        self.assertEqual(obj['delivery_tag'], None)
+        self.assertEqual(obj['delivery_tag'], 0)
 
     def test_basic_getok_default_for_redelivered(self):
         obj = commands.Basic.GetOk()
@@ -1348,7 +1348,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_getok_default_for_message_count(self):
         obj = commands.Basic.GetOk()
-        self.assertEqual(obj['message_count'], None)
+        self.assertEqual(obj['message_count'], 0)
 
     def test_basic_nack_default_for_delivery_tag(self):
         obj = commands.Basic.Nack()
@@ -1400,7 +1400,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_reject_default_for_delivery_tag(self):
         obj = commands.Basic.Reject()
-        self.assertEqual(obj['delivery_tag'], None)
+        self.assertEqual(obj['delivery_tag'], 0)
 
     def test_basic_reject_default_for_requeue(self):
         obj = commands.Basic.Reject()
@@ -1432,11 +1432,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_channel_close_default_for_class_id(self):
         obj = commands.Channel.Close()
-        self.assertEqual(obj['class_id'], None)
+        self.assertEqual(obj['class_id'], 0)
 
     def test_channel_close_default_for_method_id(self):
         obj = commands.Channel.Close()
-        self.assertEqual(obj['method_id'], None)
+        self.assertEqual(obj['method_id'], 0)
 
     def test_channel_flow_default_for_active(self):
         obj = commands.Channel.Flow()
@@ -1472,11 +1472,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_connection_close_default_for_class_id(self):
         obj = commands.Connection.Close()
-        self.assertEqual(obj['class_id'], None)
+        self.assertEqual(obj['class_id'], 0)
 
     def test_connection_close_default_for_method_id(self):
         obj = commands.Connection.Close()
-        self.assertEqual(obj['method_id'], None)
+        self.assertEqual(obj['method_id'], 0)
 
     def test_connection_open_default_for_virtual_host(self):
         obj = commands.Connection.Open()
@@ -1716,11 +1716,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_queue_declareok_default_for_message_count(self):
         obj = commands.Queue.DeclareOk()
-        self.assertEqual(obj['message_count'], None)
+        self.assertEqual(obj['message_count'], 0)
 
     def test_queue_declareok_default_for_consumer_count(self):
         obj = commands.Queue.DeclareOk()
-        self.assertIsNone(obj['consumer_count'])
+        self.assertEqual(obj['consumer_count'], 0)
 
     def test_queue_delete_default_for_ticket(self):
         obj = commands.Queue.Delete()
@@ -1744,7 +1744,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_queue_deleteok_default_for_message_count(self):
         obj = commands.Queue.DeleteOk()
-        self.assertIsNone(obj['message_count'])
+        self.assertEqual(obj['message_count'], 0)
 
     def test_queue_purge_default_for_ticket(self):
         obj = commands.Queue.Purge()
@@ -1760,7 +1760,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_queue_purgeok_default_for_message_count(self):
         obj = commands.Queue.PurgeOk()
-        self.assertIsNone(obj['message_count'])
+        self.assertEqual(obj['message_count'], 0)
 
     def test_queue_unbind_default_for_ticket(self):
         obj = commands.Queue.Unbind()

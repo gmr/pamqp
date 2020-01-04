@@ -198,20 +198,12 @@ class Codegen:
 
     def _arg_annotation(self, arg: dict) -> str:
         arg_type = AMQ_TYPE_TO_ANNOTATION[self._arg_type(arg)]
-        nullable = False
-        if arg.get('domain'):
-            domain = self._domain(arg['domain'])
-            nullable = domain.nullable if arg.get('default-value') is None else False
-        elif arg['name'] in {'delivery-mode', 'priority'}:
-            nullable = True
         if arg_type == 'common.FieldArray':
             return 'typing.Optional[typing.List[common.FieldValue]]'
         elif arg_type == 'common.FieldTable':
             return 'typing.Optional[typing.Dict[str, common.FieldValue]]'
         elif arg_type == 'common.Timestamp':
             return 'typing.Optional[datetime.datetime]'
-        elif arg_type == 'int' and nullable:
-            return 'typing.Optional[int]'
         return arg_type
 
     def _arg_default(self, arg: dict) -> str:
@@ -224,9 +216,7 @@ class Codegen:
         elif arg['type'][-3:] == 'str':
             return "''"
         elif arg['type'] in ['short', 'long', 'longlong', 'octet']:
-            if domain and not domain.nullable:
-                return '0'
-            return 'None'
+            return '0'
         elif arg['type'] == 'bit':
             return 'False'
         raise ValueError('Could not return default for %r', arg)
@@ -286,6 +276,7 @@ class Codegen:
             else:
                 self._add_line('{!r},'.format(arg['pyname']), indent + 4)
         self._add_line(']', indent)
+        self._add_line()
 
         flag_value = 15
         self._add_comment('Flag values for marshaling / unmarshaling', indent)
@@ -300,13 +291,14 @@ class Codegen:
         self._add_line("'{}': {}}}".format(
             properties[-1]['pyname'], 1 << flag_value),
             indent + 9)
-
+        self._add_line()
         self._add_line('frame_id = {}  # AMQP Frame ID'.format(class_id),
                        indent)
         self._add_line(
             'index = 0x%04X  # pamqp Mapping Index' % class_id, indent)
         self._add_line("name = '{}.Properties'".format(
             self._pep8_class_name(class_name)), indent)
+        self._add_line()
 
         self._add_comment('Class Attribute Types for unmarshaling', indent)
         for arg in properties:
@@ -402,7 +394,6 @@ class Codegen:
                         '{!r}: {},'.format(name, self._arg_annotation(arg)),
                         indent + 4)
             self._add_line('}', indent)
-
         if not len(arguments):
             self._add_line(
                 '__slots__: typing.List[str] = []  # AMQ Method Attributes',
@@ -417,7 +408,7 @@ class Codegen:
                 else:
                     self._add_line('{!r},'.format(arg['pyname']), indent + 4)
             self._add_line(']', indent)
-
+        self._add_line()
         self._add_line('frame_id = %i  # AMQP Frame ID' % method['id'], indent)
         index_value = class_id << 16 | method['id']
         self._add_line(
@@ -450,6 +441,7 @@ class Codegen:
                 self._add_line(line, indent)
 
         if arguments:
+            self._add_line()
             self._add_comment('Class Attribute Types for unmarshaling', indent)
         for arg in arguments:
             self._add_line("_{} = '{}'".format(arg['pyname'], arg['type']),
