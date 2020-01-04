@@ -1,10 +1,8 @@
 import datetime
 import decimal
 import struct
-import time
 import typing
 
-Timestamp = typing.Union[datetime.datetime, time.struct_time]
 FieldArray = typing.List['FieldValue']  # type: ignore
 FieldTable = typing.Dict[str, 'FieldValue']  # type: ignore
 FieldValue = typing.Union[bool,  # type: ignore
@@ -16,7 +14,7 @@ FieldValue = typing.Union[bool,  # type: ignore
                           int,
                           None,
                           str,
-                          Timestamp]
+                          datetime.datetime]
 
 
 class Struct:

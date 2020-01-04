@@ -1248,7 +1248,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_cancel_default_for_consumer_tag(self):
         obj = commands.Basic.Cancel()
-        self.assertEqual(obj['consumer_tag'], None)
+        self.assertEqual(obj['consumer_tag'], '')
 
     def test_basic_cancel_default_for_nowait(self):
         obj = commands.Basic.Cancel()
@@ -1256,7 +1256,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_cancelok_default_for_consumer_tag(self):
         obj = commands.Basic.CancelOk()
-        self.assertEqual(obj['consumer_tag'], None)
+        self.assertEqual(obj['consumer_tag'], '')
 
     def test_basic_consume_default_for_ticket(self):
         obj = commands.Basic.Consume()
@@ -1292,11 +1292,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_consumeok_default_for_consumer_tag(self):
         obj = commands.Basic.ConsumeOk()
-        self.assertEqual(obj['consumer_tag'], None)
+        self.assertEqual(obj['consumer_tag'], '')
 
     def test_basic_deliver_default_for_consumer_tag(self):
         obj = commands.Basic.Deliver()
-        self.assertEqual(obj['consumer_tag'], None)
+        self.assertEqual(obj['consumer_tag'], '')
 
     def test_basic_deliver_default_for_delivery_tag(self):
         obj = commands.Basic.Deliver()
@@ -1308,11 +1308,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_deliver_default_for_exchange(self):
         obj = commands.Basic.Deliver()
-        self.assertEqual(obj['exchange'], None)
+        self.assertEqual(obj['exchange'], '')
 
     def test_basic_deliver_default_for_routing_key(self):
         obj = commands.Basic.Deliver()
-        self.assertEqual(obj['routing_key'], None)
+        self.assertEqual(obj['routing_key'], '')
 
     def test_basic_get_default_for_ticket(self):
         obj = commands.Basic.Get()
@@ -1340,11 +1340,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_getok_default_for_exchange(self):
         obj = commands.Basic.GetOk()
-        self.assertEqual(obj['exchange'], None)
+        self.assertEqual(obj['exchange'], '')
 
     def test_basic_getok_default_for_routing_key(self):
         obj = commands.Basic.GetOk()
-        self.assertEqual(obj['routing_key'], None)
+        self.assertEqual(obj['routing_key'], '')
 
     def test_basic_getok_default_for_message_count(self):
         obj = commands.Basic.GetOk()
@@ -1416,11 +1416,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_return_default_for_exchange(self):
         obj = commands.Basic.Return()
-        self.assertEqual(obj['exchange'], None)
+        self.assertEqual(obj['exchange'], '')
 
     def test_basic_return_default_for_routing_key(self):
         obj = commands.Basic.Return()
-        self.assertEqual(obj['routing_key'], None)
+        self.assertEqual(obj['routing_key'], '')
 
     def test_channel_close_default_for_reply_code(self):
         obj = commands.Channel.Close()
@@ -1440,11 +1440,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_channel_flow_default_for_active(self):
         obj = commands.Channel.Flow()
-        self.assertEqual(obj['active'], None)
+        self.assertEqual(obj['active'], False)
 
     def test_channel_flowok_default_for_active(self):
         obj = commands.Channel.FlowOk()
-        self.assertEqual(obj['active'], None)
+        self.assertEqual(obj['active'], False)
 
     def test_channel_open_default_for_out_of_band(self):
         obj = commands.Channel.Open()
@@ -1496,7 +1496,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_connection_secure_default_for_challenge(self):
         obj = commands.Connection.Secure()
-        self.assertEqual(obj['challenge'], None)
+        self.assertEqual(obj['challenge'], '')
 
     def test_connection_secureok_default_for_response(self):
         obj = commands.Connection.SecureOk()
@@ -1560,11 +1560,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_exchange_bind_default_for_destination(self):
         obj = commands.Exchange.Bind()
-        self.assertEqual(obj['destination'], None)
+        self.assertEqual(obj['destination'], '')
 
     def test_exchange_bind_default_for_source(self):
         obj = commands.Exchange.Bind()
-        self.assertEqual(obj['source'], None)
+        self.assertEqual(obj['source'], '')
 
     def test_exchange_bind_default_for_routing_key(self):
         obj = commands.Exchange.Bind()
@@ -1636,11 +1636,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_exchange_unbind_default_for_destination(self):
         obj = commands.Exchange.Unbind()
-        self.assertEqual(obj['destination'], None)
+        self.assertEqual(obj['destination'], '')
 
     def test_exchange_unbind_default_for_source(self):
         obj = commands.Exchange.Unbind()
-        self.assertEqual(obj['source'], None)
+        self.assertEqual(obj['source'], '')
 
     def test_exchange_unbind_default_for_routing_key(self):
         obj = commands.Exchange.Unbind()
@@ -1664,7 +1664,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_queue_bind_default_for_exchange(self):
         obj = commands.Queue.Bind()
-        self.assertEqual(obj['exchange'], None)
+        self.assertEqual(obj['exchange'], '')
 
     def test_queue_bind_default_for_routing_key(self):
         obj = commands.Queue.Bind()
@@ -1772,7 +1772,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_queue_unbind_default_for_exchange(self):
         obj = commands.Queue.Unbind()
-        self.assertEqual(obj['exchange'], None)
+        self.assertEqual(obj['exchange'], '')
 
     def test_queue_unbind_default_for_routing_key(self):
         obj = commands.Queue.Unbind()
