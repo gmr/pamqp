@@ -1,22 +1,25 @@
 <?xml version = "1.0"?>
 <rabbitmq>
+
+    <constant name = "no-route" value = "312" class = "soft-error">
+        <doc>
+            Returned when RabbitMQ sends back with 'basic.return' when a
+            'mandatory' message cannot be delivered to any queue.
+        </doc>
+    </constant>
+
     <class name = "connection" handler = "connection" index = "10" label = "work with socket connections">
-        <method name = "blocked" synchronous = "0" index = "60" label = "signal that connection is blocked">
-          <doc>
-            This method signals to the client that the connection is blocked by RabbitMQ.
-          </doc>
-          <field name = "reason" type = "shortstr" />
-        </method>
-        <method name = "unblocked" synchronous = "0" index = "61" label = "signal that connection is no longer blocked">
-          <doc>
-            This method signals to the client that the connection is no longer blocked by RabbitMQ.
-          </doc>
+        <method name="blocked" index="60" label="indicate that connection is blocked">
+            <field name="reason" type="shortstr" label="Block reason" requred="0">
+                <doc>
+                    The reason the connection was blocked.
+                </doc>
+            </field>
         </method>
     </class>
 
     <!-- no wait is missing its definition in a few places -->
-    <field name="nowait" type="bit">
-        do not send a reply method
+    <field name="nowait" type="bit" label="do not send a reply method">
         <doc>
             If set, the server will not respond to the method. The client
             should not wait for a reply method. If the server could not
@@ -24,34 +27,34 @@
         </doc>
     </field>
     <!-- Deprecated fields aren't defined in xml except as comments but still show up in the json -->
-    <field name="ticket" type="short" label="Deprecated" requred="0">
+    <field name="ticket" type="short" label="Deprecated, must be ``0``" requred="0">
         <doc>
             Deprecated value that must be zero.
         </doc>
     </field>
-    <field name="cluster-id" type="shortstr" label="Deprecated" requred="0">
+    <field name="cluster-id" type="shortstr" label="Deprecated, must be empty" requred="0">
         <doc>
             Deprecated value that must be empty.
         </doc>
     </field>
-    <field name="internal" type="bit" label="Deprecated" requred="0">
+    <field name="internal" type="bit" label="Deprecated, must be ``False``" requred="0">
         <doc>
             Deprecated value that must be False.
         </doc>
     </field>
     <field name="out-of-band" type="shortstr"
-           label="Protocol level field, do not use, must be zero." requred="0">
+           label="Protocol level field, do not use, must be ``0``." requred="0">
         <doc>
             Used when negotiating a connection on an out-of-band channel. Do
             not use, must be zero.
         </doc>
     </field>
-    <field name="insist" type="bit" label="Deprecated" requred="0">
+    <field name="insist" type="bit" label="Deprecated, must be ``False``" requred="0">
         <doc>
             Deprecated value that must be False.
         </doc>
     </field>
-    <field name="known-hosts" type="shortstr" label="Deprecated" requred="0">
+    <field name="known-hosts" type="shortstr" label="Deprecated, must be empty" requred="0">
         <doc>
             Deprecated value that must be zero.
         </doc>
@@ -66,14 +69,15 @@
             queues using the Delete method as normal.
         </doc>
     </field>
-    <field name="channel-id" type="short" label="Deprecated" requred="0">
+    <field name="channel-id" type="short" label="Deprecated, must be empty" requred="0">
         <doc>
-            Deprecated value that must be zero.
+            Deprecated value that must be empty.
         </doc>
     </field>
-    <field name="capabilities" type="shortstr" label="Deprecated" requred="0">
+    <field name="capabilities" type="shortstr" label="Deprecated, must be empty" requred="0">
         <doc>
-            Deprecated value that must be zero.
+            Deprecated value that must be empty.
         </doc>
     </field>
+
 </rabbitmq>
