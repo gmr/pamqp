@@ -18,8 +18,11 @@ from pamqp import (base, body, commands, common, constants, decode,
 LOGGER = logging.getLogger(__name__)
 UNMARSHAL_FAILURE = 0, 0, None
 
-FrameTypes = typing.Union[body.ContentBody, 'Frame', header.ContentHeader,
-                          header.ProtocolHeader, heartbeat.Heartbeat, ]
+FrameTypes = typing.Union[base.Frame,
+                          body.ContentBody,
+                          header.ContentHeader,
+                          header.ProtocolHeader,
+                          heartbeat.Heartbeat]
 
 
 def marshal(frame_value: FrameTypes, channel_id: int) -> bytes:
@@ -87,7 +90,8 @@ def unmarshal(data_in: bytes) -> typing.Tuple[int, int, FrameTypes]:
 def _frame_parts(data: bytes) -> typing.Tuple[int, int, typing.Optional[int]]:
     """Attempt to decode a low-level frame, returning frame parts"""
     try:  # Get the Frame Type, Channel Number and Frame Size
-        return struct.unpack('>BHI', data[0:constants.FRAME_HEADER_SIZE])
+        return struct.unpack(  # type: ignore
+            '>BHI', data[0:constants.FRAME_HEADER_SIZE])
     except struct.error:  # Did not receive a full frame
         return UNMARSHAL_FAILURE
 
@@ -134,6 +138,7 @@ def _unmarshal_protocol_header_frame(data_in: bytes) \
         frame = header.ProtocolHeader()
         frame.unmarshal(data_in)
         return frame
+    return None
 
 
 def _unmarshal_method_frame(frame_data: bytes) -> base.Frame:
@@ -171,6 +176,6 @@ def _unmarshal_header_frame(frame_data: bytes) -> header.ContentHeader:
 
 def _unmarshal_body_frame(frame_data: bytes) -> body.ContentBody:
     """Attempt to unmarshal a body frame"""
-    content_body = body.ContentBody()
+    content_body = body.ContentBody(b'')
     content_body.unmarshal(frame_data)
     return content_body

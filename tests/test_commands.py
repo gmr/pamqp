@@ -1,7 +1,4 @@
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
 from pamqp import commands
 
@@ -1300,7 +1297,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_deliver_default_for_delivery_tag(self):
         obj = commands.Basic.Deliver()
-        self.assertEqual(obj['delivery_tag'], None)
+        self.assertEqual(obj['delivery_tag'], 0)
 
     def test_basic_deliver_default_for_redelivered(self):
         obj = commands.Basic.Deliver()
@@ -1332,7 +1329,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_getok_default_for_delivery_tag(self):
         obj = commands.Basic.GetOk()
-        self.assertEqual(obj['delivery_tag'], None)
+        self.assertEqual(obj['delivery_tag'], 0)
 
     def test_basic_getok_default_for_redelivered(self):
         obj = commands.Basic.GetOk()
@@ -1400,7 +1397,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_reject_default_for_delivery_tag(self):
         obj = commands.Basic.Reject()
-        self.assertEqual(obj['delivery_tag'], None)
+        self.assertEqual(obj['delivery_tag'], 0)
 
     def test_basic_reject_default_for_requeue(self):
         obj = commands.Basic.Reject()
@@ -1440,11 +1437,11 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_channel_flow_default_for_active(self):
         obj = commands.Channel.Flow()
-        self.assertEqual(obj['active'], None)
+        self.assertEqual(obj['active'], False)
 
     def test_channel_flowok_default_for_active(self):
         obj = commands.Channel.FlowOk()
-        self.assertEqual(obj['active'], None)
+        self.assertEqual(obj['active'], False)
 
     def test_channel_open_default_for_out_of_band(self):
         obj = commands.Channel.Open()
@@ -1796,3 +1793,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
                 'message_id', 'timestamp', 'message_type', 'user_id', 'app_id',
                 'cluster_id'
             ])
+
+    def test_basic_properties_eq_error(self):
+        with self.assertRaises(NotImplementedError):
+            self.assertEqual(commands.Basic.Properties(), {})

@@ -1,5 +1,28 @@
 Version History
 ===============
+
+3.0.0a4 (2020-01-01)
+--------------------
+- Refactor codegen.py
+- Revert the behaviors added in 3.0.0a2 with regard to documented defaults and `None`
+- Use `amqp0-9-1.extended.xml` instead of `amqp-0-9-1.xml` to get the documentation for RabbitMQ added classes/methods
+- Add strict value checking for deprecated values
+- Remove empty ``__init__`` functions from method classes
+
+3.0.0a3 (2019-12-31)
+--------------------
+- Make comparison of Basic.Properties against other object types raise `NotImplementedError`
+- Return test coverage to 100%
+
+3.0.0a2 (2019-12-31)
+--------------------
+- Added mypy as part of the test pipeline and made updates based upon its findings.
+- Added length checking and regex checking for values specified in AMQP spec
+- Fixed some of the type annotations added in 3.0.0a0
+- Fixed some of the documentation and label usage in `pamqp.commands`
+- Removed redundant inline documentation in `pamqp.commands`
+- Updated default values to only reflect defaults specified in the XML and JSON specs. If no default is specified, the value will now be `None`.
+
 3.0.0a1 (2019-12-19)
 --------------------
 - Revert the removal of `pamqp.body.ContentBody.name`

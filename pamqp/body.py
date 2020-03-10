@@ -1,18 +1,18 @@
 # -*- encoding: utf-8 -*-
 """
-The pamqp.body module contains the Body class which is used when
-unmarshaling body frames. When dealing with content frames, the message body
-will be returned from the library as an instance of the body class.
+The :py:mod:`pamqp.body` module contains the :py:class:`Body` class which is
+used when unmarshalling body frames. When dealing with content frames, the
+message body will be returned from the library as an instance of the body
+class.
 
 """
-import typing
 
 
 class ContentBody:
     """ContentBody carries the value for an AMQP message body frame"""
     name = 'ContentBody'
 
-    def __init__(self, value: typing.Optional[bytes] = None):
+    def __init__(self, value: bytes):
         """Create a new instance of a ContentBody object"""
         self.value = value
 
@@ -28,9 +28,9 @@ class ContentBody:
         """
         return self.value
 
-    def unmarshal(self, data: bytes) -> typing.NoReturn:
+    def unmarshal(self, data: bytes) -> None:
         """Apply the data to the object. This method is here for API
-        compatibility, there is no special unmarhsaling for the payload in a
+        compatibility, there is no special unmarshalling for the payload in a
         content frame.
 
         """

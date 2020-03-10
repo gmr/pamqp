@@ -59,8 +59,8 @@ class MarshalingTests(unittest.TestCase):
                          expectation)
 
     def test_content_header(self):
-        expectation = (b'\x02\x00\x01\x00\x00\x00\x0e\x00<\x00\x00\x00'
-                       b'\x00\x00\x00\x00\x00\x00\n\x00\x00\xce')
+        expectation = (b'\x02\x00\x01\x00\x00\x00\x10\x00<\x00\x00\x00\x00'
+                       b'\x00\x00\x00\x00\x00\n\x18\x00\x00\x00\xce')
         self.assertEqual(frame.marshal(header.ContentHeader(body_size=10), 1),
                          expectation)
 

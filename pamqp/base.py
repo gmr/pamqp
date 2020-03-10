@@ -9,8 +9,8 @@ LOGGER = logging.getLogger(__name__)
 
 class _AMQData:
     """Base class for AMQ methods and properties for encoding and decoding"""
-    __annotations__ = {}
-    __slots__ = []
+    __annotations__: typing.Dict = {}
+    __slots__: typing.List = []
     name = '_AMQData'
 
     def __contains__(self, item: str) -> bool:
@@ -25,7 +25,9 @@ class _AMQData:
         """
         return getattr(self, item)
 
-    def __iter__(self) -> typing.Tuple[str, common.FieldValue]:
+    def __iter__(self) \
+            -> typing.Generator[typing.Tuple[str, common.FieldValue],
+                                None, None]:
         """Iterate the attributes and values as key, value pairs"""
         for attribute in self.__slots__:
             yield attribute, getattr(self, attribute)
@@ -44,7 +46,7 @@ class _AMQData:
         return getattr(cls, '_' + attr)
 
     @classmethod
-    def attributes(cls: '_AMQData') -> list:
+    def attributes(cls) -> list:
         """Return the list of attributes"""
         return cls.__slots__
 
@@ -54,7 +56,7 @@ class Frame(_AMQData):
     frame_id = 0
     index = 0
     synchronous = False
-    valid_responses = []
+    valid_responses: typing.List = []
 
     def marshal(self) -> bytes:
         """Dynamically encode the frame by taking the list of attributes and
@@ -62,12 +64,12 @@ class Frame(_AMQData):
         and the data type from the class attribute.
 
         """
-        byte, offset, output, processing_bitset = None, 0, [], False
+        byte, offset, output, processing_bitset = -1, 0, [], False
         for argument in self.__slots__:
             data_type = self.amqp_type(argument)
             if not processing_bitset and data_type == 'bit':
                 byte, offset, processing_bitset = 0, 0, True
-            data_value = getattr(self, argument)
+            data_value = getattr(self, argument, 0)
             if processing_bitset:
                 if data_type != 'bit':
                     processing_bitset = False
@@ -84,7 +86,7 @@ class Frame(_AMQData):
             output.append(encode.octet(byte))
         return b''.join(output)
 
-    def unmarshal(self, data: bytes) -> typing.NoReturn:
+    def unmarshal(self, data: bytes) -> None:
         """Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 
@@ -114,13 +116,14 @@ class BasicProperties(_AMQData):
     object values.
 
     """
-    flags = {}
+    flags: typing.Dict[str, int] = {}
     name = 'BasicProperties'
 
-    def __eq__(self, other: 'BasicProperties'):
-        return all(
-            getattr(self, k, None) == getattr(other, k, None)
-            for k in self.__slots__)
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, BasicProperties):
+            raise NotImplementedError
+        return all(getattr(self, k, None) == getattr(other, k, None)
+                   for k in self.__slots__)
 
     def encode_property(self, name: str, value: common.FieldValue) -> bytes:
         """Encode a single property value
@@ -155,7 +158,7 @@ class BasicProperties(_AMQData):
                 break
         return b''.join(flag_pieces + parts)
 
-    def unmarshal(self, flags: int, data: bytes) -> typing.NoReturn:
+    def unmarshal(self, flags: int, data: bytes) -> None:
         """Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 
