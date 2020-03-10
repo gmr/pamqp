@@ -30,6 +30,7 @@ pamqp module documentation
 
    body
    commands
+   common
    decode
    encode
    exceptions
