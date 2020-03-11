@@ -3,18 +3,18 @@ import decimal
 import struct
 import typing
 
-FieldArray = typing.List['FieldValue']  # type: ignore
-FieldTable = typing.Dict[str, 'FieldValue']  # type: ignore
 FieldValue = typing.Union[bool,  # type: ignore
                           bytearray,
                           decimal.Decimal,
-                          FieldArray,
-                          FieldTable,
+                          'FieldArray',
+                          'FieldTable',
                           float,
                           int,
                           None,
                           str,
                           datetime.datetime]
+FieldArray = typing.List[FieldValue]  # type: ignore
+FieldTable = typing.Dict[str, FieldValue]  # type: ignore
 
 
 class Struct:
