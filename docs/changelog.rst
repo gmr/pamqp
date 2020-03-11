@@ -3,7 +3,9 @@ Changelog
 
 3.0.0a5 (2020-03-11)
 --------------------
-- Rename `pamqp.frame._frame_parts` to `pamqp.frame.frame_parts` (#15 again)
+- Rename `pamqp.frame._frame_parts` to :meth:`pamqp.frame.frame_parts` (#15 again)
+- `pamqp.commands.Basic.QoS.global_` renamed to :attr:`pamqp.commands.Basic.QoS.globally`
+- Removed mypy checking due to errors in mypy and recursive type aliases
 
 3.0.0a4 (2020-01-01)
 --------------------
