@@ -38,9 +38,6 @@ jobs:
       - name: Run tests
         run: nosetests
 
-      - name: Run mypy
-        run: mypy pamqp
-
       - name: Upload Coverage
         uses: codecov/codecov-action@v1.0.2
         with:

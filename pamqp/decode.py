@@ -20,10 +20,10 @@ def by_type(value: bytes,
     """Decodes values using the specified type"""
     if data_type == 'bit':
         return bit(value, offset)
-    decoder = METHODS.get(data_type)  # type: ignore
+    decoder = METHODS.get(data_type)
     if decoder is None:
         raise ValueError('Unknown type: {}'.format(data_type))
-    return decoder(value)  # type: ignore
+    return decoder(value)
 
 
 def bit(value: bytes, position: int) -> typing.Tuple[int, bool]:

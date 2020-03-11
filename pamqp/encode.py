@@ -42,7 +42,7 @@ def by_type(value: common.FieldValue, data_type: str) -> bytes:
 
     """
     try:
-        return METHODS[str(data_type)](value)  # type: ignore
+        return METHODS[str(data_type)](value)
     except KeyError:
         raise TypeError('Unknown type: {}'.format(value))
 

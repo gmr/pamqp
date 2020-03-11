@@ -90,7 +90,7 @@ def unmarshal(data_in: bytes) -> typing.Tuple[int, int, FrameTypes]:
 def frame_parts(data: bytes) -> typing.Tuple[int, int, typing.Optional[int]]:
     """Attempt to decode a low-level frame, returning frame parts"""
     try:  # Get the Frame Type, Channel Number and Frame Size
-        return struct.unpack(  # type: ignore
+        return struct.unpack(
             '>BHI', data[0:constants.FRAME_HEADER_SIZE])
     except struct.error:  # Did not receive a full frame
         return UNMARSHAL_FAILURE
