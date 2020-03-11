@@ -60,7 +60,7 @@ def unmarshal(data_in: bytes) -> typing.Tuple[int, int, FrameTypes]:
         if value:
             return 8, 0, value
 
-    frame_type, channel_id, frame_size = _frame_parts(data_in)
+    frame_type, channel_id, frame_size = frame_parts(data_in)
 
     # Heartbeats do not have frame length indicators
     if frame_type == constants.FRAME_HEARTBEAT and frame_size == 0:
@@ -87,7 +87,7 @@ def unmarshal(data_in: bytes) -> typing.Tuple[int, int, FrameTypes]:
         'Unknown', 'Unknown frame type: {}'.format(frame_type))
 
 
-def _frame_parts(data: bytes) -> typing.Tuple[int, int, typing.Optional[int]]:
+def frame_parts(data: bytes) -> typing.Tuple[int, int, typing.Optional[int]]:
     """Attempt to decode a low-level frame, returning frame parts"""
     try:  # Get the Frame Type, Channel Number and Frame Size
         return struct.unpack(  # type: ignore
