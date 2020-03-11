@@ -1,6 +1,10 @@
 Version History
 ===============
 
+3.0.0a5 (2020-03-11)
+--------------------
+- Rename `pamqp.frame._frame_parts` to `pamqp.frame.frame_parts` (#15 again)
+
 3.0.0a4 (2020-01-01)
 --------------------
 - Refactor codegen.py

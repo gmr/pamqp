@@ -1,2 +1,4 @@
-
-sphinx
+Sphinx==2.4.4
+sphinx-autodoc-typehints
+sphinx-material==0.0.23
+typed_ast
