@@ -151,8 +151,8 @@ class ArgumentTypeTests(unittest.TestCase):
         self.assertEqual(commands.Basic.Qos.amqp_type('prefetch_count'),
                          'short')
 
-    def test_basic_qos_has_global_(self):
-        self.assertEqual(commands.Basic.Qos.amqp_type('global_'), 'bit')
+    def test_basic_qos_has_globally(self):
+        self.assertEqual(commands.Basic.Qos.amqp_type('globally'), 'bit')
 
     def test_basic_recover_has_requeue(self):
         self.assertEqual(commands.Basic.Recover.amqp_type('requeue'),
@@ -677,8 +677,8 @@ class AttributeInMethodTests(unittest.TestCase):
     def test_basic_qos_has_prefetch_count(self):
         self.assertIn('prefetch_count', commands.Basic.Qos())
 
-    def test_basic_qos_has_global_(self):
-        self.assertIn('global_', commands.Basic.Qos())
+    def test_basic_qos_has_globally(self):
+        self.assertIn('globally', commands.Basic.Qos())
 
     def test_basic_recover_has_requeue(self):
         self.assertIn('requeue', commands.Basic.Recover())
@@ -1387,9 +1387,9 @@ class MethodAttributeDefaultTests(unittest.TestCase):
         obj = commands.Basic.Qos()
         self.assertEqual(obj['prefetch_count'], 0)
 
-    def test_basic_qos_default_for_global_(self):
+    def test_basic_qos_default_for_globally(self):
         obj = commands.Basic.Qos()
-        self.assertEqual(obj['global_'], False)
+        self.assertEqual(obj['globally'], False)
 
     def test_basic_recover_default_for_requeue(self):
         obj = commands.Basic.Recover()

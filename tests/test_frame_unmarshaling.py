@@ -392,7 +392,7 @@ class DemarshalingTests(unittest.TestCase):
         expectation = {
             'prefetch_count': 1,
             'prefetch_size': 0,
-            'global_': False
+            'globally': False
         }
 
         # Decode the frame and validate lengths

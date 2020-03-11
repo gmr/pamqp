@@ -1569,10 +1569,10 @@ class Basic:
         __annotations__: typing.Dict[str, object] = {
             'prefetch_size': int,
             'prefetch_count': int,
-            'global_': bool
+            'globally': bool
         }
         __slots__: typing.List[str] = [  # AMQ Method Attributes
-            'prefetch_size', 'prefetch_count', 'global_'
+            'prefetch_size', 'prefetch_count', 'globally'
         ]
 
         frame_id = 10  # AMQP Frame ID
@@ -1584,22 +1584,25 @@ class Basic:
         # Class Attribute Types for unmarshaling
         _prefetch_size = 'long'
         _prefetch_count = 'short'
-        _global_ = 'bit'
+        _globally = 'bit'
 
         def __init__(self,
                      prefetch_size: int = 0,
                      prefetch_count: int = 0,
-                     global_: bool = False) -> None:
+                     globally: bool = False) -> None:
             """Initialize the :py:class:`Basic.Qos` class
+
+            .. note:: The AMQP defined `global` argument is renamed due to a
+                      conflict with the `global` keyword in Python.
 
             :param prefetch_size: Prefetch window in octets
             :param prefetch_count: Prefetch window in messages
-            :param global_: Apply to entire connection
+            :param globally: Apply to entire connection
 
             """
             self.prefetch_size = prefetch_size
             self.prefetch_count = prefetch_count
-            self.global_ = global_
+            self.globally = globally
 
     class QosOk(base.Frame):
         """Confirm the requested qos
