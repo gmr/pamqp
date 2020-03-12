@@ -1,10 +1,9 @@
 pamqp
 =====
-pamqp is a pure-python AMQP 0-9-1 frame encoder and decoder that was created
-as client agnostic encoder and decoder.
+pamqp is a low level AMQP 0-9-1 frame encoding and decoding library for Python 3.
 
-This is a thing that RabbitMQ client libraries can use instead of maintaining
-similar functionality.
+pamqp is not a end-user client library for talking to RabbitMQ but rather is
+used by client libraries for marshaling and unmarshaling AMQP frames.
 
 |Version| |Status| |Coverage| |License| |Maintainability| |Downloads|
 
