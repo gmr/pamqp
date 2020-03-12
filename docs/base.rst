@@ -1,6 +1,8 @@
-pamqp.body
+pamqp.base
 ==========
-.. automodule:: pamqp.body
+
+.. automodule:: pamqp.base
     :members:
     :special-members:
+    :inherited-members:
     :member-order: bysource

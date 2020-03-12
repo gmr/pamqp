@@ -1,8 +1,5 @@
 # -*- encoding: utf-8 -*-
 """
-AMQP Data Encoder
-=================
-
 Functions for encoding data of various types including field tables and arrays
 
 """
@@ -28,6 +25,8 @@ def support_deprecated_rabbitmq(enabled: bool = True) -> None:
     If called with `True`, than RabbitMQ versions, the field-table integer
     types will not support the full AMQP spec.
 
+    :param enabled: Specify if deprecated RabbitMQ versions are supported
+
     """
     global DEPRECATED_RABBITMQ_SUPPORT
 
@@ -38,7 +37,10 @@ def by_type(value: common.FieldValue, data_type: str) -> bytes:
     """Takes a value of any type and tries to encode it with the specified
     encoder.
 
-    :raises: TypeError
+    :param value: The value to encode
+    :type value: :const:`pamqp.common.FieldValue`
+    :param data_type: The data type name to use for encoding
+    :raises TypeError: when the :data:`data_type` is unknown
 
     """
     try:
@@ -61,7 +63,8 @@ def bit(value: int, byte: int, position: int) -> int:
 def boolean(value: bool) -> bytes:
     """Encode a boolean value
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type
 
     """
     if not isinstance(value, bool):
@@ -72,7 +75,8 @@ def boolean(value: bool) -> bytes:
 def byte_array(value: bytearray) -> bytes:
     """Encode a byte array value
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type
 
     """
     if not isinstance(value, bytearray):
@@ -83,7 +87,8 @@ def byte_array(value: bytearray) -> bytes:
 def decimal(value: _decimal.Decimal) -> bytes:
     """Encode a decimal.Decimal value
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type
 
     """
     if not isinstance(value, _decimal.Decimal):
@@ -101,7 +106,8 @@ def decimal(value: _decimal.Decimal) -> bytes:
 def double(value: float) -> bytes:
     """Encode a floating point value as a double
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type
 
     """
     if not isinstance(value, float):
@@ -112,7 +118,8 @@ def double(value: float) -> bytes:
 def floating_point(value: float) -> bytes:
     """Encode a floating point value
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type
 
     """
     if not isinstance(value, float):
@@ -123,7 +130,9 @@ def floating_point(value: float) -> bytes:
 def long_int(value: int) -> bytes:
     """Encode a long integer
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type or outside the
+        acceptable range for the data type
 
     """
     if not isinstance(value, int):
@@ -136,7 +145,9 @@ def long_int(value: int) -> bytes:
 def long_uint(value: int) -> bytes:
     """Encode a long unsigned integer
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type or outside the
+        acceptable range for the data type
 
     """
     if not isinstance(value, int):
@@ -147,9 +158,11 @@ def long_uint(value: int) -> bytes:
 
 
 def long_long_int(value: int) -> bytes:
-    """Encode a long-long int.
+    """Encode a long-long int
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type or outside the
+        acceptable range for the data type
 
     """
     if not isinstance(value, int):
@@ -161,9 +174,10 @@ def long_long_int(value: int) -> bytes:
 
 
 def long_string(value: str) -> bytes:
-    """Encode a "long string".
+    """Encode a "long string"
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type
 
     """
     return _string(common.Struct.integer, value)
@@ -172,7 +186,8 @@ def long_string(value: str) -> bytes:
 def octet(value: int) -> bytes:
     """Encode an octet value
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type
 
     """
     if not isinstance(value, int):
@@ -183,7 +198,9 @@ def octet(value: int) -> bytes:
 def short_int(value: int) -> bytes:
     """Encode a short integer
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type or outside the
+        acceptable range for the data type
 
     """
     if not isinstance(value, int):
@@ -196,7 +213,9 @@ def short_int(value: int) -> bytes:
 def short_uint(value: int) -> bytes:
     """Encode an unsigned short integer
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type or outside the
+        acceptable range for the data type
 
     """
     if not isinstance(value, int):
@@ -209,7 +228,8 @@ def short_uint(value: int) -> bytes:
 def short_string(value: str) -> bytes:
     """ Encode a string
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type
 
     """
     return _string(common.Struct.byte, value)
@@ -219,7 +239,8 @@ def timestamp(value: typing.Union[datetime.datetime, time.struct_time]) \
         -> bytes:
     """Encode a datetime.datetime object or time.struct_time
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type
 
     """
     if isinstance(value, datetime.datetime):
@@ -234,7 +255,9 @@ def timestamp(value: typing.Union[datetime.datetime, time.struct_time]) \
 def field_array(value: common.FieldArray) -> bytes:
     """Encode a field array from a list of values
 
-    :raises: TypeError
+    :param value: Value to encode
+    :type value: :const:`pamqp.common.FieldArray`
+    :raises TypeError: when the value is not the correct type
 
     """
     if not isinstance(value, list):
@@ -250,7 +273,9 @@ def field_array(value: common.FieldArray) -> bytes:
 def field_table(value: common.FieldTable) -> bytes:
     """Encode a field table from a dict
 
-    :raises: TypeError
+    :param value: Value to encode
+    :type value: :const:`pamqp.common.FieldTable`
+    :raises TypeError: when the value is not the correct type
 
     """
     if not value:  # If there is no value, return a standard 4 null bytes
@@ -275,7 +300,9 @@ def table_integer(value: int) -> bytes:
     """Determines the best type of numeric type to encode value as, preferring
     the smallest data size first.
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type or outside the
+        acceptable range for the data type
 
     """
     if DEPRECATED_RABBITMQ_SUPPORT:
@@ -299,7 +326,9 @@ def _deprecated_table_integer(value: int) -> bytes:
     """Determines the best type of numeric type to encode value as, preferring
     the smallest data size first, supporting versions of RabbitMQ < 3.6
 
-    :raises: TypeError
+    :param value: Value to encode
+    :raises TypeError: when the value is not the correct type or outside the
+        acceptable range for the data type
 
     """
     if 0 <= value <= 255:
@@ -330,7 +359,11 @@ def encode_table_value(value: typing.Union[common.FieldArray,
                                            common.FieldValue]) -> bytes:
     """Takes a value of any type and tries to encode it with the proper encoder
 
-    :raises: TypeError
+    :param value: Value to encode
+    :type value: :const:`pamqp.common.FieldArray` or
+                 :const:`pamqp.common.FieldTable` or
+                 :const:`pamqp.common.FieldValue`
+    :raises TypeError: when the type of the value is not supported
 
     """
     if isinstance(value, bool):

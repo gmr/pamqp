@@ -25,6 +25,10 @@ class ProtocolHeader:
         """Construct a Protocol Header frame object for the specified AMQP
         version.
 
+        :param major_version: The AMQP major version (``0``)
+        :param minor_version: The AMQP major version (``9``)
+        :param revision: The AMQP major version (``1``)
+
         """
         self.major_version = major_version
         self.minor_version = minor_version
@@ -42,6 +46,7 @@ class ProtocolHeader:
         """Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 
+        :param data: The frame value to unpack
         :raises: ValueError
 
         """
@@ -70,7 +75,11 @@ class ContentHeader:
                  properties: typing.Optional[BasicProperties] = None):
         """Initialize the Exchange.DeleteOk class
 
-         Weight is unused and must be `0`
+        Weight is unused and must be `0`
+
+        :param weight: The unused content weight field
+        :param body_size: The size in bytes of the message body
+        :param properties: The message properties
 
         """
         self.class_id = None
@@ -87,8 +96,7 @@ class ContentHeader:
         """Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 
-        :returns: byte count of data used to unmarshal the frame
-        :raises: ValueError
+        :param data: The raw frame data to unmarshal
 
         """
         self.class_id, self.weight, self.body_size = struct.unpack(

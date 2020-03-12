@@ -1,8 +1,5 @@
 # -*- encoding: utf-8 -*-
 """
-AMQP Data Decoder
-=================
-
 Functions for decoding data of various types including field tables and arrays
 
 """
@@ -17,7 +14,15 @@ from pamqp import common
 def by_type(value: bytes,
             data_type: str,
             offset: int = 0) -> typing.Tuple[int, common.FieldValue]:
-    """Decodes values using the specified type"""
+    """Decodes values using the specified type
+
+    :param value: The binary value to decode
+    :param data_type: The data type name of the value
+    :param offset: The starting position of the data in the byte stream
+    :rtype: :class:`tuple` (:class:`int`, :const:`pamqp.common.FieldValue`)
+    :raises ValueError: when the data type is unknown
+
+    """
     if data_type == 'bit':
         return bit(value, offset)
     decoder = METHODS.get(data_type)
@@ -29,7 +34,10 @@ def by_type(value: bytes,
 def bit(value: bytes, position: int) -> typing.Tuple[int, bool]:
     """Decode a bit value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :param position: The position in the byte of the bit value
+    :rtype: :class:`tuple` (:class:`int`, :class:`bool`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     bit_buffer = common.Struct.byte.unpack_from(value)[0]
@@ -42,7 +50,9 @@ def bit(value: bytes, position: int) -> typing.Tuple[int, bool]:
 def boolean(value: bytes) -> typing.Tuple[int, bool]:
     """Decode a boolean value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`bool`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -54,7 +64,9 @@ def boolean(value: bytes) -> typing.Tuple[int, bool]:
 def byte_array(value: bytes) -> typing.Tuple[int, bytearray]:
     """Decode a byte_array value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`bytearray`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -67,7 +79,9 @@ def byte_array(value: bytes) -> typing.Tuple[int, bytearray]:
 def decimal(value: bytes) -> typing.Tuple[int, _decimal.Decimal]:
     """Decode a decimal value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`decimal.Decimal`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -81,7 +95,9 @@ def decimal(value: bytes) -> typing.Tuple[int, _decimal.Decimal]:
 def double(value: bytes) -> typing.Tuple[int, float]:
     """Decode a double value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`float`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -93,7 +109,9 @@ def double(value: bytes) -> typing.Tuple[int, float]:
 def floating_point(value: bytes) -> typing.Tuple[int, float]:
     """Decode a floating point value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`float`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -105,7 +123,9 @@ def floating_point(value: bytes) -> typing.Tuple[int, float]:
 def long_int(value: bytes) -> typing.Tuple[int, int]:
     """Decode a long integer value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`int`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -118,7 +138,9 @@ def long_uint(value: bytes) -> typing.Tuple[int, int]:
     """Decode an unsigned long integer value, returning bytes consumed and
     the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`int`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -131,7 +153,9 @@ def long_long_int(value: bytes) -> typing.Tuple[int, int]:
     """Decode a long-long integer value, returning bytes consumed and the
     value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`int`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -143,7 +167,9 @@ def long_long_int(value: bytes) -> typing.Tuple[int, int]:
 def long_str(value: bytes) -> typing.Tuple[int, str]:
     """Decode a string value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`str`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -156,7 +182,9 @@ def long_str(value: bytes) -> typing.Tuple[int, str]:
 def octet(value: bytes) -> typing.Tuple[int, int]:
     """Decode an octet value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`int`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -168,7 +196,9 @@ def octet(value: bytes) -> typing.Tuple[int, int]:
 def short_int(value: bytes) -> typing.Tuple[int, int]:
     """Decode a short integer value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`int`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -181,7 +211,9 @@ def short_uint(value: bytes) -> typing.Tuple[int, int]:
     """Decode an unsigned short integer value, returning bytes consumed and
     the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`int`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -194,7 +226,9 @@ def short_short_int(value: bytes) -> typing.Tuple[int, int]:
     """Decode a short-short integer value, returning bytes consumed and the
     value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`int`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -206,7 +240,9 @@ def short_short_int(value: bytes) -> typing.Tuple[int, int]:
 def short_str(value: bytes) -> typing.Tuple[int, str]:
     """Decode a string value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`str`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -219,7 +255,9 @@ def short_str(value: bytes) -> typing.Tuple[int, str]:
 def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
     """Decode a timestamp value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`datetime.datetime`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -231,7 +269,13 @@ def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
 
 
 def embedded_value(value: bytes) -> typing.Tuple[int, common.FieldValue]:
-    """Dynamically decode a value based upon the starting byte"""
+    """Dynamically decode a value based upon the starting byte
+
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :const:`pamqp.common.FieldValue`)
+    :raises ValueError: when the binary data can not be unpacked
+
+    """
     if not value:
         return 0, None
     try:
@@ -244,7 +288,9 @@ def embedded_value(value: bytes) -> typing.Tuple[int, common.FieldValue]:
 def field_array(value: bytes) -> typing.Tuple[int, common.FieldArray]:
     """Decode a field array value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :const:`pamqp.common.FieldArray`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -264,7 +310,9 @@ def field_array(value: bytes) -> typing.Tuple[int, common.FieldArray]:
 def field_table(value: bytes) -> typing.Tuple[int, common.FieldTable]:
     """Decode a field array value, returning bytes consumed and the value.
 
-    :raises: ValueError
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :const:`pamqp.common.FieldTable`)
+    :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
@@ -286,6 +334,12 @@ def field_table(value: bytes) -> typing.Tuple[int, common.FieldTable]:
 
 
 def void(_: bytes) -> typing.Tuple[int, None]:
+    """Return a void, no data to decode
+
+    :param _: The empty bytes object to ignore
+    :rtype: :class:`tuple` (:class:`int`, :const:`None`)
+
+    """
     return 0, None
 
 

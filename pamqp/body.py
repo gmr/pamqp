@@ -9,7 +9,11 @@ class.
 
 
 class ContentBody:
-    """ContentBody carries the value for an AMQP message body frame"""
+    """ContentBody carries the value for an AMQP message body frame
+
+    :param value: The value for the ContentBody frame
+
+    """
     name = 'ContentBody'
 
     def __init__(self, value: bytes):
@@ -32,6 +36,8 @@ class ContentBody:
         """Apply the data to the object. This method is here for API
         compatibility, there is no special unmarshalling for the payload in a
         content frame.
+
+        :param data: The content body data from the frame
 
         """
         self.value = data

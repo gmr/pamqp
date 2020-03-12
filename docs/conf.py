@@ -16,7 +16,7 @@ html_theme_options = {
     'html_minify': True,
     'css_minify': True,
     'nav_title': 'pamqp',
-    'globaltoc_depth': 2,
+    'globaltoc_depth': 1,
     'theme_color': 'fc6600',
     'color_primary': 'grey',
     'color_accent': 'orange',
@@ -49,4 +49,8 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 
-autodoc_default_options = {'autodoc_typehints': 'description'}
+autodoc_default_options = {
+    'autodoc_typehints': 'description',
+    'special-members': ('__contains__,__eq__,__getitem__,'
+                        '__iter__,__len__'),
+}

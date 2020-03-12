@@ -29,6 +29,7 @@ Documentation
 .. toctree::
    :maxdepth: 1
 
+   base
    body
    commands
    common

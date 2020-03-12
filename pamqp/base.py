@@ -1,3 +1,7 @@
+"""
+Base classes for the representation of frames and data structures.
+
+"""
 import logging
 import struct
 import typing
@@ -20,6 +24,8 @@ class _AMQData:
     def __getitem__(self, item: str) -> common.FieldValue:
         """Return an attribute as if it were a dict
 
+        :param item: The key to use to retrieve the value
+        :rtype: :const:`pamqp.common.FieldValue`
         :raises: KeyError
 
         """
@@ -28,7 +34,11 @@ class _AMQData:
     def __iter__(self) \
             -> typing.Generator[typing.Tuple[str, common.FieldValue],
                                 None, None]:
-        """Iterate the attributes and values as key, value pairs"""
+        """Iterate the attributes and values as key, value pairs
+
+        :rtype: (:class:`str`, :const:`pamqp.common.FieldValue`)
+
+        """
         for attribute in self.__slots__:
             yield attribute, getattr(self, attribute)
 
@@ -42,7 +52,11 @@ class _AMQData:
 
     @classmethod
     def amqp_type(cls, attr: str) -> str:
-        """Return the AMQP data type for an attribute"""
+        """Return the AMQP data type for an attribute
+
+        :param attr: The attribute name
+
+        """
         return getattr(cls, '_' + attr)
 
     @classmethod
@@ -90,6 +104,8 @@ class Frame(_AMQData):
         """Dynamically decode the frame data applying the values to the method
         object by iterating through the attributes in order and decoding them.
 
+        :param data: The raw AMQP frame data
+
         """
         offset, processing_bitset = 0, False
         for argument in self.__slots__:
@@ -128,6 +144,9 @@ class BasicProperties(_AMQData):
     def encode_property(self, name: str, value: common.FieldValue) -> bytes:
         """Encode a single property value
 
+        :param name: The name of the property to encode
+        :param value: The property to encode
+        :type value: :const:`pamqp.common.FieldValue`
         :raises: TypeError
 
         """
