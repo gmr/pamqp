@@ -209,17 +209,7 @@ class Codegen:
     def _arg_default(self, arg: dict) -> str:
         if arg.get('default-value') is not None:
             return '{!r}'.format(arg['default-value'])
-        domain = self._domain(arg.get('domain', arg['name']))
-        if ((domain and domain.type in ['array', 'table'])
-                or arg['type'] in ['array', 'table', 'timestamp']):
-            return 'None'
-        elif arg['type'][-3:] == 'str':
-            return "''"
-        elif arg['type'] in ['short', 'long', 'longlong', 'octet']:
-            return '0'
-        elif arg['type'] == 'bit':
-            return 'False'
-        raise ValueError('Could not return default for %r', arg)
+        return 'None'
 
     @staticmethod
     def _arg_name(name: str) -> str:
