@@ -329,6 +329,11 @@ class Codegen:
         for arg in properties:
             self._add_line('self.{} = {}'.format(
                 arg['pyname'], arg['pyname']), indent)
+
+        indent -= 4
+        self._add_function('check', {}, indent)
+        indent += 4
+
         self._add_line("if self.cluster_id != '':", indent)
         self._add_line("raise ValueError('cluster_id must be empty')",
                        indent + 4)
@@ -549,6 +554,32 @@ class Codegen:
                     self._add_line('self.{} = {}'.format(
                         arg['pyname'], arg['pyname']), indent)
 
+            if deprecated:
+                self._add_line('warnings.warn(', indent)
+                self._add_line(
+                    'constants.DEPRECATION_WARNING, '
+                    'category=DeprecationWarning)', indent + 4)
+
+            indent -= 4
+
+            self._add_function('check', {}, indent)
+            indent += 4
+            self._add_line('"""Checks the inner class data :py:class:`{}.{}` class'.format(
+                self._pep8_class_name(class_name),
+                self._pep8_class_name(method['name'])), indent)
+
+            self._add_line()
+            if add_type_note:
+                self._add_line(
+                    '.. note:: The AMQP type argument is referred to as '
+                    '"{}_type" to not conflict with the Python type '
+                    'keyword.'.format(class_name), indent, indent + 10,
+                    width=79)
+                self._add_line()
+            self._add_line('"""', indent)
+
+            for arg in arguments:
+                domain = self._domain(arg.get('domain', arg['name']))
                 if domain and domain.max_length is not None:
                     self._add_line(
                         'if len(self.{}) > {}:'.format(
@@ -567,11 +598,7 @@ class Codegen:
                         arg['pyname'])
                     self._add_line(line, indent + 4)
 
-            if deprecated:
-                self._add_line('warnings.warn(', indent)
-                self._add_line(
-                    'constants.DEPRECATION_WARNING, '
-                    'category=DeprecationWarning)', indent + 4)
+
         self._add_line()
 
     def _build_commands(self):

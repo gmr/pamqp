@@ -126,6 +126,10 @@ class Frame(_AMQData):
             if consumed:
                 data = data[consumed:]
 
+    def check(self) -> None:
+        """Dynamically checks for inner class consistency"""
+        pass
+
 
 class BasicProperties(_AMQData):
     """Provide a base object that marshals and unmarshals the Basic.Properties

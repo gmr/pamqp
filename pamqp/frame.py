@@ -157,6 +157,7 @@ def _unmarshal_method_frame(frame_data: bytes) -> base.Frame:
         method.unmarshal(frame_data[bytes_used:])
     except struct.error as error:
         raise exceptions.UnmarshalingException(method, error)
+    method.check()
     return method
 
 
