@@ -303,6 +303,11 @@ class Codegen:
             else:
                 self._add_line(':param {}: Deprecated, must be empty'.format(
                     arg['pyname']), indent, indent + 4, width=79)
+            if arg['name'] == 'headers':
+                self._add_line(
+                    ':type headers: typing.Optional['
+                    ':const:`~pamqp.common.FieldTable`]',
+                    indent, indent + 4, width=79)
         self._add_line(':raises: ValueError', indent)
         self._add_line()
         self._add_line('"""', indent)

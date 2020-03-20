@@ -2567,6 +2567,7 @@ class Basic:
         :param content_type: MIME content type
         :param content_encoding: MIME content encoding
         :param headers: Message header field table
+        :type headers: typing.Optional[:const:`~pamqp.common.FieldTable`]
         :param delivery_mode: Non-persistent (1) or persistent (2)
         :param priority: Message priority, 0 to 9
         :param correlation_id: Application correlation identifier

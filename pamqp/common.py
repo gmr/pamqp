@@ -8,7 +8,11 @@ import struct
 import typing
 
 FieldArray = typing.List['FieldValue']
-"""A data structure for holding an array of field values."""
+"""A data structure for holding an array of field values.
+
+:type FieldValue: pamqp.common.FieldValue
+
+"""
 
 FieldTable = typing.Dict[str, 'FieldValue']
 """Field tables are data structures that contain packed name-value pairs.
@@ -34,6 +38,8 @@ Guidelines for implementers:
 - Duplicate fields are illegal. The behaviour of a peer with respect to a
   table containing duplicate fields is undefined.
 
+:type FieldValue: pamqp.common.FieldValue
+
 """
 
 FieldValue = typing.Union[bool,
@@ -51,7 +57,7 @@ FieldValue = typing.Union[bool,
 
 """
 
-Arguments = typing.Optional[typing.Dict[str, FieldValue]]
+Arguments = typing.Optional[FieldTable]
 """Defines an AMQP method arguments argument data type"""
 
 
