@@ -51,6 +51,9 @@ FieldValue = typing.Union[bool,
 
 """
 
+Arguments = typing.Optional[typing.Dict[str, FieldValue]]
+"""Defines an AMQP method arguments argument data type"""
+
 
 class Struct:
     """Simple object for getting to the struct objects for

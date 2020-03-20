@@ -9,14 +9,35 @@
     </constant>
 
     <class name = "connection" handler = "connection" index = "10" label = "work with socket connections">
-        <method name="blocked" index="60" label="indicate that connection is blocked">
+        <method name="blocked" index="60" label="Indicate that connection is blocked">
             <field name="reason" type="shortstr" label="Block reason" requred="0">
                 <doc>
                     The reason the connection was blocked.
                 </doc>
             </field>
         </method>
+        <method name = "start-ok" synchronous = "1" index = "11">
+            <field name = "response" default-value="" />
+        </method>
     </class>
+
+    <domain name = "exchange-name" type = "shortstr" label = "exchange name" default-value="" />
+
+    <domain name = "queue-name" type = "shortstr" label = "queue name">
+        <doc>
+            The queue name identifies the queue within the vhost.  In methods where the queue
+            name may be blank, and that has no specific significance, this refers to the
+            'current' queue for the channel, meaning the last queue that the client declared
+            on the channel.  If the client did not declare a queue, and the method needs a
+            queue name, this will result in a 502 (syntax error) channel exception.
+        </doc>
+        <assert check = "length" value = "256" />
+        <assert check = "regexp" value = "^[a-zA-Z0-9-_.:]*$" />
+    </domain>
+
+    <field name = "message-count" domain = "message-count" label = "Number of messages in the queue.">
+        <doc>The number of messages pending in the queue.</doc>
+    </field>
 
     <!-- no wait is missing its definition in a few places -->
     <field name="nowait" type="bit" label="do not send a reply method">
@@ -27,41 +48,41 @@
         </doc>
     </field>
     <!-- Deprecated fields aren't defined in xml except as comments but still show up in the json -->
-    <field name="ticket" type="short" label="Deprecated, must be ``0``" requred="0">
+    <field name="ticket" type="short" label="Deprecated, must be ``0``" requred="1" default-value="0">
         <doc>
             Deprecated value that must be zero.
         </doc>
     </field>
-    <field name="cluster-id" type="shortstr" label="Deprecated, must be empty" requred="0">
+    <field name="cluster-id" type="shortstr" label="Deprecated, must be empty" requred="1" default-value="">
         <doc>
             Deprecated value that must be empty.
         </doc>
     </field>
-    <field name="internal" type="bit" label="Deprecated, must be ``False``" requred="0">
+    <field name="internal" type="bit" label="Deprecated, must be ``False``" requred="1"  default-value="False">
         <doc>
             Deprecated value that must be False.
         </doc>
     </field>
-    <field name="out-of-band" type="shortstr"
-           label="Protocol level field, do not use, must be ``0``." requred="0">
+    <field name="out-of-band" type="shortstr" default-value="0"
+           label="Protocol level field, do not use, must be ``0``." requred="1">
         <doc>
             Used when negotiating a connection on an out-of-band channel. Do
             not use, must be zero.
         </doc>
     </field>
-    <field name="insist" type="bit" label="Deprecated, must be ``False``" requred="0">
+    <field name="insist" type="bit" label="Deprecated, must be ``False``" requred="1"  default-value="False">
         <doc>
             Deprecated value that must be False.
         </doc>
     </field>
     <field name="known-hosts" type="shortstr" label="Deprecated, must be empty" requred="0">
         <doc>
-            Deprecated value that must be zero.
+            Deprecated value that must be empty.
         </doc>
     </field>
-    <field name="channel-id" type="short" label="Deprecated, must be empty" requred="0">
+    <field name="channel-id" type="longstr" label="Deprecated, must be ``0``"  default-value="0" requred="0">
         <doc>
-            Deprecated value that must be empty.
+            Do not use, must be zero.
         </doc>
     </field>
     <field name="capabilities" type="shortstr" label="Deprecated, must be empty" requred="0">

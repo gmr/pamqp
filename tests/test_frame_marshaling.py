@@ -24,7 +24,7 @@ class MarshalingTests(unittest.TestCase):
     def test_basic_cancel(self):
         expectation = (b'\x01\x00\x01\x00\x00\x00\r\x00<\x00\x1e\x07'
                        b'ctag1.0\x00\xce')
-        frame_obj = commands.Basic.Cancel(consumer_tag='ctag1.0')
+        frame_obj = commands.Basic.Cancel('ctag1.0', False)
         response = frame.marshal(frame_obj, 1)
         self.assertEqual(response, expectation,
                          'Basic.Cancel did not match expectation')
@@ -59,8 +59,8 @@ class MarshalingTests(unittest.TestCase):
                          expectation)
 
     def test_content_header(self):
-        expectation = (b'\x02\x00\x01\x00\x00\x00\x10\x00<\x00\x00\x00\x00'
-                       b'\x00\x00\x00\x00\x00\n\x18\x00\x00\x00\xce')
+        expectation = (b'\x02\x00\x01\x00\x00\x00\x0e\x00<\x00\x00\x00\x00'
+                       b'\x00\x00\x00\x00\x00\n\x00\x00\xce')
         self.assertEqual(frame.marshal(header.ContentHeader(body_size=10), 1),
                          expectation)
 

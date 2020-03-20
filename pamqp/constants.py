@@ -54,7 +54,6 @@ DOMAINS = {
     'duration': 'longlong',
     'exchange-name': 'shortstr',
     'method-id': 'short',
-    'message-count': 'long',
     'no-ack': 'bit',
     'no-local': 'bit',
     'offset': 'longlong',

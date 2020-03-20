@@ -78,6 +78,7 @@ class Frame(_AMQData):
         and the data type from the class attribute.
 
         """
+        self.validate()
         byte, offset, output, processing_bitset = -1, 0, [], False
         for argument in self.__slots__:
             data_type = self.amqp_type(argument)
@@ -125,6 +126,14 @@ class Frame(_AMQData):
             setattr(self, argument, value)
             if consumed:
                 data = data[consumed:]
+
+    def validate(self) -> None:
+        """Validate the frame data ensuring all domains or attributes adhere
+        to the protocol specification.
+
+        :raises: ValueError
+
+        """
 
 
 class BasicProperties(_AMQData):
@@ -188,3 +197,16 @@ class BasicProperties(_AMQData):
                 consumed, value = decode.by_type(data, data_type)
                 setattr(self, property_name, value)
                 data = data[consumed:]
+
+    def validate(self) -> None:
+        """Validate the frame data ensuring all domains or attributes adhere
+        to the protocol specification.
+
+        :raises: ValueError
+
+        """
+        if self.cluster_id != '':
+            raise ValueError('cluster_id must be empty')
+        if self.delivery_mode is not None and self.delivery_mode not in [1, 2]:
+            raise ValueError(
+                'Invalid delivery_mode value: {}'.format(self.delivery_mode))

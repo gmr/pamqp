@@ -20,15 +20,15 @@ class ArgumentErrorsTestCase(unittest.TestCase):
 
     def test_basic_deliver_exchange_length(self):
         with self.assertRaises(ValueError):
-            commands.Basic.Deliver(exchange=str.ljust('A', 128))
+            commands.Basic.Deliver('ctag0', 1, False, str.ljust('A', 128), 'k')
 
     def test_basic_deliver_exchange_characters(self):
         with self.assertRaises(ValueError):
-            commands.Basic.Deliver(exchange='*')
+            commands.Basic.Deliver('ctag0', 1, False, '*', 'k')
 
     def test_basic_get_queue_length(self):
         with self.assertRaises(ValueError):
-            commands.Basic.Get(queue=str.ljust('A', 128))
+            commands.Basic.Get(queue=str.ljust('A', 257))
 
     def test_basic_get_queue_characters(self):
         with self.assertRaises(ValueError):
@@ -44,11 +44,11 @@ class ArgumentErrorsTestCase(unittest.TestCase):
 
     def test_basic_getok_exchange_length(self):
         with self.assertRaises(ValueError):
-            commands.Basic.GetOk(exchange=str.ljust('A', 128))
+            commands.Basic.GetOk(1, False, str.ljust('A', 128), 'k', 0)
 
     def test_basic_getok_exchange_characters(self):
         with self.assertRaises(ValueError):
-            commands.Basic.GetOk(exchange='*')
+            commands.Basic.GetOk(1, False, '*', 'k', 0)
 
     def test_basic_properties_cluster_id(self):
         with self.assertRaises(ValueError):
@@ -68,11 +68,11 @@ class ArgumentErrorsTestCase(unittest.TestCase):
 
     def test_basic_return_exchange_length(self):
         with self.assertRaises(ValueError):
-            commands.Basic.Return(exchange=str.ljust('A', 128))
+            commands.Basic.Return(404, 'Not Found', str.ljust('A', 128), 'k')
 
     def test_basic_return_exchange_characters(self):
         with self.assertRaises(ValueError):
-            commands.Basic.Return(exchange='*')
+            commands.Basic.Return(404, 'Not Found', '*', 'k')
 
     def test_connection_open_vhost(self):
         with self.assertRaises(ValueError):
@@ -180,11 +180,11 @@ class ArgumentErrorsTestCase(unittest.TestCase):
 
     def test_queue_declareok_queue_length(self):
         with self.assertRaises(ValueError):
-            commands.Queue.DeclareOk(queue=str.ljust('A', 128))
+            commands.Queue.DeclareOk(str.ljust('A', 257), 0, 0)
 
     def test_queue_declareok_queue_characters(self):
         with self.assertRaises(ValueError):
-            commands.Queue.DeclareOk(queue='***')
+            commands.Queue.DeclareOk('***', 0, 0)
 
     def test_queue_delete_ticket(self):
         with self.assertRaises(ValueError):

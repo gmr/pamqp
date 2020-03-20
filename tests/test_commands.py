@@ -151,8 +151,8 @@ class ArgumentTypeTests(unittest.TestCase):
         self.assertEqual(commands.Basic.Qos.amqp_type('prefetch_count'),
                          'short')
 
-    def test_basic_qos_has_globally(self):
-        self.assertEqual(commands.Basic.Qos.amqp_type('globally'), 'bit')
+    def test_basic_qos_has_global_(self):
+        self.assertEqual(commands.Basic.Qos.amqp_type('global_'), 'bit')
 
     def test_basic_recover_has_requeue(self):
         self.assertEqual(commands.Basic.Recover.amqp_type('requeue'),
@@ -570,13 +570,13 @@ class AttributeInMethodTests(unittest.TestCase):
         self.assertIn('multiple', commands.Basic.Ack())
 
     def test_basic_cancel_has_consumer_tag(self):
-        self.assertIn('consumer_tag', commands.Basic.Cancel())
+        self.assertIn('consumer_tag', commands.Basic.Cancel('foo', False))
 
     def test_basic_cancel_has_nowait(self):
-        self.assertIn('nowait', commands.Basic.Cancel())
+        self.assertIn('nowait', commands.Basic.Cancel('foo', False))
 
     def test_basic_cancelok_has_consumer_tag(self):
-        self.assertIn('consumer_tag', commands.Basic.CancelOk())
+        self.assertIn('consumer_tag', commands.Basic.CancelOk('foo'))
 
     def test_basic_consume_has_ticket(self):
         self.assertIn('ticket', commands.Basic.Consume())
@@ -600,25 +600,30 @@ class AttributeInMethodTests(unittest.TestCase):
         self.assertIn('nowait', commands.Basic.Consume())
 
     def test_basic_consume_has_arguments(self):
-        self.assertIn('arguments', commands.Basic.Consume())
+        self.assertIn('arguments', commands.Basic.Consume(0))
 
     def test_basic_consumeok_has_consumer_tag(self):
-        self.assertIn('consumer_tag', commands.Basic.ConsumeOk())
+        self.assertIn('consumer_tag', commands.Basic.ConsumeOk('foo'))
 
     def test_basic_deliver_has_consumer_tag(self):
-        self.assertIn('consumer_tag', commands.Basic.Deliver())
+        self.assertIn('consumer_tag', commands.Basic.Deliver(
+            'foo', 1, False, 'amq.direct', 'bar'))
 
     def test_basic_deliver_has_delivery_tag(self):
-        self.assertIn('delivery_tag', commands.Basic.Deliver())
+        self.assertIn('delivery_tag', commands.Basic.Deliver(
+            'foo', 1, False, 'amq.direct', 'bar'))
 
     def test_basic_deliver_has_redelivered(self):
-        self.assertIn('redelivered', commands.Basic.Deliver())
+        self.assertIn('redelivered', commands.Basic.Deliver(
+            'foo', 1, False, 'amq.direct', 'bar'))
 
     def test_basic_deliver_has_exchange(self):
-        self.assertIn('exchange', commands.Basic.Deliver())
+        self.assertIn('exchange', commands.Basic.Deliver(
+            'foo', 1, False, 'amq.direct', 'bar'))
 
     def test_basic_deliver_has_routing_key(self):
-        self.assertIn('routing_key', commands.Basic.Deliver())
+        self.assertIn('routing_key', commands.Basic.Deliver(
+            'foo', 1, False, 'amq.direct', 'bar'))
 
     def test_basic_get_has_ticket(self):
         self.assertIn('ticket', commands.Basic.Get())
@@ -633,19 +638,24 @@ class AttributeInMethodTests(unittest.TestCase):
         self.assertIn('cluster_id', commands.Basic.GetEmpty())
 
     def test_basic_getok_has_delivery_tag(self):
-        self.assertIn('delivery_tag', commands.Basic.GetOk())
+        self.assertIn('delivery_tag', commands.Basic.GetOk(
+            0, False, 'amq.direct', 'foo', 1))
 
     def test_basic_getok_has_redelivered(self):
-        self.assertIn('redelivered', commands.Basic.GetOk())
+        self.assertIn('redelivered', commands.Basic.GetOk(
+            0, False, 'amq.direct', 'foo', 1))
 
     def test_basic_getok_has_exchange(self):
-        self.assertIn('exchange', commands.Basic.GetOk())
+        self.assertIn('exchange', commands.Basic.GetOk(
+            0, False, 'amq.direct', 'foo', 1))
 
     def test_basic_getok_has_routing_key(self):
-        self.assertIn('routing_key', commands.Basic.GetOk())
+        self.assertIn('routing_key', commands.Basic.GetOk(
+            0, False, 'amq.direct', 'foo', 1))
 
     def test_basic_getok_has_message_count(self):
-        self.assertIn('message_count', commands.Basic.GetOk())
+        self.assertIn('message_count', commands.Basic.GetOk(
+            0, False, 'amq.direct', 'foo', 1))
 
     def test_basic_nack_has_delivery_tag(self):
         self.assertIn('delivery_tag', commands.Basic.Nack())
@@ -677,47 +687,55 @@ class AttributeInMethodTests(unittest.TestCase):
     def test_basic_qos_has_prefetch_count(self):
         self.assertIn('prefetch_count', commands.Basic.Qos())
 
-    def test_basic_qos_has_globally(self):
-        self.assertIn('globally', commands.Basic.Qos())
+    def test_basic_qos_has_global_(self):
+        self.assertIn('global_', commands.Basic.Qos())
 
     def test_basic_recover_has_requeue(self):
         self.assertIn('requeue', commands.Basic.Recover())
 
     def test_basic_reject_has_delivery_tag(self):
-        self.assertIn('delivery_tag', commands.Basic.Reject())
+        self.assertIn('delivery_tag', commands.Basic.Reject(1, True))
 
     def test_basic_reject_has_requeue(self):
-        self.assertIn('requeue', commands.Basic.Reject())
+        self.assertIn('requeue', commands.Basic.Reject(1, True))
 
     def test_basic_return_has_reply_code(self):
-        self.assertIn('reply_code', commands.Basic.Return())
+        self.assertIn('reply_code', commands.Basic.Return(
+            404, 'Not Found', 'amq.direct', 'foo'))
 
     def test_basic_return_has_reply_text(self):
-        self.assertIn('reply_text', commands.Basic.Return())
+        self.assertIn('reply_text', commands.Basic.Return(
+            404, 'Not Found', 'amq.direct', 'foo'))
 
     def test_basic_return_has_exchange(self):
-        self.assertIn('exchange', commands.Basic.Return())
+        self.assertIn('exchange', commands.Basic.Return(
+            404, 'Not Found', 'amq.direct', 'foo'))
 
     def test_basic_return_has_routing_key(self):
-        self.assertIn('routing_key', commands.Basic.Return())
+        self.assertIn('routing_key', commands.Basic.Return(
+            404, 'Not Found', 'amq.direct', 'foo'))
 
     def test_channel_close_has_reply_code(self):
-        self.assertIn('reply_code', commands.Channel.Close())
+        self.assertIn('reply_code', commands.Channel.Close(
+            404, 'Not Found', 'amq.direct', 'foo'))
 
     def test_channel_close_has_reply_text(self):
-        self.assertIn('reply_text', commands.Channel.Close())
+        self.assertIn('reply_text', commands.Channel.Close(
+            404, 'Not Found', 'amq.direct', 'foo'))
 
     def test_channel_close_has_class_id(self):
-        self.assertIn('class_id', commands.Channel.Close())
+        self.assertIn('class_id', commands.Channel.Close(
+            404, 'Not Found', 'amq.direct', 'foo'))
 
     def test_channel_close_has_method_id(self):
-        self.assertIn('method_id', commands.Channel.Close())
+        self.assertIn('method_id', commands.Channel.Close(
+            404, 'Not Found', 'amq.direct', 'foo'))
 
     def test_channel_flow_has_active(self):
-        self.assertIn('active', commands.Channel.Flow())
+        self.assertIn('active', commands.Channel.Flow(True))
 
     def test_channel_flowok_has_active(self):
-        self.assertIn('active', commands.Channel.FlowOk())
+        self.assertIn('active', commands.Channel.FlowOk(True))
 
     def test_channel_open_has_out_of_band(self):
         self.assertIn('out_of_band', commands.Channel.Open())
@@ -732,16 +750,20 @@ class AttributeInMethodTests(unittest.TestCase):
         self.assertIn('reason', commands.Connection.Blocked())
 
     def test_connection_close_has_reply_code(self):
-        self.assertIn('reply_code', commands.Connection.Close())
+        self.assertIn('reply_code', commands.Connection.Close(
+            200, 'Client Request', 0, 0))
 
     def test_connection_close_has_reply_text(self):
-        self.assertIn('reply_text', commands.Connection.Close())
+        self.assertIn('reply_text', commands.Connection.Close(
+            200, 'Client Request', 0, 0))
 
     def test_connection_close_has_class_id(self):
-        self.assertIn('class_id', commands.Connection.Close())
+        self.assertIn('class_id', commands.Connection.Close(
+            200, 'Client Request', 0, 0))
 
     def test_connection_close_has_method_id(self):
-        self.assertIn('method_id', commands.Connection.Close())
+        self.assertIn('method_id', commands.Connection.Close(
+            200, 'Client Request', 0, 0))
 
     def test_connection_open_has_virtual_host(self):
         self.assertIn('virtual_host', commands.Connection.Open())
@@ -756,10 +778,10 @@ class AttributeInMethodTests(unittest.TestCase):
         self.assertIn('known_hosts', commands.Connection.OpenOk())
 
     def test_connection_secure_has_challenge(self):
-        self.assertIn('challenge', commands.Connection.Secure())
+        self.assertIn('challenge', commands.Connection.Secure('foo'))
 
     def test_connection_secureok_has_response(self):
-        self.assertIn('response', commands.Connection.SecureOk())
+        self.assertIn('response', commands.Connection.SecureOk('bar'))
 
     def test_connection_start_has_version_major(self):
         self.assertIn('version_major', commands.Connection.Start())
@@ -921,13 +943,13 @@ class AttributeInMethodTests(unittest.TestCase):
         self.assertIn('arguments', commands.Queue.Declare())
 
     def test_queue_declareok_has_queue(self):
-        self.assertIn('queue', commands.Queue.DeclareOk())
+        self.assertIn('queue', commands.Queue.DeclareOk('foo', 0, 0))
 
     def test_queue_declareok_has_message_count(self):
-        self.assertIn('message_count', commands.Queue.DeclareOk())
+        self.assertIn('message_count', commands.Queue.DeclareOk('foo', 0, 0))
 
     def test_queue_declareok_has_consumer_count(self):
-        self.assertIn('consumer_count', commands.Queue.DeclareOk())
+        self.assertIn('consumer_count', commands.Queue.DeclareOk('foo', 0, 0))
 
     def test_queue_delete_has_ticket(self):
         self.assertIn('ticket', commands.Queue.Delete())
@@ -945,7 +967,7 @@ class AttributeInMethodTests(unittest.TestCase):
         self.assertIn('nowait', commands.Queue.Delete())
 
     def test_queue_deleteok_has_message_count(self):
-        self.assertIn('message_count', commands.Queue.DeleteOk())
+        self.assertIn('message_count', commands.Queue.DeleteOk(0))
 
     def test_queue_purge_has_ticket(self):
         self.assertIn('ticket', commands.Queue.Purge())
@@ -957,7 +979,7 @@ class AttributeInMethodTests(unittest.TestCase):
         self.assertIn('nowait', commands.Queue.Purge())
 
     def test_queue_purgeok_has_message_count(self):
-        self.assertIn('message_count', commands.Queue.PurgeOk())
+        self.assertIn('message_count', commands.Queue.PurgeOk(0))
 
     def test_queue_unbind_has_ticket(self):
         self.assertIn('ticket', commands.Queue.Unbind())
@@ -975,10 +997,11 @@ class AttributeInMethodTests(unittest.TestCase):
         self.assertIn('arguments', commands.Queue.Unbind())
 
     def test_connection_update_secret_has_new_secret(self):
-        self.assertIn('new_secret', commands.Connection.UpdateSecret())
+        self.assertIn('new_secret', commands.Connection.UpdateSecret(
+            'foo', 'bar'))
 
     def test_connection_update_secret_has_reason(self):
-        self.assertIn('reason', commands.Connection.UpdateSecret())
+        self.assertIn('reason', commands.Connection.UpdateSecret('foo', 'bar'))
 
 
 class DeprecationWarningTests(unittest.TestCase):
@@ -1054,19 +1077,20 @@ class MethodAttributeLengthTests(unittest.TestCase):
         self.assertEqual(len(commands.Basic.Ack()), 2)
 
     def test_basic_cancel_attribute_count(self):
-        self.assertEqual(len(commands.Basic.Cancel()), 2)
+        self.assertEqual(len(commands.Basic.Cancel('ctag0', False)), 2)
 
     def test_basic_cancelok_attribute_count(self):
-        self.assertEqual(len(commands.Basic.CancelOk()), 1)
+        self.assertEqual(len(commands.Basic.CancelOk('ctag0')), 1)
 
     def test_basic_consume_attribute_count(self):
         self.assertEqual(len(commands.Basic.Consume()), 8)
 
     def test_basic_consumeok_attribute_count(self):
-        self.assertEqual(len(commands.Basic.ConsumeOk()), 1)
+        self.assertEqual(len(commands.Basic.ConsumeOk('ctag0')), 1)
 
     def test_basic_deliver_attribute_count(self):
-        self.assertEqual(len(commands.Basic.Deliver()), 5)
+        self.assertEqual(len(commands.Basic.Deliver(
+            'ctag0', 1, False, 'amq.direct', 'foo')), 5)
 
     def test_basic_get_attribute_count(self):
         self.assertEqual(len(commands.Basic.Get()), 3)
@@ -1075,7 +1099,8 @@ class MethodAttributeLengthTests(unittest.TestCase):
         self.assertEqual(len(commands.Basic.GetEmpty()), 1)
 
     def test_basic_getok_attribute_count(self):
-        self.assertEqual(len(commands.Basic.GetOk()), 5)
+        self.assertEqual(len(commands.Basic.GetOk(
+            1, False, 'amq.direct', 'foo', 0)), 5)
 
     def test_basic_nack_attribute_count(self):
         self.assertEqual(len(commands.Basic.Nack()), 3)
@@ -1096,22 +1121,24 @@ class MethodAttributeLengthTests(unittest.TestCase):
         self.assertEqual(len(commands.Basic.RecoverOk()), 0)
 
     def test_basic_reject_attribute_count(self):
-        self.assertEqual(len(commands.Basic.Reject()), 2)
+        self.assertEqual(len(commands.Basic.Reject(1, False)), 2)
 
     def test_basic_return_attribute_count(self):
-        self.assertEqual(len(commands.Basic.Return()), 4)
+        self.assertEqual(len(commands.Basic.Return(
+            404, 'Not Found', 'amq.direct', 'foo')), 4)
 
     def test_channel_close_attribute_count(self):
-        self.assertEqual(len(commands.Channel.Close()), 4)
+        self.assertEqual(len(commands.Channel.Close(
+            200, 'Requested', 0, 0)), 4)
 
     def test_channel_closeok_attribute_count(self):
         self.assertEqual(len(commands.Channel.CloseOk()), 0)
 
     def test_channel_flow_attribute_count(self):
-        self.assertEqual(len(commands.Channel.Flow()), 1)
+        self.assertEqual(len(commands.Channel.Flow(True)), 1)
 
     def test_channel_flowok_attribute_count(self):
-        self.assertEqual(len(commands.Channel.FlowOk()), 1)
+        self.assertEqual(len(commands.Channel.FlowOk(False)), 1)
 
     def test_channel_open_attribute_count(self):
         self.assertEqual(len(commands.Channel.Open()), 1)
@@ -1129,7 +1156,8 @@ class MethodAttributeLengthTests(unittest.TestCase):
         self.assertEqual(len(commands.Connection.Blocked()), 1)
 
     def test_connection_close_attribute_count(self):
-        self.assertEqual(len(commands.Connection.Close()), 4)
+        self.assertEqual(len(commands.Connection.Close(
+            200, 'Requested', 0, 0)), 4)
 
     def test_connection_closeok_attribute_count(self):
         self.assertEqual(len(commands.Connection.CloseOk()), 0)
@@ -1141,10 +1169,10 @@ class MethodAttributeLengthTests(unittest.TestCase):
         self.assertEqual(len(commands.Connection.OpenOk()), 1)
 
     def test_connection_secure_attribute_count(self):
-        self.assertEqual(len(commands.Connection.Secure()), 1)
+        self.assertEqual(len(commands.Connection.Secure('foo')), 1)
 
     def test_connection_secureok_attribute_count(self):
-        self.assertEqual(len(commands.Connection.SecureOk()), 1)
+        self.assertEqual(len(commands.Connection.SecureOk('bar')), 1)
 
     def test_connection_start_attribute_count(self):
         self.assertEqual(len(commands.Connection.Start()), 5)
@@ -1195,19 +1223,19 @@ class MethodAttributeLengthTests(unittest.TestCase):
         self.assertEqual(len(commands.Queue.Declare()), 8)
 
     def test_queue_declareok_attribute_count(self):
-        self.assertEqual(len(commands.Queue.DeclareOk()), 3)
+        self.assertEqual(len(commands.Queue.DeclareOk('foo', 0, 0)), 3)
 
     def test_queue_delete_attribute_count(self):
         self.assertEqual(len(commands.Queue.Delete()), 5)
 
     def test_queue_deleteok_attribute_count(self):
-        self.assertEqual(len(commands.Queue.DeleteOk()), 1)
+        self.assertEqual(len(commands.Queue.DeleteOk(0)), 1)
 
     def test_queue_purge_attribute_count(self):
         self.assertEqual(len(commands.Queue.Purge()), 3)
 
     def test_queue_purgeok_attribute_count(self):
-        self.assertEqual(len(commands.Queue.PurgeOk()), 1)
+        self.assertEqual(len(commands.Queue.PurgeOk(0)), 1)
 
     def test_queue_unbind_attribute_count(self):
         self.assertEqual(len(commands.Queue.Unbind()), 5)
@@ -1243,18 +1271,6 @@ class MethodAttributeDefaultTests(unittest.TestCase):
         obj = commands.Basic.Ack()
         self.assertEqual(obj['multiple'], False)
 
-    def test_basic_cancel_default_for_consumer_tag(self):
-        obj = commands.Basic.Cancel()
-        self.assertEqual(obj['consumer_tag'], '')
-
-    def test_basic_cancel_default_for_nowait(self):
-        obj = commands.Basic.Cancel()
-        self.assertEqual(obj['nowait'], False)
-
-    def test_basic_cancelok_default_for_consumer_tag(self):
-        obj = commands.Basic.CancelOk()
-        self.assertEqual(obj['consumer_tag'], '')
-
     def test_basic_consume_default_for_ticket(self):
         obj = commands.Basic.Consume()
         self.assertEqual(obj['ticket'], 0)
@@ -1287,30 +1303,6 @@ class MethodAttributeDefaultTests(unittest.TestCase):
         obj = commands.Basic.Consume()
         self.assertDictEqual(obj['arguments'], {})
 
-    def test_basic_consumeok_default_for_consumer_tag(self):
-        obj = commands.Basic.ConsumeOk()
-        self.assertEqual(obj['consumer_tag'], '')
-
-    def test_basic_deliver_default_for_consumer_tag(self):
-        obj = commands.Basic.Deliver()
-        self.assertEqual(obj['consumer_tag'], '')
-
-    def test_basic_deliver_default_for_delivery_tag(self):
-        obj = commands.Basic.Deliver()
-        self.assertEqual(obj['delivery_tag'], 0)
-
-    def test_basic_deliver_default_for_redelivered(self):
-        obj = commands.Basic.Deliver()
-        self.assertEqual(obj['redelivered'], False)
-
-    def test_basic_deliver_default_for_exchange(self):
-        obj = commands.Basic.Deliver()
-        self.assertEqual(obj['exchange'], '')
-
-    def test_basic_deliver_default_for_routing_key(self):
-        obj = commands.Basic.Deliver()
-        self.assertEqual(obj['routing_key'], '')
-
     def test_basic_get_default_for_ticket(self):
         obj = commands.Basic.Get()
         self.assertEqual(obj['ticket'], 0)
@@ -1326,26 +1318,6 @@ class MethodAttributeDefaultTests(unittest.TestCase):
     def test_basic_getempty_default_for_cluster_id(self):
         obj = commands.Basic.GetEmpty()
         self.assertEqual(obj['cluster_id'], '')
-
-    def test_basic_getok_default_for_delivery_tag(self):
-        obj = commands.Basic.GetOk()
-        self.assertEqual(obj['delivery_tag'], 0)
-
-    def test_basic_getok_default_for_redelivered(self):
-        obj = commands.Basic.GetOk()
-        self.assertEqual(obj['redelivered'], False)
-
-    def test_basic_getok_default_for_exchange(self):
-        obj = commands.Basic.GetOk()
-        self.assertEqual(obj['exchange'], '')
-
-    def test_basic_getok_default_for_routing_key(self):
-        obj = commands.Basic.GetOk()
-        self.assertEqual(obj['routing_key'], '')
-
-    def test_basic_getok_default_for_message_count(self):
-        obj = commands.Basic.GetOk()
-        self.assertEqual(obj['message_count'], 0)
 
     def test_basic_nack_default_for_delivery_tag(self):
         obj = commands.Basic.Nack()
@@ -1389,67 +1361,19 @@ class MethodAttributeDefaultTests(unittest.TestCase):
 
     def test_basic_qos_default_for_globally(self):
         obj = commands.Basic.Qos()
-        self.assertEqual(obj['globally'], False)
+        self.assertEqual(obj['global_'], False)
 
     def test_basic_recover_default_for_requeue(self):
         obj = commands.Basic.Recover()
         self.assertEqual(obj['requeue'], False)
 
-    def test_basic_reject_default_for_delivery_tag(self):
-        obj = commands.Basic.Reject()
-        self.assertEqual(obj['delivery_tag'], 0)
-
-    def test_basic_reject_default_for_requeue(self):
-        obj = commands.Basic.Reject()
-        self.assertEqual(obj['requeue'], True)
-
-    def test_basic_return_default_for_reply_code(self):
-        obj = commands.Basic.Return()
-        self.assertEqual(obj['reply_code'], 0)
-
-    def test_basic_return_default_for_reply_text(self):
-        obj = commands.Basic.Return()
-        self.assertEqual(obj['reply_text'], '')
-
-    def test_basic_return_default_for_exchange(self):
-        obj = commands.Basic.Return()
-        self.assertEqual(obj['exchange'], '')
-
-    def test_basic_return_default_for_routing_key(self):
-        obj = commands.Basic.Return()
-        self.assertEqual(obj['routing_key'], '')
-
-    def test_channel_close_default_for_reply_code(self):
-        obj = commands.Channel.Close()
-        self.assertEqual(obj['reply_code'], 0)
-
-    def test_channel_close_default_for_reply_text(self):
-        obj = commands.Channel.Close()
-        self.assertEqual(obj['reply_text'], '')
-
-    def test_channel_close_default_for_class_id(self):
-        obj = commands.Channel.Close()
-        self.assertEqual(obj['class_id'], 0)
-
-    def test_channel_close_default_for_method_id(self):
-        obj = commands.Channel.Close()
-        self.assertEqual(obj['method_id'], 0)
-
-    def test_channel_flow_default_for_active(self):
-        obj = commands.Channel.Flow()
-        self.assertEqual(obj['active'], False)
-
-    def test_channel_flowok_default_for_active(self):
-        obj = commands.Channel.FlowOk()
-        self.assertEqual(obj['active'], False)
-
     def test_channel_open_default_for_out_of_band(self):
         obj = commands.Channel.Open()
-        self.assertEqual(obj['out_of_band'], '')
+        self.assertEqual(obj['out_of_band'], '0')
 
     def test_channel_openok_default_for_channel_id(self):
         obj = commands.Channel.OpenOk()
-        self.assertEqual(obj['channel_id'], '')
+        self.assertEqual(obj['channel_id'], '0')
 
     def test_confirm_select_default_for_nowait(self):
         obj = commands.Confirm.Select()
@@ -1458,22 +1382,6 @@ class MethodAttributeDefaultTests(unittest.TestCase):
     def test_connection_blocked_default_for_reason(self):
         obj = commands.Connection.Blocked()
         self.assertEqual(obj['reason'], '')
-
-    def test_connection_close_default_for_reply_code(self):
-        obj = commands.Connection.Close()
-        self.assertEqual(obj['reply_code'], 0)
-
-    def test_connection_close_default_for_reply_text(self):
-        obj = commands.Connection.Close()
-        self.assertEqual(obj['reply_text'], '')
-
-    def test_connection_close_default_for_class_id(self):
-        obj = commands.Connection.Close()
-        self.assertEqual(obj['class_id'], 0)
-
-    def test_connection_close_default_for_method_id(self):
-        obj = commands.Connection.Close()
-        self.assertEqual(obj['method_id'], 0)
 
     def test_connection_open_default_for_virtual_host(self):
         obj = commands.Connection.Open()
@@ -1490,14 +1398,6 @@ class MethodAttributeDefaultTests(unittest.TestCase):
     def test_connection_openok_default_for_known_hosts(self):
         obj = commands.Connection.OpenOk()
         self.assertEqual(obj['known_hosts'], '')
-
-    def test_connection_secure_default_for_challenge(self):
-        obj = commands.Connection.Secure()
-        self.assertEqual(obj['challenge'], '')
-
-    def test_connection_secureok_default_for_response(self):
-        obj = commands.Connection.SecureOk()
-        self.assertEqual(obj['response'], '')
 
     def test_connection_start_default_for_version_major(self):
         obj = commands.Connection.Start()
@@ -1707,18 +1607,6 @@ class MethodAttributeDefaultTests(unittest.TestCase):
         obj = commands.Queue.Declare()
         self.assertDictEqual(obj['arguments'], {})
 
-    def test_queue_declareok_default_for_queue(self):
-        obj = commands.Queue.DeclareOk()
-        self.assertEqual(obj['queue'], '')
-
-    def test_queue_declareok_default_for_message_count(self):
-        obj = commands.Queue.DeclareOk()
-        self.assertEqual(obj['message_count'], 0)
-
-    def test_queue_declareok_default_for_consumer_count(self):
-        obj = commands.Queue.DeclareOk()
-        self.assertEqual(obj['consumer_count'], 0)
-
     def test_queue_delete_default_for_ticket(self):
         obj = commands.Queue.Delete()
         self.assertEqual(obj['ticket'], 0)
@@ -1739,10 +1627,6 @@ class MethodAttributeDefaultTests(unittest.TestCase):
         obj = commands.Queue.Delete()
         self.assertEqual(obj['nowait'], False)
 
-    def test_queue_deleteok_default_for_message_count(self):
-        obj = commands.Queue.DeleteOk()
-        self.assertEqual(obj['message_count'], 0)
-
     def test_queue_purge_default_for_ticket(self):
         obj = commands.Queue.Purge()
         self.assertEqual(obj['ticket'], 0)
@@ -1754,10 +1638,6 @@ class MethodAttributeDefaultTests(unittest.TestCase):
     def test_queue_purge_default_for_nowait(self):
         obj = commands.Queue.Purge()
         self.assertEqual(obj['nowait'], False)
-
-    def test_queue_purgeok_default_for_message_count(self):
-        obj = commands.Queue.PurgeOk()
-        self.assertEqual(obj['message_count'], 0)
 
     def test_queue_unbind_default_for_ticket(self):
         obj = commands.Queue.Unbind()

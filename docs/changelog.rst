@@ -1,6 +1,18 @@
 Changelog
 =========
 
+3.0.0a6 (2020-03-19)
+--------------------
+- `pamqp.commands.Basic.QoS.globally` renamed back to :attr:`pamqp.commands.Basic.QoS.global_`
+- Refactored codegen to put params in the class level docstring not ``__init__``
+- Added new :meth:`pamqp.frame.Frame.validate()` method
+- Changed validation to ignore attributes with a value of `None`
+- Changed default value behaviors to only use default values if one is specified, instead of by data type.
+- Overwrote AMQP spec for queue name max-length to match documented RabbitMQ value (#24)
+- Updated documentation in codegen output
+- Added strict validation of `pamqp.commands.Basic.Properties.delivery_mode` to ensure it's ``0`` or ``1``
+- Fixed codegen with respect to applying extension data over base spec data
+
 3.0.0a5 (2020-03-11)
 --------------------
 - Rename `pamqp.frame._frame_parts` to :meth:`pamqp.frame.frame_parts` (#15 again)
