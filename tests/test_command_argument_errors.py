@@ -8,7 +8,7 @@ class ArgumentErrorsTestCase(unittest.TestCase):
 
     def test_basic_consume_queue_length(self):
         with self.assertRaises(ValueError):
-            commands.Basic.Consume(queue=str.ljust('A', 128))
+            commands.Basic.Consume(queue=str.ljust('A', 257))
 
     def test_basic_consume_queue_characters(self):
         with self.assertRaises(ValueError):
@@ -172,11 +172,14 @@ class ArgumentErrorsTestCase(unittest.TestCase):
 
     def test_queue_declare_queue_length(self):
         with self.assertRaises(ValueError):
-            commands.Queue.Declare(queue=str.ljust('A', 128))
+            commands.Queue.Declare(queue=str.ljust('A', 257))
 
     def test_queue_declare_queue_characters(self):
         with self.assertRaises(ValueError):
             commands.Queue.Declare(queue='***')
+
+    def test_queue_declare_queue_with_valid_name(self):
+        self.assertIsNotNone(commands.Queue.Declare(queue='foo'))
 
     def test_queue_declareok_queue_length(self):
         with self.assertRaises(ValueError):

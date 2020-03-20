@@ -1677,3 +1677,7 @@ class MethodAttributeDefaultTests(unittest.TestCase):
     def test_basic_properties_eq_error(self):
         with self.assertRaises(NotImplementedError):
             self.assertEqual(commands.Basic.Properties(), {})
+
+    def test_basic_properties_bad_delivery_mode_error(self):
+        with self.assertRaises(ValueError):
+            commands.Basic.Properties(delivery_mode=3)
