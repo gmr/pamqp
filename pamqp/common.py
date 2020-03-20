@@ -8,11 +8,7 @@ import struct
 import typing
 
 FieldArray = typing.List['FieldValue']
-"""A data structure for holding an array of field values.
-
-:type FieldValue: pamqp.common.FieldValue
-
-"""
+"""A data structure for holding an array of field values."""
 
 FieldTable = typing.Dict[str, 'FieldValue']
 """Field tables are data structures that contain packed name-value pairs.
@@ -37,8 +33,6 @@ Guidelines for implementers:
   signed integer. The 'decimals' octet is not signed.
 - Duplicate fields are illegal. The behaviour of a peer with respect to a
   table containing duplicate fields is undefined.
-
-:type FieldValue: pamqp.common.FieldValue
 
 """
 
