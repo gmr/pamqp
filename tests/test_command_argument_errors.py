@@ -195,7 +195,7 @@ class ArgumentErrorsTestCase(unittest.TestCase):
 
     def test_queue_delete_queue_length(self):
         with self.assertRaises(ValueError):
-            commands.Queue.Delete(queue=str.ljust('A', 128))
+            commands.Queue.Delete(queue=str.ljust('A', 257))
 
     def test_queue_delete_queue_characters(self):
         with self.assertRaises(ValueError):
@@ -207,7 +207,7 @@ class ArgumentErrorsTestCase(unittest.TestCase):
 
     def test_queue_bind_queue_length(self):
         with self.assertRaises(ValueError):
-            commands.Queue.Bind(queue=str.ljust('A', 128), exchange='B')
+            commands.Queue.Bind(queue=str.ljust('A', 257), exchange='B')
 
     def test_queue_bind_queue_characters(self):
         with self.assertRaises(ValueError):
@@ -227,7 +227,7 @@ class ArgumentErrorsTestCase(unittest.TestCase):
 
     def test_queue_unbind_queue_length(self):
         with self.assertRaises(ValueError):
-            commands.Queue.Unbind(queue=str.ljust('A', 128), exchange='B')
+            commands.Queue.Unbind(queue=str.ljust('A', 257), exchange='B')
 
     def test_queue_unbind_queue_characters(self):
         with self.assertRaises(ValueError):
@@ -247,7 +247,7 @@ class ArgumentErrorsTestCase(unittest.TestCase):
 
     def test_queue_purge_queue_length(self):
         with self.assertRaises(ValueError):
-            commands.Queue.Purge(queue=str.ljust('A', 128))
+            commands.Queue.Purge(queue=str.ljust('A', 257))
 
     def test_queue_purge_queue_characters(self):
         with self.assertRaises(ValueError):
