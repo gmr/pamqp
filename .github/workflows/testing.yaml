@@ -39,6 +39,7 @@ jobs:
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v1.0.2
+        if: github.event_name == 'push' && github.repository == 'gmr/pamqp'
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           file: build/coverage.xml

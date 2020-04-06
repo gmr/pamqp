@@ -6,7 +6,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && github.repository == 'gmr/pamqp'
     container: python:3.8-alpine
     steps:
       - name: Checkout repository
