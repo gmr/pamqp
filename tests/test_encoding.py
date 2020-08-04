@@ -130,12 +130,15 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_timestamp_from_datetime(self):
         self.assertEqual(
-            encode.timestamp(datetime.datetime(2006, 11, 21, 16, 30, 10)),
+            encode.timestamp(datetime.datetime(
+                2006, 11, 21, 16, 30, 10, tzinfo=datetime.timezone.utc)),
             b'\x00\x00\x00\x00Ec)\x92')
 
     def test_encode_timestamp_from_struct_time(self):
         value = encode.timestamp(
-            datetime.datetime(2006, 11, 21, 16, 30, 10).timetuple())
+            datetime.datetime(
+                2006, 11, 21, 16, 30, 10,
+                tzinfo=datetime.timezone.utc).timetuple())
         self.assertEqual(value, b'\x00\x00\x00\x00Ec)\x92')
 
     def test_encode_timestamp_error(self):
@@ -148,7 +151,9 @@ class MarshalingTests(unittest.TestCase):
                        b'\x00\x00\x00\x00\x08')
         data = [
             1, 45000, 40000000, 'Test',
-            datetime.datetime(2006, 11, 21, 16, 30, 10), -1147483648,
+            datetime.datetime(
+                2006, 11, 21, 16, 30, 10, tzinfo=datetime.timezone.utc),
+            -1147483648,
             decimal.Decimal('3.14'), 3.14,
             3294967295, -9223372036854775800
         ]
@@ -197,7 +202,8 @@ class MarshalingTests(unittest.TestCase):
             'intval': 1,
             'strval': 'Test',
             'boolval': True,
-            'timestampval': datetime.datetime(2006, 11, 21, 16, 30, 10),
+            'timestampval': datetime.datetime(
+                2006, 11, 21, 16, 30, 10, tzinfo=datetime.timezone.utc),
             'decval': decimal.Decimal('3.14'),
             'floatval': 3.14,
             'longval': 912598613,
@@ -236,7 +242,9 @@ class MarshalingTests(unittest.TestCase):
                        b'\x00\x00\x08')
         data = [
             1, 17000, 45000, 'Test',
-            datetime.datetime(2006, 11, 21, 16, 30, 10), -1147483648,
+            datetime.datetime(
+                2006, 11, 21, 16, 30, 10, tzinfo=datetime.timezone.utc),
+            -1147483648,
             decimal.Decimal('3.14'), 3.14,
             3294967295, -9223372036854775800
         ]
@@ -311,7 +319,8 @@ class MarshalingTests(unittest.TestCase):
             's64int': 4000000000000000000,
             'strval': 'Test',
             'boolval': True,
-            'timestampval': datetime.datetime(2006, 11, 21, 16, 30, 10),
+            'timestampval': datetime.datetime(
+                2006, 11, 21, 16, 30, 10, tzinfo=datetime.timezone.utc),
             'decval': decimal.Decimal('3.14'),
             'floatval': 3.14,
             'longval': 912598613,

@@ -336,7 +336,7 @@ class DemarshalingTests(unittest.TestCase):
             'reply_to': 'unmarshaling_tests',
             'expiration': '1345274026',
             'message_id': '746a1902-39dc-47cf-9471-9feecda35660',
-            'timestamp': datetime.datetime(2012, 10, 2, 9, 51, 3),
+            'timestamp': datetime.datetime(2012, 10, 2, 10, 51, 3),
             'message_type': 'unittest',
             'user_id': 'pika',
             'app_id': 'frame_unmarshaling_tests',
