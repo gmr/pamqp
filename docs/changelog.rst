@@ -1,6 +1,11 @@
 Changelog
 =========
 
+3.0.0 (2020-08-04)
+------------------
+- Fix unsigned short-int encoding and decoding to use the correct amqp field designation of ``B`` instad of ``b`` (#27)
+- Fix timestamp encoding/decoding tests to work when the timezone is set on the host machine (#26)
+
 3.0.0a6 (2020-03-19)
 --------------------
 - `pamqp.commands.Basic.QoS.globally` renamed back to :attr:`pamqp.commands.Basic.QoS.global_`
