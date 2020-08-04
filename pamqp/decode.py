@@ -365,7 +365,7 @@ METHODS = {
 TABLE_MAPPING = {
     b'\x00': void,
     b'A': field_array,
-    b'b': short_short_int,
+    b'B': short_short_int,
     b'D': decimal,
     b'd': double,
     b'F': field_table,
