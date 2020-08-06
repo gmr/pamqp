@@ -111,7 +111,7 @@ class CodecDecodeTests(unittest.TestCase):
         self.assertRaises(ValueError, decode.decimal, False)
 
     def test_decode_double_value(self):
-        value = b'@\t!\xf9\xf0\x1b\x86n'
+        value = b'@\t!\xf9\xf0\x1B\x86n'
         self.assertEqual(round(decode.double(value)[1], 5),
                          round(float(3.14159), 5))
 
@@ -641,13 +641,13 @@ class CodecDecodeTests(unittest.TestCase):
         self.assertEqual(decode._embedded_value(value)[0], 3)
 
     def test_decode_embedded_value_short_short_bytes_consumed(self):
-        self.assertEqual(decode._embedded_value(b'b\xff')[0], 2)
+        self.assertEqual(decode._embedded_value(b'B\xff')[0], 2)
 
     def test_decode_embedded_value_short_short_data_type(self):
-        self.assertIsInstance(decode._embedded_value(b'b\xff')[1], int)
+        self.assertIsInstance(decode._embedded_value(b'B\xff')[1], int)
 
     def test_decode_embedded_value_short_short_value(self):
-        self.assertEqual(decode._embedded_value(b'b\xff')[1], 255)
+        self.assertEqual(decode._embedded_value(b'B\xff')[1], 255)
 
     def test_decode_embedded_value_short_data_type(self):
         value = b's\x7f\xff'

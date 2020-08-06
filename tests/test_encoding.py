@@ -162,8 +162,8 @@ class MarshalingTests(unittest.TestCase):
         self.assertRaises(TypeError, encode.timestamp, 'hi')
 
     def test_encode_field_array(self):
-        expectation = (b'\x00\x00\x00:b\x01u\xaf\xc8I\x02bZ\x00S\x00\x00\x00'
-                       b'\x04TestT\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D'
+        expectation = (b'\x00\x00\x00:B\x01u\xaf\xc8I\x02bZ\x00S\x00\x00\x00'
+                       b'\x04TestT\x00\x00\x00\x00Ec)\x92I\xbB\x9a\xca\x00D'
                        b'\x02\x00\x00\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00'
                        b'\x00\x00\x00\x00\x08')
         data = [
@@ -188,11 +188,11 @@ class MarshalingTests(unittest.TestCase):
                           {'key': encode.field_table})
 
     def test_encode_field_table(self):
-        expectation = (b"\x00\x00\x04'\x08arrayvalA\x00\x00\x00\x06b\x01b"
-                       b'\x02b\x03\x07boolvalt\x01\tbytearrayx\x00\x00\x00'
+        expectation = (b"\x00\x00\x04'\x08arrayvalA\x00\x00\x00\x06B\x01B"
+                       b'\x02B\x03\x07boolvalt\x01\tbytearrayx\x00\x00\x00'
                        b'\x03AAA\x06decvalD\x02\x00\x00\x01:\x07dictvalF\x00'
                        b'\x00\x00\x0c\x03fooS\x00\x00\x00\x03bar\x08floatval'
-                       b'f@H\xf5\xc3\x06intvalb\x01\x07longstrS\x00\x00\x03t'
+                       b'f@H\xf5\xc3\x06intvalB\x01\x07longstrS\x00\x00\x03t'
                        b'000000000000000000000000000000000000000000000000000'
                        b'011111111111111111111111111111111111111111111111111'
                        b'112222222222222222222222222222222222222222222222222'
@@ -250,8 +250,8 @@ class MarshalingTests(unittest.TestCase):
         self.assertEqual(encode.field_table(data), expectation)
 
     def test_encode_by_type_field_array(self):
-        expectation = (b'\x00\x00\x008b\x01sBhu\xaf\xc8S\x00\x00\x00\x04TestT'
-                       b'\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02\x00'
+        expectation = (b'\x00\x00\x008B\x01sBhu\xaf\xc8S\x00\x00\x00\x04TestT'
+                       b'\x00\x00\x00\x00Ec)\x92I\xbB\x9a\xca\x00D\x02\x00'
                        b'\x00\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00\x00\x00'
                        b'\x00\x00\x08')
         data = [
@@ -297,7 +297,7 @@ class MarshalingTests(unittest.TestCase):
             b'\x00\x00\x00\x00Ec)\x92')
 
     def test_encode_by_type_field_table(self):
-        expectation = (b'\x00\x00\x04B\x08arrayvalA\x00\x00\x00\x08b\x01s\x10'
+        expectation = (b'\x00\x00\x04B\x08arrayvalA\x00\x00\x00\x08B\x01s\x10'
                        b'`u\xa4\x10\x07boolvalt\x01\x06decvalD\x02\x00\x00\x01'
                        b':\x07dictvalF\x00\x00\x00\x0c\x03fooS\x00\x00\x00\x03'
                        b'bar\x08floatvalf@H\xf5\xc3\x07longstrS\x00\x00\x03t00'
@@ -321,7 +321,7 @@ class MarshalingTests(unittest.TestCase):
                        b'\x06s32intI\xc4e6\x00\x06s64intl7\x82\xda\xce\x9d\x90'
                        b'\x00\x00\x06strvalS\x00\x00\x00\x04Test\x0ctimestamp'
                        b'valT\x00\x00\x00\x00Ec)\x92\x06u16ints \x00\x06u32int'
-                       b'i\xeek(\x00\x05u8bitb ')
+                       b'i\xeek(\x00\x05u8bitB ')
         data = {
             'u8bit': 32,
             'u16int': 8192,
@@ -374,7 +374,7 @@ class EncodeTableIntegerTestCase(unittest.TestCase):
 
     def test_table_integer(self):
         tests = {
-            'short-short': (32, b'b '),
+            'short-short': (32, b'B '),
             'short': (1024, b's\x04\x00'),
             'short-negative': (-1024, b's\xfc\x00'),
             'short-unsigned': (32768, b'u\x80\x00'),
@@ -392,7 +392,7 @@ class EncodeTableIntegerTestCase(unittest.TestCase):
 
     def test_deprecated_table_integer(self):
         tests = {
-            'short-short': (32, b'b '),
+            'short-short': (32, b'B '),
             'short': (1024, b's\x04\x00'),
             'short-negative': (-1024, b's\xfc\x00'),
             'long': (65536, b'I\x00\x01\x00\x00'),

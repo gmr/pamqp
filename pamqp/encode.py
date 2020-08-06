@@ -337,7 +337,7 @@ def table_integer(value):
 
     # Send the appropriately sized data value
     if 0 <= value <= 255:
-        return b'b' + octet(value)
+        return b'B' + octet(value)
     elif -32768 <= value <= 32767:
         return b's' + short_int(value)
     elif 0 <= value <= 65535:
@@ -362,7 +362,7 @@ def _deprecated_table_integer(value):
     """
     # Send the appropriately sized data value
     if 0 <= value <= 255:
-        return b'b' + octet(value)
+        return b'B' + octet(value)
     elif -32768 <= value <= 32767:
         return b's' + short_int(value)
     elif -2147483648 <= value <= 2147483647:

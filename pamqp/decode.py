@@ -322,7 +322,7 @@ def _embedded_value(value):
     # Determine the field type and encode it
     if value[0:1] == b't':
         bytes_consumed, value = boolean(value[1:])
-    elif value[0:1] == b'b':
+    elif value[0:1] == b'B':
         bytes_consumed, value = short_short_int(value[1:])
     elif value[0:1] == b's':
         bytes_consumed, value = short_int(value[1:])
