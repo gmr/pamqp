@@ -1,6 +1,10 @@
 Changelog
 =========
 
+3.0.1 (2020-08-07)
+------------------
+- Fix an issue with `Basic.Reject` `requeue=False` always being set to `True` (#29 - `eandersson <https://github.com/eandersson>`_)
+
 3.0.0 (2020-08-04)
 ------------------
 - Fix unsigned short-int encoding and decoding to use the correct amqp field designation of ``B`` instad of ``b`` (#27)
