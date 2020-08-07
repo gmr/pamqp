@@ -2434,7 +2434,7 @@ class Basic:
                      requeue: bool = True) -> None:
             """Initialize the :class:`Basic.Reject` class"""
             self.delivery_tag = delivery_tag
-            self.requeue = requeue or True
+            self.requeue = requeue
 
     class RecoverAsync(base.Frame):
         """Redeliver unacknowledged messages
