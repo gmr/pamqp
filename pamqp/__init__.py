@@ -3,7 +3,7 @@
 __author__ = 'Gavin M. Roy'
 __email__ = 'gavinmroy@gmail.com'
 __since__ = '2011-09-23'
-__version__ = '3.0.1'
+__version__ = '3.0.2'
 
 __all__ = [
     'body', 'decode', 'commands', 'constants', 'encode', 'exceptions', 'frame',
