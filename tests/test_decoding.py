@@ -240,6 +240,10 @@ class CodecDecodeTests(unittest.TestCase):
     def test_decode_timestamp_bytes_consumed(self):
         self.assertEqual(decode.timestamp(b'\x00\x00\x00\x00Ec)\x92')[0], 8)
 
+    def test_decode_timestamp_milliseconds(self):
+        self.assertIsInstance(
+            decode.timestamp(b'\x00\x00\x01w\xf7\xdb\xcfg')[1], datetime.datetime)
+
     def test_decode_timestamp_data_type(self):
         self.assertIsInstance(
             decode.timestamp(b'\x00\x00\x00\x00Ec)\x92')[1], datetime.datetime)
