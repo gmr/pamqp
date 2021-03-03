@@ -5,6 +5,7 @@ Functions for decoding data of various types including field tables and arrays
 """
 import datetime
 import decimal as _decimal
+import math
 import time
 import typing
 
@@ -262,8 +263,15 @@ def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
     """
     try:
         temp = common.Struct.timestamp.unpack(value[0:8])
+        ts = temp[0]
+
+        # Test whether this is a timestamp with millisecond precision
+        digits = int(math.log10(ts)) + 1
+        if digits >= 13:
+            ts = int(ts / 1000)
+
         return 8, datetime.datetime.fromtimestamp(
-            time.mktime(time.gmtime(temp[0])))
+            time.mktime(time.gmtime(ts)))
     except TypeError:
         raise ValueError('Could not unpack timestamp value')
 
