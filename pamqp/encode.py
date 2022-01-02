@@ -244,7 +244,10 @@ def timestamp(value: typing.Union[datetime.datetime, time.struct_time]) \
 
     """
     if isinstance(value, datetime.datetime):
-        value = value.timetuple()
+        if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
+            # assume datetime object is UTC
+            value = value.replace(tzinfo=datetime.timezone.utc)
+        return common.Struct.timestamp.pack(int(value.timestamp()))
     if isinstance(value, time.struct_time):
         return common.Struct.timestamp.pack(calendar.timegm(value))
     raise TypeError(
