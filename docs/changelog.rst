@@ -1,6 +1,11 @@
 Changelog
 =========
 
+3.1.0 (2022-01-10)
+------------------
+- Add implicit UTC timezone behavior to the AMQP Basic.Properties timestamp value. (#37 - `RemiCardona <https://github.com/RemiCardona>`_)
+- Add support for short-short-int and short-short-uint. (#33 - `michal800106 <https://github.com/michal800106>`_)
+
 3.0.1 (2020-08-07)
 ------------------
 - Fix an issue with `Basic.Reject` `requeue=False` always being set to `True` (#29 - `eandersson <https://github.com/eandersson>`_)
