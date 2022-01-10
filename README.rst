@@ -13,7 +13,7 @@ https://pamqp.readthedocs.io
 
 Python Versions Supported
 -------------------------
-3.6+
+3.7+
 
 License
 -------
