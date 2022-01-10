@@ -225,6 +225,9 @@ class CodecDecodeTests(unittest.TestCase):
     def test_decode_short_short_uint_value(self):
         self.assertEqual(decode.short_short_uint(b'\xff')[1], 255)
 
+    def test_decode_short_short_uint_invalid_value(self):
+        self.assertRaises(ValueError, decode.short_short_uint, None)
+
     def test_decode_short_str_bytes_consumed(self):
         self.assertEqual(decode.short_str(b'\n0123456789')[0], 11)
 
