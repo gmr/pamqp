@@ -5,7 +5,6 @@ Functions for decoding data of various types including field tables and arrays
 """
 import datetime
 import decimal as _decimal
-import time
 import typing
 
 from pamqp import common
@@ -262,8 +261,7 @@ def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
     """
     try:
         temp = common.Struct.timestamp.unpack(value[0:8])
-        return 8, datetime.datetime.fromtimestamp(
-            time.mktime(time.gmtime(temp[0])))
+        return 8, datetime.datetime.utcfromtimestamp(temp[0])
     except TypeError:
         raise ValueError('Could not unpack timestamp value')
 

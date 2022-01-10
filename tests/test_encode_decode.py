@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import datetime
 import unittest
 
 from pamqp import decode, encode
@@ -14,3 +15,11 @@ class EncodeDecodeTests(unittest.TestCase):
         encoded = encode.field_table(data)
         decoded = decode.field_table(encoded)[1]
         self.assertIn('A' * 128, decoded)
+
+    def test_timestamp_with_dst(self):
+        # this test assumes the system is set up using a northern hemisphere
+        # timesone with DST (America/New_York as per github CI is fine)
+        data = datetime.datetime(2006, 5, 21, 16, 30, 10)
+        encoded = encode.timestamp(data)
+        decoded = decode.timestamp(encoded)[1]
+        self.assertEqual(decoded, data)
