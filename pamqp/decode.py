@@ -375,25 +375,25 @@ METHODS = {
     'void': void,
 }  # Define a data type mapping to methods for by_type()
 
-
+# See https://www.rabbitmq.com/amqp-0-9-1-errata.html
 TABLE_MAPPING = {
-    b'\x00': void,
-    b'A': field_array,
-    b'B': short_short_uint,
+    b't': boolean,
     b'b': short_short_int,
-    b'D': decimal,
-    b'd': double,
-    b'F': field_table,
-    b'f': floating_point,
+    b'B': short_short_uint,
+    b's': short_int,
+    b'u': short_uint,
     b'I': long_int,
     b'i': long_uint,
-    b'L': long_long_int,
     b'l': long_long_int,
+    b'L': long_long_int,
+    b'f': floating_point,
+    b'd': double,
+    b'D': decimal,
     b'S': long_str,
-    b's': short_int,
+    b'A': field_array,
     b'T': timestamp,
-    b't': boolean,
-    b'u': short_uint,
+    b'F': field_table,
     b'V': void,
+    b'\x00': void,  # While not documented, have seen this in the wild
     b'x': byte_array,
 }  # Define a mapping for use in `field_array()` and `field_table()`
