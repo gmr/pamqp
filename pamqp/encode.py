@@ -357,9 +357,10 @@ def _string(encoder: struct.Struct, value: str) -> bytes:
     return encoder.pack(len(temp)) + temp
 
 
-def encode_table_value(value: typing.Union[common.FieldArray,
-                                           common.FieldTable,
-                                           common.FieldValue]) -> bytes:
+def encode_table_value(
+    value: typing.Union[common.FieldArray, common.FieldTable,
+                        common.FieldValue]
+) -> bytes:
     """Takes a value of any type and tries to encode it with the proper encoder
 
     :param value: Value to encode

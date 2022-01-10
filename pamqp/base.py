@@ -147,8 +147,9 @@ class BasicProperties(_AMQData):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BasicProperties):
             raise NotImplementedError
-        return all(getattr(self, k, None) == getattr(other, k, None)
-                   for k in self.__slots__)
+        return all(
+            getattr(self, k, None) == getattr(other, k, None)
+            for k in self.__slots__)
 
     def encode_property(self, name: str, value: common.FieldValue) -> bytes:
         """Encode a single property value
@@ -208,5 +209,5 @@ class BasicProperties(_AMQData):
         if self.cluster_id != '':
             raise ValueError('cluster_id must be empty')
         if self.delivery_mode is not None and self.delivery_mode not in [1, 2]:
-            raise ValueError(
-                'Invalid delivery_mode value: {}'.format(self.delivery_mode))
+            raise ValueError('Invalid delivery_mode value: {}'.format(
+                self.delivery_mode))

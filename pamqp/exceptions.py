@@ -7,6 +7,7 @@ class PAMQPException(Exception):
 
 class UnmarshalingException(PAMQPException):
     """Raised when a frame is not able to be unmarshaled."""
+
     def __str__(self) -> str:  # pragma: nocover
         return 'Could not unmarshal {} frame: {}'.format(
             self.args[0], self.args[1])

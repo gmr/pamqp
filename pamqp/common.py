@@ -36,16 +36,8 @@ Guidelines for implementers:
 
 """
 
-FieldValue = typing.Union[bool,
-                          bytearray,
-                          decimal.Decimal,
-                          FieldArray,
-                          FieldTable,
-                          float,
-                          int,
-                          None,
-                          str,
-                          datetime.datetime]
+FieldValue = typing.Union[bool, bytearray, decimal.Decimal, FieldArray,
+                          FieldTable, float, int, None, str, datetime.datetime]
 """Defines valid field values for a :const:`FieldTable` and a
 :const:`FieldValue`
 
