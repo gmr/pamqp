@@ -2,19 +2,19 @@
 
 To get setup in the environment and run the tests, take the following steps:
 
-```bash
-virtualenv -p python3 env
+```sh
+python3 -m venv env
 source env/bin/activate
-pip install -r requirements.txt
+pip install -e '.[testing]'
 
-nosetests
 flake8
+coverage run && coverage report
 ```
 
 Please format your code contributions with the ``yapf`` formatter:
 
-```bash
-yapf -i --style=pep8 pamqp
+```sh
+yapf -i --recursive --style=pep8 pamqp
 ```
 
 ## Test Coverage
