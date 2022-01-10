@@ -231,9 +231,24 @@ def short_short_int(value: bytes) -> typing.Tuple[int, int]:
 
     """
     try:
-        return 1, common.Struct.short_short.unpack_from(value[0:1])[0]
+        return 1, common.Struct.short_short_int.unpack_from(value[0:1])[0]
     except TypeError:
         raise ValueError('Could not unpack short-short integer value')
+
+
+def short_short_uint(value: bytes) -> typing.Tuple[int, int]:
+    """Decode a unsigned short-short integer value, returning bytes consumed and
+    the value.
+
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`int`)
+    :raises ValueError: when the binary data can not be unpacked
+
+    """
+    try:
+        return 1, common.Struct.short_short_uint.unpack_from(value[0:1])[0]
+    except TypeError:
+        raise ValueError('Could not unpack unsigned short-short integer value')
 
 
 def short_str(value: bytes) -> typing.Tuple[int, str]:
@@ -360,21 +375,24 @@ METHODS = {
     'void': void,
 }  # Define a data type mapping to methods for by_type()
 
+
 TABLE_MAPPING = {
     b'\x00': void,
     b'A': field_array,
-    b'B': short_short_int,
+    b'B': short_short_uint,
+    b'b': short_short_int,
     b'D': decimal,
     b'd': double,
     b'F': field_table,
     b'f': floating_point,
     b'I': long_int,
     b'i': long_uint,
+    b'L': long_long_int,
     b'l': long_long_int,
     b'S': long_str,
     b's': short_int,
-    b't': boolean,
     b'T': timestamp,
+    b't': boolean,
     b'u': short_uint,
     b'V': void,
     b'x': byte_array,

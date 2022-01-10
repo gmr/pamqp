@@ -69,7 +69,7 @@ def boolean(value: bool) -> bytes:
     """
     if not isinstance(value, bool):
         raise TypeError('bool required, received {}'.format(type(value)))
-    return common.Struct.short_short.pack(int(value))
+    return common.Struct.short_short_uint.pack(int(value))
 
 
 def byte_array(value: bytearray) -> bytes:
@@ -310,8 +310,8 @@ def table_integer(value: int) -> bytes:
     """
     if DEPRECATED_RABBITMQ_SUPPORT:
         return _deprecated_table_integer(value)
-    if 0 <= value <= 255:
-        return b'B' + octet(value)
+    if -128 <= value <= 127:
+        return b'b' + octet(value)
     elif -32768 <= value <= 32767:
         return b's' + short_int(value)
     elif 0 <= value <= 65535:
@@ -334,8 +334,8 @@ def _deprecated_table_integer(value: int) -> bytes:
         acceptable range for the data type
 
     """
-    if 0 <= value <= 255:
-        return b'B' + octet(value)
+    if -128 <= value <= 127:
+        return b'b' + octet(value)
     elif -32768 <= value <= 32767:
         return b's' + short_int(value)
     elif -2147483648 <= value <= 2147483647:
