@@ -15,7 +15,7 @@ class Heartbeat(object):
 
     """
     name: str = 'Heartbeat'
-    value = struct.pack('>BHI', constants.FRAME_HEARTBEAT, 0, 0) + \
+    value: bytes = struct.pack('>BHI', constants.FRAME_HEARTBEAT, 0, 0) + \
         constants.FRAME_END_CHAR
 
     @classmethod

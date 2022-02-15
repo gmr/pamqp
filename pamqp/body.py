@@ -14,7 +14,8 @@ class ContentBody:
     :param value: The value for the ContentBody frame
 
     """
-    name = 'ContentBody'
+    name: str = 'ContentBody'
+    value: bytes
 
     def __init__(self, value: bytes):
         """Create a new instance of a ContentBody object"""

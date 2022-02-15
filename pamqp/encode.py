@@ -44,7 +44,7 @@ def by_type(value: common.FieldValue, data_type: str) -> bytes:
 
     """
     try:
-        return METHODS[str(data_type)](value)
+        return _METHODS[str(data_type)](value)
     except KeyError:
         raise TypeError('Unknown type: {}'.format(value))
 
@@ -393,7 +393,7 @@ def encode_table_value(
     raise TypeError('Unknown type: {} ({!r})'.format(type(value), value))
 
 
-METHODS = {
+_METHODS = {
     'bytearray': byte_array,
     'double': double,
     'field_array': field_array,
