@@ -174,10 +174,12 @@ class CodecDecodeTests(unittest.TestCase):
         self.assertIsInstance(decode.long_str(value)[1], str)
 
     def test_decode_long_str_data_type_unicode(self):
-        self.assertIsInstance(
-            decode.long_str(b'\x00\x00\x00\x0c\xd8\xa7'
-                            b'\xd8\xae\xd8\xaa\xd8\xa8'
-                            b'\xd8\xa7\xd8\xb1')[1], str)
+        value = b'\0\0\0\x0c\xd8\xa7\xd8\xae\xd8\xaa\xd8\xa8\xd8\xa7\xd8\xb1'
+        self.assertIsInstance(decode.long_str(value)[1], str)
+
+    def test_decode_long_str_data_type_non_unicode(self):
+        value = b'\x00\x00\x00\x01\xff'
+        self.assertIsInstance(decode.long_str(value)[1], bytes)
 
     def test_decode_long_str_invalid_value(self):
         self.assertRaises(ValueError, decode.long_str, None)
