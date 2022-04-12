@@ -38,6 +38,9 @@ jobs:
       - name: Run flake8 tests
         run: flake8 --output build/flake8.txt --tee
 
+      - name: Run pyright type completeness check
+        run: pyright --verifytypes pamqp
+
       - name: Run tests
         run: coverage run && coverage report && coverage xml
 

@@ -16,7 +16,10 @@ BasicProperties = typing.Optional[commands.Basic.Properties]
 
 class ProtocolHeader:
     """Class that represents the AMQP Protocol Header"""
-    name = 'ProtocolHeader'
+    name: str = 'ProtocolHeader'
+    major_version: int
+    minor_version: int
+    revision: int
 
     def __init__(self,
                  major_version: int = constants.VERSION[0],
@@ -67,7 +70,11 @@ class ContentHeader:
     follow.
 
     """
-    name = 'ContentHeader'
+    name: str = 'ContentHeader'
+    class_id: typing.Optional[int]
+    weight: int
+    body_size: int
+    properties: BasicProperties
 
     def __init__(self,
                  weight: int = 0,

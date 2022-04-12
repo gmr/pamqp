@@ -13,9 +13,8 @@ LOGGER = logging.getLogger(__name__)
 
 class _AMQData:
     """Base class for AMQ methods and properties for encoding and decoding"""
-    __annotations__: typing.Dict = {}
-    __slots__: typing.List = []
-    name = '_AMQData'
+    __slots__: typing.List[str] = []
+    name: str = '_AMQData'
 
     def __contains__(self, item: str) -> bool:
         """Return if the item is in the attribute list"""
@@ -60,17 +59,18 @@ class _AMQData:
         return getattr(cls, '_' + attr)
 
     @classmethod
-    def attributes(cls) -> list:
+    def attributes(cls) -> typing.List[str]:
         """Return the list of attributes"""
         return cls.__slots__
 
 
 class Frame(_AMQData):
     """Base Class for AMQ Methods for encoding and decoding"""
-    frame_id = 0
-    index = 0
-    synchronous = False
-    valid_responses: typing.List = []
+    name: str
+    frame_id: int = 0
+    index: int = 0
+    synchronous: bool = False
+    valid_responses: typing.Sequence[str] = []
 
     def marshal(self) -> bytes:
         """Dynamically encode the frame by taking the list of attributes and
@@ -142,7 +142,7 @@ class BasicProperties(_AMQData):
 
     """
     flags: typing.Dict[str, int] = {}
-    name = 'BasicProperties'
+    name: str = 'BasicProperties'
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BasicProperties):

@@ -292,7 +292,7 @@ def embedded_value(value: bytes) -> typing.Tuple[int, common.FieldValue]:
     if not value:
         return 0, None
     try:
-        bytes_consumed, temp = TABLE_MAPPING[value[0:1]](value[1:])
+        bytes_consumed, temp = _TABLE_MAPPING[value[0:1]](value[1:])
     except KeyError:
         raise ValueError('Unknown type: {!r}'.format(value[:1]))
     return bytes_consumed + 1, temp
@@ -356,7 +356,7 @@ def void(_: bytes) -> typing.Tuple[int, None]:
     return 0, None
 
 
-METHODS = {
+METHODS: typing.Mapping[str, typing.Callable[..., typing.Tuple[int, typing.Any]]] = {
     'array': field_array,
     'bit': bit,
     'boolean': boolean,
@@ -376,7 +376,7 @@ METHODS = {
 }  # Define a data type mapping to methods for by_type()
 
 # See https://www.rabbitmq.com/amqp-0-9-1-errata.html
-TABLE_MAPPING = {
+_TABLE_MAPPING = {
     b't': boolean,
     b'b': short_short_int,
     b'B': short_short_uint,
