@@ -2,7 +2,7 @@ import unittest
 
 from pamqp import commands
 
-#tag uri examples from https://en.wikipedia.org/wiki/Tag_URI_scheme
+# Tag uri examples from https://en.wikipedia.org/wiki/Tag_URI_scheme
 TAG_URIS = [
     'tag:timothy@hpl.hp.com,2001:web/externalHome',
     'tag:sandro@w3.org,2004-05:Sandro',
@@ -11,7 +11,9 @@ TAG_URIS = [
     'tag:yaml.org,2002:int#section1'
 ]
 
+
 class TagUriScheme(unittest.TestCase):
+
     def test_tag_uri_scheme_tag1(self):
         commands.Exchange.Declare(exchange=TAG_URIS[0])
 
@@ -23,4 +25,3 @@ class TagUriScheme(unittest.TestCase):
 
     def test_tag_uri_scheme_tag4(self):
         commands.Exchange.Declare(exchange=TAG_URIS[3])
-
