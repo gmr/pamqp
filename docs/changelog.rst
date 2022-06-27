@@ -1,6 +1,11 @@
 Changelog
 =========
 
+3.2.0 (2022-06-27)
+------------------
+- Allow long-str to fall back to bytes in case of UnicodeDecodeError (AMQP 1.0 interop) (#40 - `dmaone  <https://github.com/dmaone>`_)
+- DOMAIN_REGEX enhanced to fulfill tag uri scheme for exchange and queue names. (#42 - `deschmih <https://github.com/deschmih>`_)
+
 3.1.0 (2022-01-10)
 ------------------
 - Add implicit UTC timezone behavior to the AMQP Basic.Properties timestamp value. (#37 - `RemiCardona <https://github.com/RemiCardona>`_)
