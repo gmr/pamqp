@@ -163,7 +163,7 @@ def long_long_int(value: bytes) -> typing.Tuple[int, int]:
         raise ValueError('Could not unpack long-long integer value')
 
 
-def long_str(value: bytes) -> typing.Tuple[int, str]:
+def long_str(value: bytes) -> typing.Tuple[int, typing.Union[str, bytes]]:
     """Decode a string value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -176,6 +176,8 @@ def long_str(value: bytes) -> typing.Tuple[int, str]:
         return length + 4, value[4:length + 4].decode('utf-8')
     except TypeError:
         raise ValueError('Could not unpack long string value')
+    except UnicodeDecodeError:
+        return length + 4, value[4:length + 4]
 
 
 def octet(value: bytes) -> typing.Tuple[int, int]:
