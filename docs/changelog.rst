@@ -1,6 +1,10 @@
 Changelog
 =========
 
+3.2.1 (2022-09-07)
+------------------
+- Add wheel to distribution format (#43)
+
 3.2.0 (2022-06-27)
 ------------------
 - Allow long-str to fall back to bytes in case of UnicodeDecodeError (AMQP 1.0 interop) (#40 - `dmaone  <https://github.com/dmaone>`_)
