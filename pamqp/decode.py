@@ -239,8 +239,8 @@ def short_short_int(value: bytes) -> typing.Tuple[int, int]:
 
 
 def short_short_uint(value: bytes) -> typing.Tuple[int, int]:
-    """Decode a unsigned short-short integer value, returning bytes consumed and
-    the value.
+    """Decode a unsigned short-short integer value, returning bytes consumed
+    and the value.
 
     :param value: The binary value to decode
     :rtype: :class:`tuple` (:class:`int`, :class:`int`)
