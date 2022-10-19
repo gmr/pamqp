@@ -1,6 +1,20 @@
 Changelog
 =========
 
+3.2.1 (2022-09-07)
+------------------
+- Add wheel to distribution format (#43)
+
+3.2.0 (2022-06-27)
+------------------
+- Allow long-str to fall back to bytes in case of UnicodeDecodeError (AMQP 1.0 interop) (#40 - `dmaone  <https://github.com/dmaone>`_)
+- DOMAIN_REGEX enhanced to fulfill tag uri scheme for exchange and queue names. (#42 - `deschmih <https://github.com/deschmih>`_)
+
+3.1.0 (2022-01-10)
+------------------
+- Add implicit UTC timezone behavior to the AMQP Basic.Properties timestamp value. (#37 - `RemiCardona <https://github.com/RemiCardona>`_)
+- Add support for short-short-int and short-short-uint. (#33 - `michal800106 <https://github.com/michal800106>`_)
+
 3.0.1 (2020-08-07)
 ------------------
 - Fix an issue with `Basic.Reject` `requeue=False` always being set to `True` (#29 - `eandersson <https://github.com/eandersson>`_)

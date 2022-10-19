@@ -11,7 +11,7 @@ PLATFORM_64BIT = (struct.calcsize('P') * 8) == 64
 
 
 class CodecDecodeTests(unittest.TestCase):
-    FIELD_ARR = (b'\x00\x00\x009B\x01u\xaf\xc8S\x00\x00\x00\x08Test \xe2\x9c'
+    FIELD_ARR = (b'\x00\x00\x009b\x01u\xaf\xc8S\x00\x00\x00\x08Test \xe2\x9c'
                  b'\x88T\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02\x00\x00'
                  b'\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00\x00\x00\x00\x00'
                  b'\x08')
@@ -21,10 +21,10 @@ class CodecDecodeTests(unittest.TestCase):
         decimal.Decimal('3.14'), 3.14, 3294967295, -9223372036854775800
     ]
     FIELD_TBL = (
-        b'\x00\x00\x00\x99\x08arrayvalA\x00\x00\x00\x06B\x01B\x02B\x03\x07'
+        b'\x00\x00\x00\x99\x08arrayvalA\x00\x00\x00\x06b\x01b\x02b\x03\x07'
         b'boolvalt\x01\x06decvalD\x02\x00\x00\x01:\x07dictvalF\x00\x00\x00'
         b'\r\x04f\xe2\x9c\x89S\x00\x00\x00\x03\xe2\x9c\x90\x08floatvalf@H'
-        b'\xf5\xc3\x06intvalB\x01\x07longvalI6e&U\x06strvalS\x00\x00\x00\x08'
+        b'\xf5\xc3\x06intvalb\x01\x07longvalI6e&U\x06strvalS\x00\x00\x00\x08'
         b'Test \xe2\x9c\x88\x0ctimestampvalT\x00\x00\x00\x00Ec)\x92\x04\xf0'
         b'\x9f\x90\xb0V'
     )
@@ -100,7 +100,7 @@ class CodecDecodeTests(unittest.TestCase):
         self.assertRaises(ValueError, decode.decimal, False)
 
     def test_decode_double_value(self):
-        value = b'@\t!\xf9\xf0\x1B\x86n'
+        value = b'@\t!\xf9\xf0\x1b\x86n'
         self.assertEqual(round(decode.double(value)[1], 5),
                          round(float(3.14159), 5))
 
@@ -174,10 +174,12 @@ class CodecDecodeTests(unittest.TestCase):
         self.assertIsInstance(decode.long_str(value)[1], str)
 
     def test_decode_long_str_data_type_unicode(self):
-        self.assertIsInstance(
-            decode.long_str(b'\x00\x00\x00\x0c\xd8\xa7'
-                            b'\xd8\xae\xd8\xaa\xd8\xa8'
-                            b'\xd8\xa7\xd8\xb1')[1], str)
+        value = b'\0\0\0\x0c\xd8\xa7\xd8\xae\xd8\xaa\xd8\xa8\xd8\xa7\xd8\xb1'
+        self.assertIsInstance(decode.long_str(value)[1], str)
+
+    def test_decode_long_str_data_type_non_unicode(self):
+        value = b'\x00\x00\x00\x01\xff'
+        self.assertIsInstance(decode.long_str(value)[1], bytes)
 
     def test_decode_long_str_invalid_value(self):
         self.assertRaises(ValueError, decode.long_str, None)
@@ -222,8 +224,11 @@ class CodecDecodeTests(unittest.TestCase):
     def test_decode_short_short_int_invalid_value(self):
         self.assertRaises(ValueError, decode.short_short_int, None)
 
-    def test_decode_short_short_int_value(self):
-        self.assertEqual(decode.short_short_int(b'\xff')[1], 255)
+    def test_decode_short_short_uint_value(self):
+        self.assertEqual(decode.short_short_uint(b'\xff')[1], 255)
+
+    def test_decode_short_short_uint_invalid_value(self):
+        self.assertRaises(ValueError, decode.short_short_uint, None)
 
     def test_decode_short_str_bytes_consumed(self):
         self.assertEqual(decode.short_str(b'\n0123456789')[0], 11)
@@ -633,10 +638,10 @@ class CodecDecodeTests(unittest.TestCase):
         self.assertEqual(decode.embedded_value(value)[0], 3)
 
     def test_decode_embedded_value_short_short_bytes_consumed(self):
-        self.assertEqual(decode.embedded_value(b'B\xff')[0], 2)
+        self.assertEqual(decode.embedded_value(b'b\xff')[0], 2)
 
     def test_decode_embedded_value_short_short_data_type(self):
-        self.assertIsInstance(decode.embedded_value(b'B\xff')[1], int)
+        self.assertIsInstance(decode.embedded_value(b'b\xff')[1], int)
 
     def test_decode_embedded_value_short_short_value(self):
         self.assertEqual(decode.embedded_value(b'B\xff')[1], 255)

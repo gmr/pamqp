@@ -12,7 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.6, 3.7, 3.8, 3.9]
+        python:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
     container:
       image: python:${{ matrix.python }}-alpine
     steps:
@@ -26,10 +30,7 @@ jobs:
         run: setup-timezone -z America/New_York
 
       - name: Install testing dependencies
-        run: pip3 install -e '.[test]'
-
-      - name: Install library dependencies
-        run: python3 setup.py develop
+        run: pip3 install -e '.[testing]'
 
       - name: Create build directory
         run: mkdir build
@@ -38,7 +39,7 @@ jobs:
         run: flake8 --output build/flake8.txt --tee
 
       - name: Run tests
-        run: nosetests
+        run: coverage run && coverage report && coverage xml
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v1.0.2
@@ -47,4 +48,3 @@ jobs:
           token: ${{secrets.CODECOV_TOKEN}}
           file: build/coverage.xml
           flags: unittests
-          fail_ci_if_error: true

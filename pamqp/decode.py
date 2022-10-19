@@ -165,7 +165,7 @@ def long_long_int(value: bytes) -> typing.Tuple[int, int]:
         raise ValueError('Could not unpack long-long integer value')
 
 
-def long_str(value: bytes) -> typing.Tuple[int, str]:
+def long_str(value: bytes) -> typing.Tuple[int, typing.Union[str, bytes]]:
     """Decode a string value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -178,6 +178,8 @@ def long_str(value: bytes) -> typing.Tuple[int, str]:
         return length + 4, value[4:length + 4].decode('utf-8')
     except TypeError:
         raise ValueError('Could not unpack long string value')
+    except UnicodeDecodeError:
+        return length + 4, value[4:length + 4]
 
 
 def octet(value: bytes) -> typing.Tuple[int, int]:
@@ -233,9 +235,24 @@ def short_short_int(value: bytes) -> typing.Tuple[int, int]:
 
     """
     try:
-        return 1, common.Struct.short_short.unpack_from(value[0:1])[0]
+        return 1, common.Struct.short_short_int.unpack_from(value[0:1])[0]
     except TypeError:
         raise ValueError('Could not unpack short-short integer value')
+
+
+def short_short_uint(value: bytes) -> typing.Tuple[int, int]:
+    """Decode a unsigned short-short integer value, returning bytes consumed
+    and the value.
+
+    :param value: The binary value to decode
+    :rtype: :class:`tuple` (:class:`int`, :class:`int`)
+    :raises ValueError: when the binary data can not be unpacked
+
+    """
+    try:
+        return 1, common.Struct.short_short_uint.unpack_from(value[0:1])[0]
+    except TypeError:
+        raise ValueError('Could not unpack unsigned short-short integer value')
 
 
 def short_str(value: bytes) -> typing.Tuple[int, str]:
@@ -270,8 +287,7 @@ def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
         if digits >= 13:
             ts = int(ts / 1000)
 
-        return 8, datetime.datetime.fromtimestamp(
-            time.mktime(time.gmtime(ts)))
+        return 8, datetime.datetime.utcfromtimestamp(ts)
     except TypeError:
         raise ValueError('Could not unpack timestamp value')
 
@@ -370,22 +386,25 @@ METHODS = {
     'void': void,
 }  # Define a data type mapping to methods for by_type()
 
+# See https://www.rabbitmq.com/amqp-0-9-1-errata.html
 TABLE_MAPPING = {
-    b'\x00': void,
-    b'A': field_array,
-    b'B': short_short_int,
-    b'D': decimal,
-    b'd': double,
-    b'F': field_table,
-    b'f': floating_point,
+    b't': boolean,
+    b'b': short_short_int,
+    b'B': short_short_uint,
+    b's': short_int,
+    b'u': short_uint,
     b'I': long_int,
     b'i': long_uint,
     b'l': long_long_int,
+    b'L': long_long_int,
+    b'f': floating_point,
+    b'd': double,
+    b'D': decimal,
     b'S': long_str,
-    b's': short_int,
-    b't': boolean,
+    b'A': field_array,
     b'T': timestamp,
-    b'u': short_uint,
+    b'F': field_table,
     b'V': void,
+    b'\x00': void,  # While not documented, have seen this in the wild
     b'x': byte_array,
 }  # Define a mapping for use in `field_array()` and `field_table()`

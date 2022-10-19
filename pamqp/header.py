@@ -39,8 +39,8 @@ class ProtocolHeader:
         ProtocolHeader frame.
 
         """
-        return constants.AMQP + struct.pack(
-            'BBBB', 0, self.major_version, self.minor_version, self.revision)
+        return constants.AMQP + struct.pack('BBBB', 0, self.major_version,
+                                            self.minor_version, self.revision)
 
     def unmarshal(self, data: bytes) -> int:
         """Dynamically decode the frame data applying the values to the method

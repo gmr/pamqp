@@ -13,11 +13,11 @@ https://pamqp.readthedocs.io
 
 Python Versions Supported
 -------------------------
-3.6+
+3.7+
 
 License
 -------
-Copyright (c) 2011-2020 Gavin M. Roy
+Copyright (c) 2011-2022 Gavin M. Roy
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,

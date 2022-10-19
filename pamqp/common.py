@@ -36,16 +36,8 @@ Guidelines for implementers:
 
 """
 
-FieldValue = typing.Union[bool,
-                          bytearray,
-                          decimal.Decimal,
-                          FieldArray,
-                          FieldTable,
-                          float,
-                          int,
-                          None,
-                          str,
-                          datetime.datetime]
+FieldValue = typing.Union[bool, bytes, bytearray, decimal.Decimal, FieldArray,
+                          FieldTable, float, int, None, str, datetime.datetime]
 """Defines valid field values for a :const:`FieldTable` and a
 :const:`FieldValue`
 
@@ -64,11 +56,12 @@ class Struct:
     double = struct.Struct('>d')
     float = struct.Struct('>f')
     integer = struct.Struct('>I')
-    long = struct.Struct('>l')
-    long_long_int = struct.Struct('>q')
-    short = struct.Struct('>h')
-    short_short = struct.Struct('>B')
-    timestamp = struct.Struct('>Q')
     uint = struct.Struct('>i')
+    long_long_int = struct.Struct('>q')
+    short_short_int = struct.Struct('>b')
+    short_short_uint = struct.Struct('>B')
+    timestamp = struct.Struct('>Q')
+    long = struct.Struct('>l')
     ulong = struct.Struct('>L')
+    short = struct.Struct('>h')
     ushort = struct.Struct('>H')
