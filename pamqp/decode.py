@@ -278,7 +278,13 @@ def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
     """
     try:
         temp = common.Struct.timestamp.unpack(value[0:8])
-        return 8, datetime.datetime.utcfromtimestamp(temp[0])
+        ts_value = temp[0]
+
+        # Anything above the year 2106 is likely milliseconds
+        if ts_value > 0xFFFFFFFF:
+            ts_value /= 1000.0
+
+        return 8, datetime.datetime.utcfromtimestamp(ts_value)
     except TypeError:
         raise ValueError('Could not unpack timestamp value')
 
