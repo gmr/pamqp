@@ -19,7 +19,16 @@ class EncodeDecodeTests(unittest.TestCase):
     def test_timestamp_with_dst(self):
         # this test assumes the system is set up using a northern hemisphere
         # timesone with DST (America/New_York as per github CI is fine)
-        data = datetime.datetime(2006, 5, 21, 16, 30, 10)
+        data = datetime.datetime(2006, 5, 21, 16, 30, 10,
+                                 tzinfo=datetime.timezone.utc)
         encoded = encode.timestamp(data)
         decoded = decode.timestamp(encoded)[1]
         self.assertEqual(decoded, data)
+
+    def test_timestamp_without_timezone(self):
+        naive = datetime.datetime(2006, 5, 21, 16, 30, 10)
+        aware = datetime.datetime(2006, 5, 21, 16, 30, 10,
+                                  tzinfo=datetime.timezone.utc)
+        encoded = encode.timestamp(naive)
+        decoded = decode.timestamp(encoded)[1]
+        self.assertEqual(decoded, aware)

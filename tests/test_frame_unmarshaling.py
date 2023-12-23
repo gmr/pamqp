@@ -336,7 +336,8 @@ class DemarshalingTests(unittest.TestCase):
             'reply_to': 'unmarshaling_tests',
             'expiration': '1345274026',
             'message_id': '746a1902-39dc-47cf-9471-9feecda35660',
-            'timestamp': datetime.datetime(2012, 10, 2, 9, 51, 3),
+            'timestamp': datetime.datetime(2012, 10, 2, 9, 51, 3,
+                                           tzinfo=datetime.timezone.utc),
             'message_type': 'unittest',
             'user_id': 'pika',
             'app_id': 'frame_unmarshaling_tests',
@@ -1708,7 +1709,8 @@ class DemarshalingTests(unittest.TestCase):
             message_type='foo',
             priority=10,
             reply_to='q1',
-            timestamp=datetime.datetime(2019, 12, 19, 23, 29, 00))
+            timestamp=datetime.datetime(2019, 12, 19, 23, 29, 00,
+                                        tzinfo=datetime.timezone.utc))
         ch = frame.marshal(header.ContentHeader(0, 10, props), 1)
         rt_props = frame.unmarshal(ch)[2].properties
         self.assertEqual(rt_props, props)
