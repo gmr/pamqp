@@ -1583,6 +1583,14 @@ class MethodAttributeDefaultTests(unittest.TestCase):
         obj = commands.Queue.Declare()
         self.assertEqual(obj['queue'], '')
 
+    def test_queue_declare_with_space_in_queue_name(self):
+        obj = commands.Queue.Declare(queue='Test Queue')
+        self.assertEqual(obj['queue'], 'Test Queue')
+
+    def test_queue_declare_raises_with_linefeed(self):
+        with self.assertRaises(ValueError):
+            _ = commands.Queue.Declare(queue='Test\nQueue')
+
     def test_queue_declare_default_for_passive(self):
         obj = commands.Queue.Declare()
         self.assertEqual(obj['passive'], False)
