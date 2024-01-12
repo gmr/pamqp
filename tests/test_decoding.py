@@ -739,5 +739,4 @@ class CodecDecodeTests(unittest.TestCase):
         dt = datetime.datetime(2107, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
         large_timestamp_bytes = struct.pack('>Q',
                                             int(dt.timestamp() * 1000))
-        self.assertEqual(decode.timestamp(large_timestamp_bytes)[1],
-                         dt.replace(tzinfo=None))
+        self.assertEqual(decode.timestamp(large_timestamp_bytes)[1], dt)
