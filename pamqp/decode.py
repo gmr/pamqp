@@ -278,7 +278,8 @@ def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
     """
     try:
         temp = common.Struct.timestamp.unpack(value[0:8])
-        return 8, datetime.datetime.utcfromtimestamp(temp[0])
+        return 8, datetime.datetime.fromtimestamp(temp[0],
+                                                  tz=datetime.timezone.utc)
     except TypeError:
         raise ValueError('Could not unpack timestamp value')
 

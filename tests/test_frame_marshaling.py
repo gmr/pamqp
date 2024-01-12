@@ -77,7 +77,8 @@ class MarshalingTests(unittest.TestCase):
             message_type='foo',
             priority=10,
             reply_to='q1',
-            timestamp=datetime.datetime(2019, 12, 19, 23, 29, 00))
+            timestamp=datetime.datetime(2019, 12, 19, 23, 29, 00,
+                                        tzinfo=datetime.timezone.utc))
         expectation = (b'\x02\x00\x01\x00\x00\x00\xa2\x00<\x00\x00\x00\x00\x00'
                        b'\x00\x00\x00\x00\n\xff\xe8\x10application/json\x05'
                        b'bzip2\x00\x00\x00\x11\x03fooS\x00\x00\x00\x08Test '
