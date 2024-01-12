@@ -723,3 +723,21 @@ class CodecDecodeTests(unittest.TestCase):
         value = decode.embedded_value(b'F' + self.FIELD_TBL)[1]
         self.assertListEqual(sorted(value.keys()),
                              sorted(self.FIELD_TBL_VALUE.keys()))
+
+    def test_decode_large_timestamp_bytes_consumed(self):
+        dt = datetime.datetime(2107, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
+        large_timestamp_bytes = struct.pack('>Q', int(dt.timestamp() * 1000))
+        self.assertEqual(decode.timestamp(large_timestamp_bytes)[0], 8)
+
+    def test_decode_large_timestamp_data_type(self):
+        dt = datetime.datetime(2107, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
+        large_timestamp_bytes = struct.pack('>Q', int(dt.timestamp() * 1000))
+        self.assertIsInstance(decode.timestamp(large_timestamp_bytes)[1],
+                              datetime.datetime)
+
+    def test_decode_large_timestamp_value(self):
+        dt = datetime.datetime(2107, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
+        large_timestamp_bytes = struct.pack('>Q',
+                                            int(dt.timestamp() * 1000))
+        self.assertEqual(decode.timestamp(large_timestamp_bytes)[1],
+                         dt.replace(tzinfo=None))
