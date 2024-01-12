@@ -284,7 +284,7 @@ def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
         if ts_value > 0xFFFFFFFF:
             ts_value /= 1000.0
 
-        return 8, datetime.datetime.fromtimestamp(temp[0],
+        return 8, datetime.datetime.fromtimestamp(ts_value,
                                                   tz=datetime.timezone.utc)
     except TypeError:
         raise ValueError('Could not unpack timestamp value')
