@@ -1,6 +1,12 @@
 Changelog
 =========
 
+3.3.0 (2024-01-12)
+------------------
+- Convert AMQP timestamp property to handle milliseconds (#48 - `david1155 <https://github.com/david1155>`_)
+- Remove internal must be false check to support RabbitMQ Tracing (#50 - `hari01584 <https://github.com/hari01584>`_)
+- Remove usage of deprecated datetime.utcfromtimestamp (#52 - `decaz <https://github.com/decaz>`_)
+
 3.2.1 (2022-09-07)
 ------------------
 - Add wheel to distribution format (#43)
