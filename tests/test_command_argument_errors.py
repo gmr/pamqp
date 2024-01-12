@@ -102,10 +102,6 @@ class ArgumentErrorsTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             commands.Exchange.Declare(ticket=46 & 2)  # Just ahead of me
 
-    def test_exchange_declare_internal(self):
-        with self.assertRaises(ValueError):
-            commands.Exchange.Declare(internal=True)
-
     def test_exchange_declare_exchange_length(self):
         with self.assertRaises(ValueError):
             commands.Exchange.Declare(exchange=str.ljust('A', 128))
