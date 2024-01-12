@@ -40,7 +40,7 @@ Documentation
 License
 -------
 
-Copyright (c) 2011-2022 Gavin M. Roy
+Copyright (c) 2011-2024 Gavin M. Roy
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
