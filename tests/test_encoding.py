@@ -282,7 +282,8 @@ class MarshalingTests(unittest.TestCase):
     def test_encode_by_type_timestamp(self):
         self.assertEqual(
             encode.by_type(
-                datetime.datetime(2006, 11, 21, 16, 30, 10), 'timestamp'),
+                datetime.datetime(2006, 11, 21, 16, 30, 10,
+                                  tzinfo=datetime.timezone.utc), 'timestamp'),
             b'\x00\x00\x00\x00Ec)\x92')
 
     def test_encode_by_type_field_table(self):

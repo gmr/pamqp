@@ -865,8 +865,6 @@ class Exchange:
             if self.exchange is not None and not constants.DOMAIN_REGEX[
                     'exchange-name'].fullmatch(self.exchange):
                 raise ValueError('Invalid value for exchange')
-            if self.internal is not None and self.internal is not False:
-                raise ValueError('internal must be False')
 
     class DeclareOk(base.Frame):
         """Confirm exchange declaration

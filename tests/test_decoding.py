@@ -17,7 +17,8 @@ class CodecDecodeTests(unittest.TestCase):
                  b'\x08')
     FIELD_ARR_VALUE = [
         1, 45000, 'Test ✈',
-        datetime.datetime(2006, 11, 21, 16, 30, 10), -1147483648,
+        datetime.datetime(2006, 11, 21, 16, 30, 10,
+                          tzinfo=datetime.timezone.utc), -1147483648,
         decimal.Decimal('3.14'), 3.14, 3294967295, -9223372036854775800
     ]
     FIELD_TBL = (
@@ -32,7 +33,8 @@ class CodecDecodeTests(unittest.TestCase):
         'intval': 1,
         'strval': 'Test ✈',
         'boolval': True,
-        'timestampval': datetime.datetime(2006, 11, 21, 16, 30, 10),
+        'timestampval': datetime.datetime(2006, 11, 21, 16, 30, 10,
+                                          tzinfo=datetime.timezone.utc),
         'decval': decimal.Decimal('3.14'),
         '🐰': None,
         'floatval': 3.14,
@@ -255,7 +257,8 @@ class CodecDecodeTests(unittest.TestCase):
     def test_decode_timestamp_value(self):
         self.assertEqual(
             decode.timestamp(b'\x00\x00\x00\x00Ec)\x92')[1],
-            datetime.datetime(2006, 11, 21, 16, 30, 10))
+            datetime.datetime(2006, 11, 21, 16, 30, 10,
+                              tzinfo=datetime.timezone.utc))
 
     def test_decode_field_array_bytes_consumed(self):
         self.assertEqual(
@@ -484,7 +487,8 @@ class CodecDecodeTests(unittest.TestCase):
         value = b'\x00\x00\x00\x00Ec)\x92'
         self.assertEqual(
             decode.by_type(value, 'timestamp')[1],
-            datetime.datetime(2006, 11, 21, 16, 30, 10))
+            datetime.datetime(2006, 11, 21, 16, 30, 10,
+                              tzinfo=datetime.timezone.utc))
 
     def test_decode_by_type_void(self):
         self.assertIsNone(decode.by_type(b'', 'void')[1])
@@ -668,7 +672,8 @@ class CodecDecodeTests(unittest.TestCase):
         value = b'T\x00\x00\x00\x00Ec)\x92'
         self.assertEqual(
             decode.embedded_value(value)[1],
-            datetime.datetime(2006, 11, 21, 16, 30, 10))
+            datetime.datetime(2006, 11, 21, 16, 30, 10,
+                              tzinfo=datetime.timezone.utc))
 
     def test_decode_embedded_value_field_array_bytes_consumed(self):
         self.assertEqual(
