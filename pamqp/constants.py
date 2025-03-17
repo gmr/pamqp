@@ -71,8 +71,8 @@ DOMAINS = {
 
 # AMQP domain patterns
 DOMAIN_REGEX = {
-    'exchange-name': re.compile(r'^[a-zA-Z0-9-_.:@#,/ ]*$'),
-    'queue-name': re.compile(r'^[a-zA-Z0-9-_.:@#,/ ]*$')
+    'exchange-name': re.compile(r'^[a-zA-Z0-9-_.:@#,/+ ]*$'),
+    'queue-name': re.compile(r'^[a-zA-Z0-9-_.:@#,/+ ]*$')
 }
 
 # Other constants
