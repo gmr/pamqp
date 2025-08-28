@@ -36,14 +36,15 @@ Guidelines for implementers:
 
 """
 
-FieldValue = typing.Union[bool, bytes, bytearray, decimal.Decimal, FieldArray,
-                          FieldTable, float, int, None, str, datetime.datetime]
+FieldValue = typing.Union[bool, bytes, bytearray, decimal.Decimal,
+                          "FieldArray", "FieldTable", float, int, None, str,
+                          datetime.datetime]
 """Defines valid field values for a :const:`FieldTable` and a
 :const:`FieldValue`
 
 """
 
-Arguments = typing.Optional[FieldTable]
+Arguments = typing.Optional["FieldTable"]
 """Defines an AMQP method arguments argument data type"""
 
 
