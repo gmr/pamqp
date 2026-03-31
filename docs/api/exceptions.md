@@ -1,0 +1,3 @@
+# pamqp.exceptions
+
+::: pamqp.exceptions

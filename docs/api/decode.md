@@ -1,0 +1,3 @@
+# pamqp.decode
+
+::: pamqp.decode

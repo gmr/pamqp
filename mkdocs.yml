@@ -1,0 +1,49 @@
+site_name: pamqp
+site_url: https://pamqp.readthedocs.io
+repo_url: https://github.com/gmr/pamqp
+repo_name: gmr/pamqp
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - API Reference:
+      - base: api/base.md
+      - body: api/body.md
+      - commands: api/commands.md
+      - common: api/common.md
+      - decode: api/decode.md
+      - encode: api/encode.md
+      - exceptions: api/exceptions.md
+      - frame: api/frame.md
+      - header: api/header.md
+      - heartbeat: api/heartbeat.md
+  - Changelog: changelog.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            members_order: source
+            docstring_style: sphinx
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences

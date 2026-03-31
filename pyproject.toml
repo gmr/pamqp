@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "pamqp"
 version = "3.3.0"
 description = "RabbitMQ Focused AMQP low-level library"
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">=3.11"
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
@@ -55,8 +55,9 @@ dev = [
     "ruff",
 ]
 docs = [
-    "sphinx",
-    "sphinx-rtd-theme",
+    "mkdocs>=1.6,<2",
+    "mkdocs-material>=9.5,<10",
+    "mkdocstrings[python]",
 ]
 
 [tool.coverage.run]

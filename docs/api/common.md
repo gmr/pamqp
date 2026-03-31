@@ -1,0 +1,3 @@
+# pamqp.common
+
+::: pamqp.common

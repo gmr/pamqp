@@ -1,0 +1,3 @@
+# pamqp.encode
+
+::: pamqp.encode

@@ -1,0 +1,3 @@
+# pamqp.base
+
+::: pamqp.base
