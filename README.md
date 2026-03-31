@@ -13,7 +13,7 @@ used by client libraries for marshaling and unmarshaling AMQP frames.
 
 ## Documentation
 
-[pamqp.readthedocs.io](https://pamqp.readthedocs.io)
+[gmr.github.io/pamqp](https://gmr.github.io/pamqp/)
 
 ## Features
 

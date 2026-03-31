@@ -35,7 +35,7 @@ keywords = ["amqp", "rabbitmq"]
 
 [project.urls]
 Homepage = "https://github.com/gmr/pamqp"
-Documentation = "https://pamqp.readthedocs.io"
+Documentation = "https://gmr.github.io/pamqp/"
 "Bug Tracker" = "https://github.com/gmr/pamqp/issues"
 
 [project.optional-dependencies]
