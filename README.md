@@ -27,8 +27,11 @@ used by client libraries for marshaling and unmarshaling AMQP frames.
 ## Used By
 
 - [aio-pika](https://github.com/mosquito/aio-pika)
+- [aioamqp](https://github.com/Polyconseil/aioamqp)
 - [aiorabbit](https://github.com/gmr/aiorabbit)
 - [aiormq](https://github.com/mosquito/aiormq)
+- [amqp-mock](https://github.com/tsv1/amqp-mock)
+- [carehare](https://github.com/CJWorkbench/carehare)
 - [rabbitpy](https://github.com/gmr/rabbitpy)
 
 ## Installation
