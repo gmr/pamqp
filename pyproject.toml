@@ -46,8 +46,10 @@ codegen = [
 
 [dependency-groups]
 dev = [
+    "basedpyright",
     "build",
     "coverage[toml]",
+    "mypy",
     "pre-commit",
     "ruff",
 ]
@@ -76,6 +78,14 @@ output = "build/coverage.xml"
 
 [tool.hatch.build.targets.wheel]
 include = ["pamqp"]
+
+[tool.basedpyright]
+typeCheckingMode = "standard"
+exclude = ["pamqp/commands.py", "tools/**"]
+
+[tool.mypy]
+strict = true
+exclude = ["pamqp/commands\\.py$", "tools/"]
 
 [tool.ruff]
 line-length = 79

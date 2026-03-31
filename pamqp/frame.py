@@ -171,7 +171,7 @@ def _unmarshal_method_frame(frame_data: bytes) -> base.Frame:
     """
     bytes_used, method_index = decode.long_int(frame_data[0:4])
     try:
-        method = commands.INDEX_MAPPING[method_index]()
+        method: base.Frame = commands.INDEX_MAPPING[method_index]()
     except KeyError as err:
         raise exceptions.UnmarshalingException(
             'Unknown', f'Unknown method index: {method_index!s}'
