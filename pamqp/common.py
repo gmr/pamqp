@@ -2,15 +2,15 @@
 Common type aliases and classes.
 
 """
+
 import datetime
 import decimal
 import struct
-import typing
 
-FieldArray = typing.List['FieldValue']
+FieldArray = list['FieldValue']
 """A data structure for holding an array of field values."""
 
-FieldTable = typing.Dict[str, 'FieldValue']
+FieldTable = dict[str, 'FieldValue']
 """Field tables are data structures that contain packed name-value pairs.
 
 The name-value pairs are encoded as short string defining the name, and octet
@@ -36,14 +36,25 @@ Guidelines for implementers:
 
 """
 
-FieldValue = typing.Union[bool, bytes, bytearray, decimal.Decimal, FieldArray,
-                          FieldTable, float, int, None, str, datetime.datetime]
+FieldValue = (
+    bool
+    | bytes
+    | bytearray
+    | decimal.Decimal
+    | FieldArray
+    | FieldTable
+    | float
+    | int
+    | None
+    | str
+    | datetime.datetime
+)
 """Defines valid field values for a :const:`FieldTable` and a
 :const:`FieldValue`
 
 """
 
-Arguments = typing.Optional[FieldTable]
+Arguments = FieldTable | None
 """Defines an AMQP method arguments argument data type"""
 
 
@@ -52,6 +63,7 @@ class Struct:
     :mod:`pamqp.decode` / :mod:`pamqp.encode`.
 
     """
+
     byte = struct.Struct('B')
     double = struct.Struct('>d')
     float = struct.Struct('>f')

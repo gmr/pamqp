@@ -1,22 +1,31 @@
-name: Deployment
+name: Publish to PyPI
+
 on:
-  push:
-    branches-ignore: ["*"]
-    tags: ["*"]
+  release:
+    types: [created]
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && github.repository == 'gmr/pamqp'
-    container: python:3.10-alpine
+
+    environment:
+      name: pypi
+      url: https://pypi.org/project/pamqp/
+
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v1
-      - name: Install wheel
-        run: pip3 install wheel
-      - name: Build package
-        run: python3 setup.py sdist bdist_wheel
-      - name: Publish package
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_PASSWORD }}
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Build and check package
+        run: |
+          uv build
+          uvx twine check dist/*
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

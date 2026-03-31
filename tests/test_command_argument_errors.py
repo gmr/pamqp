@@ -5,7 +5,6 @@ from pamqp import commands
 
 
 class ArgumentErrorsTestCase(unittest.TestCase):
-
     def test_basic_consume_queue_length(self):
         with self.assertRaises(ValueError):
             commands.Basic.Consume(queue=str.ljust('A', 257))

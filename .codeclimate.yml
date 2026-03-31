@@ -1,6 +1,6 @@
 languages:
   Python: true
-exclude_paths: 
+exclude_paths:
   - codegen/*
   - docs/*
   - tests/*
