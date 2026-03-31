@@ -80,10 +80,10 @@ include = ["pamqp"]
 [tool.ruff]
 line-length = 79
 target-version = "py311"
-exclude = ["pamqp/commands.py"]
 
 [tool.ruff.format]
 quote-style = "single"
+exclude = ["pamqp/commands.py"]
 
 [tool.ruff.lint]
 select = [
@@ -119,7 +119,7 @@ max-complexity = 15
 
 [tool.ruff.lint.per-file-ignores]
 "docs/conf.py" = ["DTZ011"]
-"pamqp/commands.py" = ["B028", "S105"]
+"pamqp/commands.py" = ["B028", "RUF023", "S105", "UP006", "UP045"]
 "pamqp/constants.py" = ["S105"]
 "tests/**/*.py" = ["DTZ001", "S", "UP031"]
 "tools/**/*.py" = ["B019", "B020", "C403", "C901", "S", "T20", "UP031"]
