@@ -272,6 +272,12 @@ class MarshalingTests(unittest.TestCase):
         ]
         self.assertEqual(encode.by_type(data, 'field_array'), expectation)
 
+    def test_encode_table_with_negative_integer(self):
+        data = {'x-priority': -1}
+        result = encode.field_table(data)
+        self.assertIn(b'x-priority', result)
+        self.assertIn(b'b\xff', result)
+
     def test_encode_by_type_byte_array(self):
         self.assertEqual(
             encode.by_type(bytearray((65, 66, 67)), 'bytearray'),
@@ -403,6 +409,8 @@ class EncodeTableIntegerTestCase(unittest.TestCase):
     def test_table_integer(self):
         tests = {
             'short-short': (32, b'b '),
+            'short-short-negative': (-1, b'b\xff'),
+            'short-short-min': (-128, b'b\x80'),
             'short': (1024, b's\x04\x00'),
             'short-negative': (-1024, b's\xfc\x00'),
             'short-unsigned': (32768, b'u\x80\x00'),
@@ -428,6 +436,8 @@ class EncodeTableIntegerTestCase(unittest.TestCase):
         self.assertTrue(encode.DEPRECATED_RABBITMQ_SUPPORT)
         tests = {
             'short-short': (32, b'b '),
+            'short-short-negative': (-1, b'b\xff'),
+            'short-short-min': (-128, b'b\x80'),
             'short': (1024, b's\x04\x00'),
             'short-negative': (-1024, b's\xfc\x00'),
             'long': (65536, b'I\x00\x01\x00\x00'),
