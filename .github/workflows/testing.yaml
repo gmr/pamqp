@@ -2,7 +2,7 @@ name: Testing
 on:
   pull_request:
   push:
-    branches: ["**"]
+    branches: [main]
     paths-ignore:
       - 'docs/**'
       - '*.md'

@@ -962,7 +962,7 @@ class Codegen:
                 elif constant['class'] == 'hard-error':
                     extends = 'AMQPHardError'
                 else:
-                    raise ValueError(f"Unexpected class: {constant['class']}")
+                    raise ValueError(f'Unexpected class: {constant["class"]}')
                 self._add_line(f'class AMQP{class_name}({extends}):')
                 self._add_line('    """')
                 documentation = self._documentation(

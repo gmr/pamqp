@@ -15,5 +15,6 @@ repos:
     rev: v0.14.5
     hooks:
       - id: ruff-format
+        exclude: ^pamqp/commands\.py$
       - id: ruff
         args: [--fix]
