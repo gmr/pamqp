@@ -312,7 +312,7 @@ def table_integer(value: int) -> bytes:
     if DEPRECATED_RABBITMQ_SUPPORT:
         return _deprecated_table_integer(value)
     if -128 <= value <= 127:
-        return b'b' + octet(value)
+        return b'b' + common.Struct.short_short_int.pack(value)
     elif -32768 <= value <= 32767:
         return b's' + short_int(value)
     elif 0 <= value <= 65535:
@@ -336,7 +336,7 @@ def _deprecated_table_integer(value: int) -> bytes:
 
     """
     if -128 <= value <= 127:
-        return b'b' + octet(value)
+        return b'b' + common.Struct.short_short_int.pack(value)
     elif -32768 <= value <= 32767:
         return b's' + short_int(value)
     elif -2147483648 <= value <= 2147483647:
