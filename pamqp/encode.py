@@ -45,7 +45,7 @@ def by_type(value: common.FieldValue, data_type: str) -> bytes:
     try:
         return METHODS[str(data_type)](value)
     except KeyError as err:
-        raise TypeError(f'Unknown type: {value}') from err
+        raise TypeError(f'Unknown type: {data_type}') from err
 
 
 def bit(value: int, byte: int, position: int) -> int:
