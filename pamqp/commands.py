@@ -25,10 +25,10 @@ class Connection:
     thereafter.
 
     """
-    __slots__: typing.List[str] = []
+    __slots__: typing.ClassVar[list[str]] = []
 
-    frame_id = 10  # AMQP Frame ID
-    index = 0x000A0000  # pamqp Mapping Index
+    frame_id: typing.ClassVar[int] = 10  # AMQP Frame ID
+    index: typing.ClassVar[int] = 0x000A0000  # pamqp Mapping Index
 
     class Start(base.Frame):
         """Start connection negotiation
@@ -50,24 +50,18 @@ class Connection:
             - Default: ``en_US``
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'version_major': int,
-            'version_minor': int,
-            'server_properties': common.FieldTable,
-            'mechanisms': str,
-            'locales': str
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'version_major', 'version_minor', 'server_properties',
             'mechanisms', 'locales'
         ]
 
-        frame_id = 10  # AMQP Frame ID
-        index = 0x000A000A  # pamqp Mapping Index
-        name = 'Connection.Start'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 10  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A000A  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.Start'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Connection.StartOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Connection.StartOk']
 
         # Class Attribute Types for unmarshaling
         _version_major = 'octet'
@@ -79,8 +73,7 @@ class Connection:
         def __init__(self,
                      version_major: int = 0,
                      version_minor: int = 9,
-                     server_properties: typing.Optional[
-                         common.FieldTable] = None,
+                     server_properties: common.FieldTable | None = None,
                      mechanisms: str = 'PLAIN',
                      locales: str = 'en_US') -> None:
             """Initialize the :class:`Connection.Start` class"""
@@ -106,20 +99,15 @@ class Connection:
             - Default: ``en_US``
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'client_properties': common.FieldTable,
-            'mechanism': str,
-            'response': str,
-            'locale': str
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'client_properties', 'mechanism', 'response', 'locale'
         ]
 
-        frame_id = 11  # AMQP Frame ID
-        index = 0x000A000B  # pamqp Mapping Index
-        name = 'Connection.StartOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A000B  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.StartOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _client_properties = 'table'
@@ -128,8 +116,7 @@ class Connection:
         _locale = 'shortstr'
 
         def __init__(self,
-                     client_properties: typing.Optional[
-                         common.FieldTable] = None,
+                     client_properties: common.FieldTable | None = None,
                      mechanism: str = 'PLAIN',
                      response: str = '',
                      locale: str = 'en_US') -> None:
@@ -149,22 +136,22 @@ class Connection:
         :param challenge: Security challenge data
 
         """
-        __annotations__: typing.Dict[str, object] = {'challenge': str}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'challenge'
         ]
 
-        frame_id = 20  # AMQP Frame ID
-        index = 0x000A0014  # pamqp Mapping Index
-        name = 'Connection.Secure'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 20  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A0014  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.Secure'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Connection.SecureOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Connection.SecureOk']
 
         # Class Attribute Types for unmarshaling
         _challenge = 'longstr'
 
-        def __init__(self, challenge: typing.Optional[str] = None) -> None:
+        def __init__(self, challenge: str | None = None) -> None:
             """Initialize the :class:`Connection.Secure` class"""
             self.challenge = challenge
 
@@ -177,20 +164,20 @@ class Connection:
         :param response: Security response data
 
         """
-        __annotations__: typing.Dict[str, object] = {'response': str}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'response'
         ]
 
-        frame_id = 21  # AMQP Frame ID
-        index = 0x000A0015  # pamqp Mapping Index
-        name = 'Connection.SecureOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 21  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A0015  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.SecureOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _response = 'longstr'
 
-        def __init__(self, response: typing.Optional[str] = None) -> None:
+        def __init__(self, response: str | None = None) -> None:
             """Initialize the :class:`Connection.SecureOk` class"""
             self.response = response
 
@@ -208,21 +195,17 @@ class Connection:
             - Default: ``0``
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'channel_max': int,
-            'frame_max': int,
-            'heartbeat': int
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'channel_max', 'frame_max', 'heartbeat'
         ]
 
-        frame_id = 30  # AMQP Frame ID
-        index = 0x000A001E  # pamqp Mapping Index
-        name = 'Connection.Tune'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 30  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A001E  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.Tune'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Connection.TuneOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Connection.TuneOk']
 
         # Class Attribute Types for unmarshaling
         _channel_max = 'short'
@@ -253,19 +236,15 @@ class Connection:
             - Default: ``0``
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'channel_max': int,
-            'frame_max': int,
-            'heartbeat': int
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'channel_max', 'frame_max', 'heartbeat'
         ]
 
-        frame_id = 31  # AMQP Frame ID
-        index = 0x000A001F  # pamqp Mapping Index
-        name = 'Connection.TuneOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 31  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A001F  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.TuneOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _channel_max = 'short'
@@ -299,21 +278,17 @@ class Connection:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'virtual_host': str,
-            'capabilities': str,
-            'insist': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'virtual_host', 'capabilities', 'insist'
         ]
 
-        frame_id = 40  # AMQP Frame ID
-        index = 0x000A0028  # pamqp Mapping Index
-        name = 'Connection.Open'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 40  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A0028  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.Open'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Connection.OpenOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Connection.OpenOk']
 
         # Class Attribute Types for unmarshaling
         _virtual_host = 'shortstr'
@@ -353,15 +328,15 @@ class Connection:
             - Default: ``''``
 
         """
-        __annotations__: typing.Dict[str, object] = {'known_hosts': str}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'known_hosts'
         ]
 
-        frame_id = 41  # AMQP Frame ID
-        index = 0x000A0029  # pamqp Mapping Index
-        name = 'Connection.OpenOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 41  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A0029  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.OpenOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _known_hosts = 'shortstr'
@@ -397,22 +372,17 @@ class Connection:
         :param method_id: Failing method ID
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'reply_code': int,
-            'reply_text': str,
-            'class_id': int,
-            'method_id': int
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'reply_code', 'reply_text', 'class_id', 'method_id'
         ]
 
-        frame_id = 50  # AMQP Frame ID
-        index = 0x000A0032  # pamqp Mapping Index
-        name = 'Connection.Close'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 50  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A0032  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.Close'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Connection.CloseOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Connection.CloseOk']
 
         # Class Attribute Types for unmarshaling
         _reply_code = 'short'
@@ -421,10 +391,10 @@ class Connection:
         _method_id = 'short'
 
         def __init__(self,
-                     reply_code: typing.Optional[int] = None,
+                     reply_code: int | None = None,
                      reply_text: str = '',
-                     class_id: typing.Optional[int] = None,
-                     method_id: typing.Optional[int] = None) -> None:
+                     class_id: int | None = None,
+                     method_id: int | None = None) -> None:
             """Initialize the :class:`Connection.Close` class"""
             self.reply_code = reply_code
             self.reply_text = reply_text or ''
@@ -439,13 +409,13 @@ class Connection:
         close the socket.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 51  # AMQP Frame ID
-        index = 0x000A0033  # pamqp Mapping Index
-        name = 'Connection.CloseOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 51  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A0033  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.CloseOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
     class Blocked(base.Frame):
         """Indicate that connection is blocked
@@ -457,15 +427,15 @@ class Connection:
             - Default: ``''``
 
         """
-        __annotations__: typing.Dict[str, object] = {'reason': str}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'reason'
         ]
 
-        frame_id = 60  # AMQP Frame ID
-        index = 0x000A003C  # pamqp Mapping Index
-        name = 'Connection.Blocked'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 60  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A003C  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.Blocked'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _reason = 'shortstr'
@@ -481,13 +451,13 @@ class Connection:
         accepts publishes.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 61  # AMQP Frame ID
-        index = 0x000A003D  # pamqp Mapping Index
-        name = 'Connection.Unblocked'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 61  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A003D  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.Unblocked'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
     class UpdateSecret(base.Frame):
         """Update secret
@@ -500,28 +470,27 @@ class Connection:
         :param reason: Reason
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'new_secret': str,
-            'reason': str
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'new_secret', 'reason'
         ]
 
-        frame_id = 70  # AMQP Frame ID
-        index = 0x000A0046  # pamqp Mapping Index
-        name = 'Connection.UpdateSecret'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 70  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A0046  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.UpdateSecret'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Connection.UpdateSecretOk']
+        valid_responses: typing.ClassVar[list[str]] = [
+            'Connection.UpdateSecretOk'
+        ]
 
         # Class Attribute Types for unmarshaling
         _new_secret = 'longstr'
         _reason = 'shortstr'
 
         def __init__(self,
-                     new_secret: typing.Optional[str] = None,
-                     reason: typing.Optional[str] = None) -> None:
+                     new_secret: str | None = None,
+                     reason: str | None = None) -> None:
             """Initialize the :class:`Connection.UpdateSecret` class"""
             self.new_secret = new_secret
             self.reason = reason
@@ -532,13 +501,13 @@ class Connection:
         This method confirms the updated secret is valid.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 71  # AMQP Frame ID
-        index = 0x000A0047  # pamqp Mapping Index
-        name = 'Connection.UpdateSecretOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 71  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x000A0047  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Connection.UpdateSecretOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
 
 class Channel:
@@ -548,10 +517,10 @@ class Channel:
     server and for both peers to operate the channel thereafter.
 
     """
-    __slots__: typing.List[str] = []
+    __slots__: typing.ClassVar[list[str]] = []
 
-    frame_id = 20  # AMQP Frame ID
-    index = 0x00140000  # pamqp Mapping Index
+    frame_id: typing.ClassVar[int] = 20  # AMQP Frame ID
+    index: typing.ClassVar[int] = 0x00140000  # pamqp Mapping Index
 
     class Open(base.Frame):
         """Open a channel for use
@@ -562,16 +531,17 @@ class Channel:
             - Default: ``0``
 
         """
-        __annotations__: typing.Dict[str, object] = {'out_of_band': str}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'out_of_band'
         ]
 
-        frame_id = 10  # AMQP Frame ID
-        index = 0x0014000A  # pamqp Mapping Index
-        name = 'Channel.Open'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Channel.OpenOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 10  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0014000A  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Channel.Open'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Channel.OpenOk']
 
         # Class Attribute Types for unmarshaling
         _out_of_band = 'shortstr'
@@ -600,15 +570,15 @@ class Channel:
             - Default: ``0``
 
         """
-        __annotations__: typing.Dict[str, object] = {'channel_id': str}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'channel_id'
         ]
 
-        frame_id = 11  # AMQP Frame ID
-        index = 0x0014000B  # pamqp Mapping Index
-        name = 'Channel.OpenOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0014000B  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Channel.OpenOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _channel_id = 'longstr'
@@ -641,21 +611,22 @@ class Channel:
         :param active: Start/stop content frames
 
         """
-        __annotations__: typing.Dict[str, object] = {'active': bool}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'active'
         ]
 
-        frame_id = 20  # AMQP Frame ID
-        index = 0x00140014  # pamqp Mapping Index
-        name = 'Channel.Flow'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Channel.FlowOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 20  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00140014  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Channel.Flow'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Channel.FlowOk']
 
         # Class Attribute Types for unmarshaling
         _active = 'bit'
 
-        def __init__(self, active: typing.Optional[bool] = None) -> None:
+        def __init__(self, active: bool | None = None) -> None:
             """Initialize the :class:`Channel.Flow` class"""
             self.active = active
 
@@ -667,20 +638,20 @@ class Channel:
         :param active: Current flow setting
 
         """
-        __annotations__: typing.Dict[str, object] = {'active': bool}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'active'
         ]
 
-        frame_id = 21  # AMQP Frame ID
-        index = 0x00140015  # pamqp Mapping Index
-        name = 'Channel.FlowOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 21  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00140015  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Channel.FlowOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _active = 'bit'
 
-        def __init__(self, active: typing.Optional[bool] = None) -> None:
+        def __init__(self, active: bool | None = None) -> None:
             """Initialize the :class:`Channel.FlowOk` class"""
             self.active = active
 
@@ -700,22 +671,17 @@ class Channel:
         :param method_id: Failing method ID
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'reply_code': int,
-            'reply_text': str,
-            'class_id': int,
-            'method_id': int
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'reply_code', 'reply_text', 'class_id', 'method_id'
         ]
 
-        frame_id = 40  # AMQP Frame ID
-        index = 0x00140028  # pamqp Mapping Index
-        name = 'Channel.Close'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 40  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00140028  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Channel.Close'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Channel.CloseOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Channel.CloseOk']
 
         # Class Attribute Types for unmarshaling
         _reply_code = 'short'
@@ -724,10 +690,10 @@ class Channel:
         _method_id = 'short'
 
         def __init__(self,
-                     reply_code: typing.Optional[int] = None,
+                     reply_code: int | None = None,
                      reply_text: str = '',
-                     class_id: typing.Optional[int] = None,
-                     method_id: typing.Optional[int] = None) -> None:
+                     class_id: int | None = None,
+                     method_id: int | None = None) -> None:
             """Initialize the :class:`Channel.Close` class"""
             self.reply_code = reply_code
             self.reply_text = reply_text or ''
@@ -741,13 +707,13 @@ class Channel:
         recipient that it is safe to release resources for the channel.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 41  # AMQP Frame ID
-        index = 0x00140029  # pamqp Mapping Index
-        name = 'Channel.CloseOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 41  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00140029  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Channel.CloseOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
 
 class Exchange:
@@ -757,10 +723,10 @@ class Exchange:
     configured in the server or declared at runtime.
 
     """
-    __slots__: typing.List[str] = []
+    __slots__: typing.ClassVar[list[str]] = []
 
-    frame_id = 40  # AMQP Frame ID
-    index = 0x00280000  # pamqp Mapping Index
+    frame_id: typing.ClassVar[int] = 40  # AMQP Frame ID
+    index: typing.ClassVar[int] = 0x00280000  # pamqp Mapping Index
 
     class Declare(base.Frame):
         """Verify exchange exists, create if needed
@@ -794,28 +760,18 @@ class Exchange:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'exchange': str,
-            'exchange_type': str,
-            'passive': bool,
-            'durable': bool,
-            'auto_delete': bool,
-            'internal': bool,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'exchange', 'exchange_type', 'passive', 'durable',
             'auto_delete', 'internal', 'nowait', 'arguments'
         ]
 
-        frame_id = 10  # AMQP Frame ID
-        index = 0x0028000A  # pamqp Mapping Index
-        name = 'Exchange.Declare'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 10  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0028000A  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Exchange.Declare'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Exchange.DeclareOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Exchange.DeclareOk']
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -828,17 +784,16 @@ class Exchange:
         _nowait = 'bit'
         _arguments = 'table'
 
-        def __init__(
-                self,
-                ticket: int = 0,
-                exchange: str = '',
-                exchange_type: str = 'direct',
-                passive: bool = False,
-                durable: bool = False,
-                auto_delete: bool = False,
-                internal: bool = False,
-                nowait: bool = False,
-                arguments: typing.Optional[common.Arguments] = None) -> None:
+        def __init__(self,
+                     ticket: int = 0,
+                     exchange: str = '',
+                     exchange_type: str = 'direct',
+                     passive: bool = False,
+                     durable: bool = False,
+                     auto_delete: bool = False,
+                     internal: bool = False,
+                     nowait: bool = False,
+                     arguments: common.Arguments | None = None) -> None:
             """Initialize the :class:`Exchange.Declare` class"""
             self.ticket = ticket
             self.exchange = exchange
@@ -873,13 +828,13 @@ class Exchange:
         exchange, essential for automatically-named exchanges.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 11  # AMQP Frame ID
-        index = 0x0028000B  # pamqp Mapping Index
-        name = 'Exchange.DeclareOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0028000B  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Exchange.DeclareOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
     class Delete(base.Frame):
         """Delete an exchange
@@ -898,22 +853,17 @@ class Exchange:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'exchange': str,
-            'if_unused': bool,
-            'nowait': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'exchange', 'if_unused', 'nowait'
         ]
 
-        frame_id = 20  # AMQP Frame ID
-        index = 0x00280014  # pamqp Mapping Index
-        name = 'Exchange.Delete'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 20  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00280014  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Exchange.Delete'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Exchange.DeleteOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Exchange.DeleteOk']
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -954,13 +904,13 @@ class Exchange:
         This method confirms the deletion of an exchange.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 21  # AMQP Frame ID
-        index = 0x00280015  # pamqp Mapping Index
-        name = 'Exchange.DeleteOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 21  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00280015  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Exchange.DeleteOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
     class Bind(base.Frame):
         """Bind exchange to an exchange
@@ -983,25 +933,18 @@ class Exchange:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'destination': str,
-            'source': str,
-            'routing_key': str,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'destination', 'source', 'routing_key', 'nowait',
             'arguments'
         ]
 
-        frame_id = 30  # AMQP Frame ID
-        index = 0x0028001E  # pamqp Mapping Index
-        name = 'Exchange.Bind'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 30  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0028001E  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Exchange.Bind'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Exchange.BindOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Exchange.BindOk']
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -1011,14 +954,13 @@ class Exchange:
         _nowait = 'bit'
         _arguments = 'table'
 
-        def __init__(
-                self,
-                ticket: int = 0,
-                destination: str = '',
-                source: str = '',
-                routing_key: str = '',
-                nowait: bool = False,
-                arguments: typing.Optional[common.Arguments] = None) -> None:
+        def __init__(self,
+                     ticket: int = 0,
+                     destination: str = '',
+                     source: str = '',
+                     routing_key: str = '',
+                     nowait: bool = False,
+                     arguments: common.Arguments | None = None) -> None:
             """Initialize the :class:`Exchange.Bind` class"""
             self.ticket = ticket
             self.destination = destination
@@ -1054,13 +996,13 @@ class Exchange:
         This method confirms that the bind was successful.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 31  # AMQP Frame ID
-        index = 0x0028001F  # pamqp Mapping Index
-        name = 'Exchange.BindOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 31  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0028001F  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Exchange.BindOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
     class Unbind(base.Frame):
         """Unbind an exchange from an exchange
@@ -1084,25 +1026,18 @@ class Exchange:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'destination': str,
-            'source': str,
-            'routing_key': str,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'destination', 'source', 'routing_key', 'nowait',
             'arguments'
         ]
 
-        frame_id = 40  # AMQP Frame ID
-        index = 0x00280028  # pamqp Mapping Index
-        name = 'Exchange.Unbind'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 40  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00280028  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Exchange.Unbind'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Exchange.UnbindOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Exchange.UnbindOk']
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -1112,14 +1047,13 @@ class Exchange:
         _nowait = 'bit'
         _arguments = 'table'
 
-        def __init__(
-                self,
-                ticket: int = 0,
-                destination: str = '',
-                source: str = '',
-                routing_key: str = '',
-                nowait: bool = False,
-                arguments: typing.Optional[common.Arguments] = None) -> None:
+        def __init__(self,
+                     ticket: int = 0,
+                     destination: str = '',
+                     source: str = '',
+                     routing_key: str = '',
+                     nowait: bool = False,
+                     arguments: common.Arguments | None = None) -> None:
             """Initialize the :class:`Exchange.Unbind` class"""
             self.ticket = ticket
             self.destination = destination
@@ -1155,13 +1089,13 @@ class Exchange:
         This method confirms that the unbind was successful.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 51  # AMQP Frame ID
-        index = 0x00280033  # pamqp Mapping Index
-        name = 'Exchange.UnbindOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 51  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00280033  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Exchange.UnbindOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
 
 class Queue:
@@ -1172,10 +1106,10 @@ class Queue:
     order to receive messages from publishers.
 
     """
-    __slots__: typing.List[str] = []
+    __slots__: typing.ClassVar[list[str]] = []
 
-    frame_id = 50  # AMQP Frame ID
-    index = 0x00320000  # pamqp Mapping Index
+    frame_id: typing.ClassVar[int] = 50  # AMQP Frame ID
+    index: typing.ClassVar[int] = 0x00320000  # pamqp Mapping Index
 
     class Declare(base.Frame):
         """Declare queue, create if needed
@@ -1204,27 +1138,18 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'queue': str,
-            'passive': bool,
-            'durable': bool,
-            'exclusive': bool,
-            'auto_delete': bool,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'passive', 'durable', 'exclusive',
             'auto_delete', 'nowait', 'arguments'
         ]
 
-        frame_id = 10  # AMQP Frame ID
-        index = 0x0032000A  # pamqp Mapping Index
-        name = 'Queue.Declare'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 10  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0032000A  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Queue.Declare'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Queue.DeclareOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Queue.DeclareOk']
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -1236,16 +1161,15 @@ class Queue:
         _nowait = 'bit'
         _arguments = 'table'
 
-        def __init__(
-                self,
-                ticket: int = 0,
-                queue: str = '',
-                passive: bool = False,
-                durable: bool = False,
-                exclusive: bool = False,
-                auto_delete: bool = False,
-                nowait: bool = False,
-                arguments: typing.Optional[common.Arguments] = None) -> None:
+        def __init__(self,
+                     ticket: int = 0,
+                     queue: str = '',
+                     passive: bool = False,
+                     durable: bool = False,
+                     exclusive: bool = False,
+                     auto_delete: bool = False,
+                     nowait: bool = False,
+                     arguments: common.Arguments | None = None) -> None:
             """Initialize the :class:`Queue.Declare` class"""
             self.ticket = ticket
             self.queue = queue
@@ -1280,24 +1204,20 @@ class Queue:
 
         :param queue: Reports the name of the queue. If the server generated a
             queue name, this field contains that name.
-        :param message_count: Number of messages in the queue.
+        :param message_count: Number of messages in queue
         :param consumer_count: Number of consumers
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'queue': str,
-            'message_count': int,
-            'consumer_count': int
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'queue', 'message_count', 'consumer_count'
         ]
 
-        frame_id = 11  # AMQP Frame ID
-        index = 0x0032000B  # pamqp Mapping Index
-        name = 'Queue.DeclareOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0032000B  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Queue.DeclareOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _queue = 'shortstr'
@@ -1305,9 +1225,9 @@ class Queue:
         _consumer_count = 'long'
 
         def __init__(self,
-                     queue: typing.Optional[str] = None,
-                     message_count: typing.Optional[int] = None,
-                     consumer_count: typing.Optional[int] = None) -> None:
+                     queue: str | None = None,
+                     message_count: int | None = None,
+                     consumer_count: int | None = None) -> None:
             """Initialize the :class:`Queue.DeclareOk` class"""
             self.queue = queue
             self.message_count = message_count
@@ -1351,23 +1271,17 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'queue': str,
-            'exchange': str,
-            'routing_key': str,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'exchange', 'routing_key', 'nowait', 'arguments'
         ]
 
-        frame_id = 20  # AMQP Frame ID
-        index = 0x00320014  # pamqp Mapping Index
-        name = 'Queue.Bind'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Queue.BindOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 20  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00320014  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Queue.Bind'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Queue.BindOk']
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -1377,14 +1291,13 @@ class Queue:
         _nowait = 'bit'
         _arguments = 'table'
 
-        def __init__(
-                self,
-                ticket: int = 0,
-                queue: str = '',
-                exchange: str = '',
-                routing_key: str = '',
-                nowait: bool = False,
-                arguments: typing.Optional[common.Arguments] = None) -> None:
+        def __init__(self,
+                     ticket: int = 0,
+                     queue: str = '',
+                     exchange: str = '',
+                     routing_key: str = '',
+                     nowait: bool = False,
+                     arguments: common.Arguments | None = None) -> None:
             """Initialize the :class:`Queue.Bind` class"""
             self.ticket = ticket
             self.queue = queue
@@ -1420,13 +1333,13 @@ class Queue:
         This method confirms that the bind was successful.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 21  # AMQP Frame ID
-        index = 0x00320015  # pamqp Mapping Index
-        name = 'Queue.BindOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 21  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00320015  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Queue.BindOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
     class Purge(base.Frame):
         """Purge a queue
@@ -1443,20 +1356,17 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'queue': str,
-            'nowait': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'nowait'
         ]
 
-        frame_id = 30  # AMQP Frame ID
-        index = 0x0032001E  # pamqp Mapping Index
-        name = 'Queue.Purge'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Queue.PurgeOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 30  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0032001E  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Queue.Purge'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Queue.PurgeOk']
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -1496,20 +1406,20 @@ class Queue:
         :param message_count: Reports the number of messages purged.
 
         """
-        __annotations__: typing.Dict[str, object] = {'message_count': int}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'message_count'
         ]
 
-        frame_id = 31  # AMQP Frame ID
-        index = 0x0032001F  # pamqp Mapping Index
-        name = 'Queue.PurgeOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 31  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0032001F  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Queue.PurgeOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _message_count = 'long'
 
-        def __init__(self, message_count: typing.Optional[int] = None) -> None:
+        def __init__(self, message_count: int | None = None) -> None:
             """Initialize the :class:`Queue.PurgeOk` class"""
             self.message_count = message_count
 
@@ -1533,22 +1443,17 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'queue': str,
-            'if_unused': bool,
-            'if_empty': bool,
-            'nowait': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'if_unused', 'if_empty', 'nowait'
         ]
 
-        frame_id = 40  # AMQP Frame ID
-        index = 0x00320028  # pamqp Mapping Index
-        name = 'Queue.Delete'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Queue.DeleteOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 40  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00320028  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Queue.Delete'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Queue.DeleteOk']
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -1594,20 +1499,20 @@ class Queue:
         :param message_count: Reports the number of messages deleted.
 
         """
-        __annotations__: typing.Dict[str, object] = {'message_count': int}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'message_count'
         ]
 
-        frame_id = 41  # AMQP Frame ID
-        index = 0x00320029  # pamqp Mapping Index
-        name = 'Queue.DeleteOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 41  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00320029  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Queue.DeleteOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _message_count = 'long'
 
-        def __init__(self, message_count: typing.Optional[int] = None) -> None:
+        def __init__(self, message_count: int | None = None) -> None:
             """Initialize the :class:`Queue.DeleteOk` class"""
             self.message_count = message_count
 
@@ -1630,22 +1535,17 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'queue': str,
-            'exchange': str,
-            'routing_key': str,
-            'arguments': common.Arguments
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'exchange', 'routing_key', 'arguments'
         ]
 
-        frame_id = 50  # AMQP Frame ID
-        index = 0x00320032  # pamqp Mapping Index
-        name = 'Queue.Unbind'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Queue.UnbindOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 50  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00320032  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Queue.Unbind'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Queue.UnbindOk']
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -1654,13 +1554,12 @@ class Queue:
         _routing_key = 'shortstr'
         _arguments = 'table'
 
-        def __init__(
-                self,
-                ticket: int = 0,
-                queue: str = '',
-                exchange: str = '',
-                routing_key: str = '',
-                arguments: typing.Optional[common.Arguments] = None) -> None:
+        def __init__(self,
+                     ticket: int = 0,
+                     queue: str = '',
+                     exchange: str = '',
+                     routing_key: str = '',
+                     arguments: common.Arguments | None = None) -> None:
             """Initialize the :class:`Queue.Unbind` class"""
             self.ticket = ticket
             self.queue = queue
@@ -1695,13 +1594,13 @@ class Queue:
         This method confirms that the unbind was successful.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 51  # AMQP Frame ID
-        index = 0x00320033  # pamqp Mapping Index
-        name = 'Queue.UnbindOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 51  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x00320033  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Queue.UnbindOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
 
 class Basic:
@@ -1711,10 +1610,10 @@ class Basic:
     messaging model.
 
     """
-    __slots__: typing.List[str] = []
+    __slots__: typing.ClassVar[list[str]] = []
 
-    frame_id = 60  # AMQP Frame ID
-    index = 0x003C0000  # pamqp Mapping Index
+    frame_id: typing.ClassVar[int] = 60  # AMQP Frame ID
+    index: typing.ClassVar[int] = 0x003C0000  # pamqp Mapping Index
 
     class Qos(base.Frame):
         """Specify quality of service
@@ -1734,20 +1633,17 @@ class Basic:
             - Default: ``False``
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'prefetch_size': int,
-            'prefetch_count': int,
-            'global_': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'prefetch_size', 'prefetch_count', 'global_'
         ]
 
-        frame_id = 10  # AMQP Frame ID
-        index = 0x003C000A  # pamqp Mapping Index
-        name = 'Basic.Qos'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Basic.QosOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 10  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C000A  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Qos'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Basic.QosOk']
 
         # Class Attribute Types for unmarshaling
         _prefetch_size = 'long'
@@ -1771,13 +1667,13 @@ class Basic:
         consumers until a new QoS is defined.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 11  # AMQP Frame ID
-        index = 0x003C000B  # pamqp Mapping Index
-        name = 'Basic.QosOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C000B  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.QosOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
     class Consume(base.Frame):
         """Start a queue consumer
@@ -1809,27 +1705,18 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'queue': str,
-            'consumer_tag': str,
-            'no_local': bool,
-            'no_ack': bool,
-            'exclusive': bool,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'consumer_tag', 'no_local', 'no_ack',
             'exclusive', 'nowait', 'arguments'
         ]
 
-        frame_id = 20  # AMQP Frame ID
-        index = 0x003C0014  # pamqp Mapping Index
-        name = 'Basic.Consume'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 20  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C0014  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Consume'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Basic.ConsumeOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Basic.ConsumeOk']
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -1841,16 +1728,15 @@ class Basic:
         _nowait = 'bit'
         _arguments = 'table'
 
-        def __init__(
-                self,
-                ticket: int = 0,
-                queue: str = '',
-                consumer_tag: str = '',
-                no_local: bool = False,
-                no_ack: bool = False,
-                exclusive: bool = False,
-                nowait: bool = False,
-                arguments: typing.Optional[common.Arguments] = None) -> None:
+        def __init__(self,
+                     ticket: int = 0,
+                     queue: str = '',
+                     consumer_tag: str = '',
+                     no_local: bool = False,
+                     no_ack: bool = False,
+                     exclusive: bool = False,
+                     nowait: bool = False,
+                     arguments: common.Arguments | None = None) -> None:
             """Initialize the :class:`Basic.Consume` class"""
             self.ticket = ticket
             self.queue = queue
@@ -1887,20 +1773,20 @@ class Basic:
             provided by the server.
 
         """
-        __annotations__: typing.Dict[str, object] = {'consumer_tag': str}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'consumer_tag'
         ]
 
-        frame_id = 21  # AMQP Frame ID
-        index = 0x003C0015  # pamqp Mapping Index
-        name = 'Basic.ConsumeOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 21  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C0015  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.ConsumeOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _consumer_tag = 'shortstr'
 
-        def __init__(self, consumer_tag: typing.Optional[str] = None) -> None:
+        def __init__(self, consumer_tag: str | None = None) -> None:
             """Initialize the :class:`Basic.ConsumeOk` class"""
             self.consumer_tag = consumer_tag
 
@@ -1926,30 +1812,28 @@ class Basic:
             - Default: ``False``
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'consumer_tag': str,
-            'nowait': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'consumer_tag', 'nowait'
         ]
 
-        frame_id = 30  # AMQP Frame ID
-        index = 0x003C001E  # pamqp Mapping Index
-        name = 'Basic.Cancel'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Basic.CancelOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 30  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C001E  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Cancel'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Basic.CancelOk']
 
         # Class Attribute Types for unmarshaling
         _consumer_tag = 'shortstr'
         _nowait = 'bit'
 
         def __init__(self,
-                     consumer_tag: typing.Optional[str] = None,
+                     consumer_tag: str | None = None,
                      nowait: bool = False) -> None:
             """Initialize the :class:`Basic.Cancel` class"""
             self.consumer_tag = consumer_tag
-            self.nowait = nowait or False
+            self.nowait = nowait if nowait is not None else False
 
     class CancelOk(base.Frame):
         """Confirm a cancelled consumer
@@ -1959,20 +1843,20 @@ class Basic:
         :param consumer_tag: Consumer tag
 
         """
-        __annotations__: typing.Dict[str, object] = {'consumer_tag': str}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'consumer_tag'
         ]
 
-        frame_id = 31  # AMQP Frame ID
-        index = 0x003C001F  # pamqp Mapping Index
-        name = 'Basic.CancelOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 31  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C001F  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.CancelOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _consumer_tag = 'shortstr'
 
-        def __init__(self, consumer_tag: typing.Optional[str] = None) -> None:
+        def __init__(self, consumer_tag: str | None = None) -> None:
             """Initialize the :class:`Basic.CancelOk` class"""
             self.consumer_tag = consumer_tag
 
@@ -2000,21 +1884,15 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'exchange': str,
-            'routing_key': str,
-            'mandatory': bool,
-            'immediate': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'exchange', 'routing_key', 'mandatory', 'immediate'
         ]
 
-        frame_id = 40  # AMQP Frame ID
-        index = 0x003C0028  # pamqp Mapping Index
-        name = 'Basic.Publish'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 40  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C0028  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Publish'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -2071,20 +1949,15 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'reply_code': int,
-            'reply_text': str,
-            'exchange': str,
-            'routing_key': str
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'reply_code', 'reply_text', 'exchange', 'routing_key'
         ]
 
-        frame_id = 50  # AMQP Frame ID
-        index = 0x003C0032  # pamqp Mapping Index
-        name = 'Basic.Return'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 50  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C0032  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Return'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _reply_code = 'short'
@@ -2093,10 +1966,10 @@ class Basic:
         _routing_key = 'shortstr'
 
         def __init__(self,
-                     reply_code: typing.Optional[int] = None,
+                     reply_code: int | None = None,
                      reply_text: str = '',
                      exchange: str = '',
-                     routing_key: typing.Optional[str] = None) -> None:
+                     routing_key: str | None = None) -> None:
             """Initialize the :class:`Basic.Return` class"""
             self.reply_code = reply_code
             self.reply_text = reply_text or ''
@@ -2137,22 +2010,16 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'consumer_tag': str,
-            'delivery_tag': int,
-            'redelivered': bool,
-            'exchange': str,
-            'routing_key': str
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'consumer_tag', 'delivery_tag', 'redelivered', 'exchange',
             'routing_key'
         ]
 
-        frame_id = 60  # AMQP Frame ID
-        index = 0x003C003C  # pamqp Mapping Index
-        name = 'Basic.Deliver'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 60  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C003C  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Deliver'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _consumer_tag = 'shortstr'
@@ -2162,15 +2029,15 @@ class Basic:
         _routing_key = 'shortstr'
 
         def __init__(self,
-                     consumer_tag: typing.Optional[str] = None,
-                     delivery_tag: typing.Optional[int] = None,
+                     consumer_tag: str | None = None,
+                     delivery_tag: int | None = None,
                      redelivered: bool = False,
                      exchange: str = '',
-                     routing_key: typing.Optional[str] = None) -> None:
+                     routing_key: str | None = None) -> None:
             """Initialize the :class:`Basic.Deliver` class"""
             self.consumer_tag = consumer_tag
             self.delivery_tag = delivery_tag
-            self.redelivered = redelivered or False
+            self.redelivered = redelivered if redelivered is not None else False
             self.exchange = exchange or ''
             self.routing_key = routing_key
             self.validate()
@@ -2204,21 +2071,19 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'ticket': int,
-            'queue': str,
-            'no_ack': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'no_ack'
         ]
 
-        frame_id = 70  # AMQP Frame ID
-        index = 0x003C0046  # pamqp Mapping Index
-        name = 'Basic.Get'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 70  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C0046  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Get'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Basic.GetOk', 'Basic.GetEmpty']
+        valid_responses: typing.ClassVar[list[str]] = [
+            'Basic.GetOk', 'Basic.GetEmpty'
+        ]
 
         # Class Attribute Types for unmarshaling
         _ticket = 'short'
@@ -2265,26 +2130,20 @@ class Basic:
             the default exchange.
             - Default: ``''``
         :param routing_key: Message routing key
-        :param message_count: Number of messages in the queue.
+        :param message_count: Number of messages in queue
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'delivery_tag': int,
-            'redelivered': bool,
-            'exchange': str,
-            'routing_key': str,
-            'message_count': int
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'delivery_tag', 'redelivered', 'exchange', 'routing_key',
             'message_count'
         ]
 
-        frame_id = 71  # AMQP Frame ID
-        index = 0x003C0047  # pamqp Mapping Index
-        name = 'Basic.GetOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 71  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C0047  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.GetOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _delivery_tag = 'longlong'
@@ -2294,14 +2153,14 @@ class Basic:
         _message_count = 'long'
 
         def __init__(self,
-                     delivery_tag: typing.Optional[int] = None,
+                     delivery_tag: int | None = None,
                      redelivered: bool = False,
                      exchange: str = '',
-                     routing_key: typing.Optional[str] = None,
-                     message_count: typing.Optional[int] = None) -> None:
+                     routing_key: str | None = None,
+                     message_count: int | None = None) -> None:
             """Initialize the :class:`Basic.GetOk` class"""
             self.delivery_tag = delivery_tag
-            self.redelivered = redelivered or False
+            self.redelivered = redelivered if redelivered is not None else False
             self.exchange = exchange or ''
             self.routing_key = routing_key
             self.message_count = message_count
@@ -2330,15 +2189,15 @@ class Basic:
             - Default: ``''``
 
         """
-        __annotations__: typing.Dict[str, object] = {'cluster_id': str}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'cluster_id'
         ]
 
-        frame_id = 72  # AMQP Frame ID
-        index = 0x003C0048  # pamqp Mapping Index
-        name = 'Basic.GetEmpty'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 72  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C0048  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.GetEmpty'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _cluster_id = 'shortstr'
@@ -2374,18 +2233,15 @@ class Basic:
             - Default: ``False``
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'delivery_tag': int,
-            'multiple': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'delivery_tag', 'multiple'
         ]
 
-        frame_id = 80  # AMQP Frame ID
-        index = 0x003C0050  # pamqp Mapping Index
-        name = 'Basic.Ack'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 80  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C0050  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Ack'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _delivery_tag = 'longlong'
@@ -2410,29 +2266,26 @@ class Basic:
             - Default: ``True``
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'delivery_tag': int,
-            'requeue': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'delivery_tag', 'requeue'
         ]
 
-        frame_id = 90  # AMQP Frame ID
-        index = 0x003C005A  # pamqp Mapping Index
-        name = 'Basic.Reject'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 90  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C005A  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Reject'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _delivery_tag = 'longlong'
         _requeue = 'bit'
 
         def __init__(self,
-                     delivery_tag: typing.Optional[int] = None,
+                     delivery_tag: int | None = None,
                      requeue: bool = True) -> None:
             """Initialize the :class:`Basic.Reject` class"""
             self.delivery_tag = delivery_tag
-            self.requeue = requeue
+            self.requeue = requeue if requeue is not None else True
 
     class RecoverAsync(base.Frame):
         """Redeliver unacknowledged messages
@@ -2447,15 +2300,15 @@ class Basic:
             - Default: ``False``
 
         """
-        __annotations__: typing.Dict[str, object] = {'requeue': bool}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'requeue'
         ]
 
-        frame_id = 100  # AMQP Frame ID
-        index = 0x003C0064  # pamqp Mapping Index
-        name = 'Basic.RecoverAsync'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 100  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C0064  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.RecoverAsync'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _requeue = 'bit'
@@ -2477,17 +2330,17 @@ class Basic:
             - Default: ``False``
 
         """
-        __annotations__: typing.Dict[str, object] = {'requeue': bool}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'requeue'
         ]
 
-        frame_id = 110  # AMQP Frame ID
-        index = 0x003C006E  # pamqp Mapping Index
-        name = 'Basic.Recover'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 110  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C006E  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Recover'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Basic.RecoverOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Basic.RecoverOk']
 
         # Class Attribute Types for unmarshaling
         _requeue = 'bit'
@@ -2502,13 +2355,13 @@ class Basic:
         This method acknowledges a :class:`Basic.Recover` method.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 111  # AMQP Frame ID
-        index = 0x003C006F  # pamqp Mapping Index
-        name = 'Basic.RecoverOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 111  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C006F  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.RecoverOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
     class Nack(base.Frame):
         """Reject one or more incoming messages
@@ -2528,19 +2381,15 @@ class Basic:
             - Default: ``True``
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'delivery_tag': int,
-            'multiple': bool,
-            'requeue': bool
-        }
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'delivery_tag', 'multiple', 'requeue'
         ]
 
-        frame_id = 120  # AMQP Frame ID
-        index = 0x003C0078  # pamqp Mapping Index
-        name = 'Basic.Nack'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 120  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C0078  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Nack'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
         # Class Attribute Types for unmarshaling
         _delivery_tag = 'longlong'
@@ -2580,23 +2429,7 @@ class Basic:
         :raises: ValueError
 
         """
-        __annotations__: typing.Dict[str, object] = {
-            'content_type': str,
-            'content_encoding': str,
-            'headers': common.FieldTable,
-            'delivery_mode': int,
-            'priority': int,
-            'correlation_id': str,
-            'reply_to': str,
-            'expiration': str,
-            'message_id': str,
-            'timestamp': datetime.datetime,
-            'message_type': str,
-            'user_id': str,
-            'app_id': str,
-            'cluster_id': str
-        }
-        __slots__: typing.List[str] = [  # AMQ Properties Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Properties Attributes
             'content_type', 'content_encoding', 'headers', 'delivery_mode',
             'priority', 'correlation_id', 'reply_to', 'expiration',
             'message_id', 'timestamp', 'message_type', 'user_id', 'app_id',
@@ -2604,7 +2437,7 @@ class Basic:
         ]
 
         # Flag values for marshaling / unmarshaling
-        flags = {
+        flags: typing.ClassVar[dict[str, int]] = {
             'content_type': 32768,
             'content_encoding': 16384,
             'headers': 8192,
@@ -2621,9 +2454,9 @@ class Basic:
             'cluster_id': 4
         }
 
-        frame_id = 60  # AMQP Frame ID
-        index = 0x003C  # pamqp Mapping Index
-        name = 'Basic.Properties'
+        frame_id: typing.ClassVar[int] = 60  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x003C  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Basic.Properties'
 
         # Class Attribute Types for unmarshaling
         _content_type = 'shortstr'
@@ -2642,19 +2475,19 @@ class Basic:
         _cluster_id = 'shortstr'
 
         def __init__(self,
-                     content_type: typing.Optional[str] = None,
-                     content_encoding: typing.Optional[str] = None,
-                     headers: typing.Optional[common.FieldTable] = None,
-                     delivery_mode: typing.Optional[int] = None,
-                     priority: typing.Optional[int] = None,
-                     correlation_id: typing.Optional[str] = None,
-                     reply_to: typing.Optional[str] = None,
-                     expiration: typing.Optional[str] = None,
-                     message_id: typing.Optional[str] = None,
-                     timestamp: typing.Optional[datetime.datetime] = None,
-                     message_type: typing.Optional[str] = None,
-                     user_id: typing.Optional[str] = None,
-                     app_id: typing.Optional[str] = None,
+                     content_type: str | None = None,
+                     content_encoding: str | None = None,
+                     headers: common.FieldTable | None = None,
+                     delivery_mode: int | None = None,
+                     priority: int | None = None,
+                     correlation_id: str | None = None,
+                     reply_to: str | None = None,
+                     expiration: str | None = None,
+                     message_id: str | None = None,
+                     timestamp: datetime.datetime | None = None,
+                     message_type: str | None = None,
+                     user_id: str | None = None,
+                     app_id: str | None = None,
                      cluster_id: str = '') -> None:
             """Initialize the Basic.Properties class"""
             self.content_type = content_type
@@ -2688,10 +2521,10 @@ class Tx:
     mandatory flags on :class:`Basic.Publish` methods is not defined.
 
     """
-    __slots__: typing.List[str] = []
+    __slots__: typing.ClassVar[list[str]] = []
 
-    frame_id = 90  # AMQP Frame ID
-    index = 0x005A0000  # pamqp Mapping Index
+    frame_id: typing.ClassVar[int] = 90  # AMQP Frame ID
+    index: typing.ClassVar[int] = 0x005A0000  # pamqp Mapping Index
 
     class Select(base.Frame):
         """Select standard transaction mode
@@ -2701,14 +2534,15 @@ class Tx:
         or Rollback methods.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 10  # AMQP Frame ID
-        index = 0x005A000A  # pamqp Mapping Index
-        name = 'Tx.Select'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Tx.SelectOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 10  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x005A000A  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Tx.Select'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Tx.SelectOk']
 
     class SelectOk(base.Frame):
         """Confirm transaction mode
@@ -2717,13 +2551,13 @@ class Tx:
         set to use standard transactions.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 11  # AMQP Frame ID
-        index = 0x005A000B  # pamqp Mapping Index
-        name = 'Tx.SelectOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x005A000B  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Tx.SelectOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
     class Commit(base.Frame):
         """Commit the current transaction
@@ -2733,14 +2567,15 @@ class Tx:
         immediately after a commit.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 20  # AMQP Frame ID
-        index = 0x005A0014  # pamqp Mapping Index
-        name = 'Tx.Commit'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Tx.CommitOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 20  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x005A0014  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Tx.Commit'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Tx.CommitOk']
 
     class CommitOk(base.Frame):
         """Confirm a successful commit
@@ -2749,13 +2584,13 @@ class Tx:
         if a commit fails, the server raises a channel exception.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 21  # AMQP Frame ID
-        index = 0x005A0015  # pamqp Mapping Index
-        name = 'Tx.CommitOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 21  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x005A0015  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Tx.CommitOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
     class Rollback(base.Frame):
         """Abandon the current transaction
@@ -2767,14 +2602,15 @@ class Tx:
         recover call should be issued.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 30  # AMQP Frame ID
-        index = 0x005A001E  # pamqp Mapping Index
-        name = 'Tx.Rollback'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
-        valid_responses = ['Tx.RollbackOk']  # Valid responses to this method
+        frame_id: typing.ClassVar[int] = 30  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x005A001E  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Tx.Rollback'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
+        # Valid responses to this method
+        valid_responses: typing.ClassVar[list[str]] = ['Tx.RollbackOk']
 
     class RollbackOk(base.Frame):
         """Confirm successful rollback
@@ -2783,13 +2619,13 @@ class Tx:
         that if an rollback fails, the server raises a channel exception.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 31  # AMQP Frame ID
-        index = 0x005A001F  # pamqp Mapping Index
-        name = 'Tx.RollbackOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 31  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x005A001F  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Tx.RollbackOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
 
 class Confirm:
@@ -2810,10 +2646,10 @@ class Confirm:
     :class:`Basic.Ack` methods referring to these sequence numbers.
 
     """
-    __slots__: typing.List[str] = []
+    __slots__: typing.ClassVar[list[str]] = []
 
-    frame_id = 85  # AMQP Frame ID
-    index = 0x00550000  # pamqp Mapping Index
+    frame_id: typing.ClassVar[int] = 85  # AMQP Frame ID
+    index: typing.ClassVar[int] = 0x00550000  # pamqp Mapping Index
 
     class Select(base.Frame):
         """Select confirm mode (i.e. enable publisher acknowledgements)
@@ -2825,17 +2661,17 @@ class Confirm:
             - Default: ``False``
 
         """
-        __annotations__: typing.Dict[str, object] = {'nowait': bool}
-        __slots__: typing.List[str] = [  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'nowait'
         ]
 
-        frame_id = 10  # AMQP Frame ID
-        index = 0x0055000A  # pamqp Mapping Index
-        name = 'Confirm.Select'
-        synchronous = True  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 10  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0055000A  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Confirm.Select'
+        synchronous: typing.ClassVar[
+            bool] = True  # Indicates if this is a synchronous AMQP method
         # Valid responses to this method
-        valid_responses = ['Confirm.SelectOk']
+        valid_responses: typing.ClassVar[list[str]] = ['Confirm.SelectOk']
 
         # Class Attribute Types for unmarshaling
         _nowait = 'bit'
@@ -2851,13 +2687,13 @@ class Confirm:
         set to use publisher acknowledgements.
 
         """
-        __annotations__: typing.Dict[str, object] = {}
-        __slots__: typing.List[str] = []  # AMQ Method Attributes
+        __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
-        frame_id = 11  # AMQP Frame ID
-        index = 0x0055000B  # pamqp Mapping Index
-        name = 'Confirm.SelectOk'
-        synchronous = False  # Indicates if this is a synchronous AMQP method
+        frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID
+        index: typing.ClassVar[int] = 0x0055000B  # pamqp Mapping Index
+        name: typing.ClassVar[str] = 'Confirm.SelectOk'
+        synchronous: typing.ClassVar[
+            bool] = False  # Indicates if this is a synchronous AMQP method
 
 
 # AMQP Class.Method Index Mapping

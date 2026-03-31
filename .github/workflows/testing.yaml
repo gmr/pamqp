@@ -34,6 +34,12 @@ jobs:
       - name: Lint Check
         run: uv run pre-commit run --all-files
 
+      - name: Type Check (mypy)
+        run: uv run mypy pamqp
+
+      - name: Type Check (basedpyright)
+        run: uv run basedpyright pamqp
+
       - name: Run tests
         run: |
           uv run coverage run

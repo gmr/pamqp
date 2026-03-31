@@ -7,6 +7,7 @@ binary data into AMQP Header frames.
 """
 
 import struct
+import typing
 
 from pamqp import commands, constants, decode
 
@@ -16,14 +17,14 @@ BasicProperties = commands.Basic.Properties | None
 class ProtocolHeader:
     """Class that represents the AMQP Protocol Header"""
 
-    name = 'ProtocolHeader'
+    name: typing.ClassVar[str] = 'ProtocolHeader'
 
     def __init__(
         self,
         major_version: int = constants.VERSION[0],
         minor_version: int = constants.VERSION[1],
         revision: int = constants.VERSION[2],
-    ):
+    ) -> None:
         """Construct a Protocol Header frame object for the specified AMQP
         version.
 
@@ -73,14 +74,14 @@ class ContentHeader:
 
     """
 
-    name = 'ContentHeader'
+    name: typing.ClassVar[str] = 'ContentHeader'
 
     def __init__(
         self,
         weight: int = 0,
         body_size: int = 0,
-        properties: BasicProperties | None = None,
-    ):
+        properties: commands.Basic.Properties | None = None,
+    ) -> None:
         """Initialize the Exchange.DeleteOk class
 
         Weight is unused and must be `0`

@@ -3,6 +3,7 @@ Functions for decoding data of various types including field tables and arrays
 
 """
 
+import collections.abc
 import datetime
 import decimal as _decimal
 
@@ -174,9 +175,10 @@ def long_str(value: bytes) -> tuple[int, str | bytes]:
     """
     try:
         length = common.Struct.integer.unpack(value[0:4])[0]
-        return length + 4, value[4 : length + 4].decode('utf-8')
     except TypeError as err:
         raise ValueError('Could not unpack long string value') from err
+    try:
+        return length + 4, value[4 : length + 4].decode('utf-8')
     except UnicodeDecodeError:
         return length + 4, value[4 : length + 4]
 
@@ -369,7 +371,9 @@ def void(_: bytes) -> tuple[int, None]:
     return 0, None
 
 
-METHODS = {
+METHODS: dict[
+    str, collections.abc.Callable[..., tuple[int, common.FieldValue]]
+] = {
     'array': field_array,
     'bit': bit,
     'boolean': boolean,
@@ -389,7 +393,9 @@ METHODS = {
 }  # Define a data type mapping to methods for by_type()
 
 # See https://www.rabbitmq.com/amqp-0-9-1-errata.html
-TABLE_MAPPING = {
+TABLE_MAPPING: dict[
+    bytes, collections.abc.Callable[..., tuple[int, common.FieldValue]]
+] = {
     b't': boolean,
     b'b': short_short_int,
     b'B': short_short_uint,

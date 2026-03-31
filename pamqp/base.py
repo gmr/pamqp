@@ -3,6 +3,7 @@ Base classes for the representation of frames and data structures.
 
 """
 
+import collections.abc
 import logging
 import struct
 import typing
@@ -15,9 +16,8 @@ LOGGER = logging.getLogger(__name__)
 class _AMQData:
     """Base class for AMQ methods and properties for encoding and decoding"""
 
-    __annotations__: dict = {}
-    __slots__: list = []
-    name = '_AMQData'
+    __slots__: typing.ClassVar[list[str]] = []
+    name: typing.ClassVar[str] = '_AMQData'
 
     def __contains__(self, item: str) -> bool:
         """Return if the item is in the attribute list"""
@@ -31,11 +31,11 @@ class _AMQData:
         :raises: KeyError
 
         """
-        return getattr(self, item)
+        return getattr(self, item)  # type: ignore[no-any-return]
 
     def __iter__(
         self,
-    ) -> typing.Generator[tuple[str, common.FieldValue], None, None]:
+    ) -> collections.abc.Generator[tuple[str, common.FieldValue], None, None]:
         """Iterate the attributes and values as key, value pairs
 
         :rtype: (:class:`str`, :const:`pamqp.common.FieldValue`)
@@ -59,10 +59,10 @@ class _AMQData:
         :param attr: The attribute name
 
         """
-        return getattr(cls, '_' + attr)
+        return getattr(cls, '_' + attr)  # type: ignore[no-any-return]
 
     @classmethod
-    def attributes(cls) -> list:
+    def attributes(cls) -> list[str]:
         """Return the list of attributes"""
         return cls.__slots__
 
@@ -70,10 +70,10 @@ class _AMQData:
 class Frame(_AMQData):
     """Base Class for AMQ Methods for encoding and decoding"""
 
-    frame_id = 0
-    index = 0
-    synchronous = False
-    valid_responses: list = []
+    frame_id: typing.ClassVar[int] = 0
+    index: typing.ClassVar[int] = 0
+    synchronous: typing.ClassVar[bool] = False
+    valid_responses: typing.ClassVar[list[str]] = []
 
     def marshal(self) -> bytes:
         """Dynamically encode the frame by taking the list of attributes and
@@ -145,8 +145,8 @@ class BasicProperties(_AMQData):
 
     """
 
-    flags: dict[str, int] = {}
-    name = 'BasicProperties'
+    flags: typing.ClassVar[dict[str, int]] = {}
+    name: typing.ClassVar[str] = 'BasicProperties'
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BasicProperties):
@@ -212,9 +212,8 @@ class BasicProperties(_AMQData):
         :raises: ValueError
 
         """
-        if self.cluster_id != '':
+        if getattr(self, 'cluster_id', '') != '':
             raise ValueError('cluster_id must be empty')
-        if self.delivery_mode is not None and self.delivery_mode not in [1, 2]:
-            raise ValueError(
-                f'Invalid delivery_mode value: {self.delivery_mode}'
-            )
+        delivery_mode = getattr(self, 'delivery_mode', None)
+        if delivery_mode is not None and delivery_mode not in [1, 2]:
+            raise ValueError(f'Invalid delivery_mode value: {delivery_mode}')

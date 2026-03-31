@@ -70,8 +70,7 @@ class PAMQPException(Exception):
 class UnmarshalingException(PAMQPException):
     """Raised when a frame is not able to be unmarshaled."""
     def __str__(self) -> str:  # pragma: nocover
-        return 'Could not unmarshal {} frame: {}'.format(
-            self.args[0], self.args[1])
+        return f'Could not unmarshal {self.args[0]} frame: {self.args[1]}'
 
 
 class AMQPError(PAMQPException):
@@ -200,7 +199,7 @@ class Codegen:
                 if arg['name'] == 'arguments' and default == '{}':
                     default = 'None'
                 if default == 'None' or default is None:
-                    annotation = f'typing.Optional[{annotation}]'
+                    annotation = f'{annotation} | None'
                 if index == len(args) - 1:
                     self._add_line(
                         '{}: {} = {}) -> None:'.format(
@@ -350,26 +349,8 @@ class Codegen:
         self._add_line()
         self._add_line('"""', indent)
 
-        self._add_line('__annotations__: typing.Dict[str, object] = {', indent)
-        for offset, arg in enumerate(properties):
-            if offset == len(properties) - 1:
-                self._add_line(
-                    '{!r}: {}'.format(
-                        arg['pyname'], self._arg_annotation(arg)
-                    ),
-                    indent + 4,
-                )
-            else:
-                self._add_line(
-                    '{!r}: {},'.format(
-                        arg['pyname'], self._arg_annotation(arg)
-                    ),
-                    indent + 4,
-                )
-        self._add_line('}', indent)
-
         self._add_line(
-            '__slots__: typing.List[str] = [  # AMQ Properties Attributes',
+            '__slots__: typing.ClassVar[list[str]] = [  # AMQ Properties Attributes',
             indent,
         )
         for offset, arg in enumerate(properties):
@@ -383,7 +364,7 @@ class Codegen:
         flag_value = 15
         self._add_comment('Flag values for marshaling / unmarshaling', indent)
         self._add_line(
-            "flags = {{'{}': {},".format(
+            "flags: typing.ClassVar[dict[str, int]] = {{'{}': {},".format(
                 properties[0]['pyname'], 1 << flag_value
             ),
             indent,
@@ -400,12 +381,17 @@ class Codegen:
             indent + 9,
         )
         self._add_line()
-        self._add_line(f'frame_id = {class_id}  # AMQP Frame ID', indent)
         self._add_line(
-            'index = 0x%04X  # pamqp Mapping Index' % class_id, indent
+            f'frame_id: typing.ClassVar[int] = {class_id}  # AMQP Frame ID',
+            indent,
         )
         self._add_line(
-            f"name = '{self._pep8_class_name(class_name)}.Properties'",
+            'index: typing.ClassVar[int] = 0x%04X  # pamqp Mapping Index'
+            % class_id,
+            indent,
+        )
+        self._add_line(
+            f"name: typing.ClassVar[str] = '{self._pep8_class_name(class_name)}.Properties'",
             indent,
         )
         self._add_line()
@@ -551,38 +537,19 @@ class Codegen:
         indent = 8
         self._add_documentation(label, '\n'.join(documentation), indent)
 
+        for offset, arg in enumerate(arguments):
+            name = self._arg_name(arg['name'])
+            if name == 'type' and class_name == 'exchange':
+                name = 'exchange_type'
+            arguments[offset]['pyname'] = name
         if not len(arguments):
             self._add_line(
-                '__annotations__: typing.Dict[str, object] = {}', indent
-            )
-        else:
-            self._add_line(
-                '__annotations__: typing.Dict[str, object] = {', indent
-            )
-            for offset, arg in enumerate(arguments):
-                name = self._arg_name(arg['name'])
-                if name == 'type' and class_name == 'exchange':
-                    name = 'exchange_type'
-                arguments[offset]['pyname'] = name
-                if offset == len(method['arguments']) - 1:
-                    self._add_line(
-                        f'{name!r}: {self._arg_annotation(arg)}',
-                        indent + 4,
-                    )
-                else:
-                    self._add_line(
-                        f'{name!r}: {self._arg_annotation(arg)},',
-                        indent + 4,
-                    )
-            self._add_line('}', indent)
-        if not len(arguments):
-            self._add_line(
-                '__slots__: typing.List[str] = []  # AMQ Method Attributes',
+                '__slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes',
                 indent,
             )
         else:
             self._add_line(
-                '__slots__: typing.List[str] = [  # AMQ Method Attributes',
+                '__slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes',
                 indent,
             )
             for offset, arg in enumerate(arguments):
@@ -592,20 +559,26 @@ class Codegen:
                     self._add_line('{!r},'.format(arg['pyname']), indent + 4)
             self._add_line(']', indent)
         self._add_line()
-        self._add_line('frame_id = %i  # AMQP Frame ID' % method['id'], indent)
+        self._add_line(
+            'frame_id: typing.ClassVar[int] = %i  # AMQP Frame ID'
+            % method['id'],
+            indent,
+        )
         index_value = class_id << 16 | method['id']
         self._add_line(
-            'index = 0x%08X  # pamqp Mapping Index' % index_value, indent
+            'index: typing.ClassVar[int] = 0x%08X  # pamqp Mapping Index'
+            % index_value,
+            indent,
         )
         self._add_line(
-            "name = '{}.{}'".format(
+            "name: typing.ClassVar[str] = '{}.{}'".format(
                 self._pep8_class_name(class_name),
                 self._pep8_class_name(method['name']),
             ),
             indent,
         )
         self._add_line(
-            'synchronous = {}  # Indicates if this is a synchronous AMQP '
+            'synchronous: typing.ClassVar[bool] = {}  # Indicates if this is a synchronous AMQP '
             'method'.format(method.get('synchronous', False)),
             indent,
         )
@@ -627,7 +600,9 @@ class Codegen:
                         self._pep8_class_name(method['name']),
                     )
                 ]
-            line = 'valid_responses = [{}]'.format(', '.join(responses))
+            line = 'valid_responses: typing.ClassVar[list[str]] = [{}]'.format(
+                ', '.join(responses)
+            )
             if len(line) <= 36:
                 self._add_line(
                     f'{line}  # Valid responses to this method', indent
@@ -673,12 +648,20 @@ class Codegen:
                 elif (
                     default is not None and not all_defaults and default != ''
                 ):
-                    self._add_line(
-                        'self.{} = {} or {}'.format(
-                            arg['pyname'], arg['pyname'], default
-                        ),
-                        indent,
-                    )
+                    if arg['type'] == 'bit':
+                        self._add_line(
+                            'self.{0} = {0} if {0} is not None else {1}'.format(
+                                arg['pyname'], default
+                            ),
+                            indent,
+                        )
+                    else:
+                        self._add_line(
+                            'self.{} = {} or {}'.format(
+                                arg['pyname'], arg['pyname'], default
+                            ),
+                            indent,
+                        )
                 else:
                     self._add_line(
                         'self.{} = {}'.format(arg['pyname'], arg['pyname']),
@@ -705,7 +688,6 @@ class Codegen:
                             'cluster_id',
                             'known_hosts',
                             'out_of_band',
-                            'internal',
                             'insist',
                             'ticket',
                         }
@@ -762,7 +744,7 @@ class Codegen:
                             arg['pyname'], '!=', "''", 'empty'
                         )
                         continue
-                    elif arg['name'] in {'internal', 'insist'}:
+                    elif arg['name'] == 'insist':
                         format_deprecated_value(
                             arg['pyname'], 'is not', 'False', 'False'
                         )
@@ -824,14 +806,18 @@ class Codegen:
             if documentation:
                 self._add_documentation(label, documentation, indent)
 
-            self._add_line('__slots__: typing.List[str] = []', indent)
+            self._add_line(
+                '__slots__: typing.ClassVar[list[str]] = []', indent
+            )
             self._add_line()
             self._add_line(
-                'frame_id = {}  # AMQP Frame ID'.format(definition['id']),
+                'frame_id: typing.ClassVar[int] = {}  # AMQP Frame ID'.format(
+                    definition['id']
+                ),
                 indent,
             )
             self._add_line(
-                'index = 0x%08X  # pamqp Mapping Index'
+                'index: typing.ClassVar[int] = 0x%08X  # pamqp Mapping Index'
                 % (definition['id'] << 16),
                 indent,
             )
@@ -880,7 +866,7 @@ class Codegen:
             dom_regex[0] = dom_regex[0].replace(
                 '           ', 'DOMAIN_REGEX = {'
             )
-            dom_regex[-1] = dom_regex[-1].replace(',', '}')
+            dom_regex[-1] = dom_regex[-1][::-1].replace(',', '}', 1)[::-1]
             return data_types, domains, dom_regex
 
         self._output_buffer = [CONSTANTS_HEADER]
@@ -1142,6 +1128,11 @@ class Codegen:
                     kwargs['nullable'] = False
                 elif assertion.attrib.get('check') == 'regexp':
                     kwargs['regex'] = assertion.attrib['value']
+
+            # Extend the AMQP spec regex for exchange/queue names to
+            # include characters that RabbitMQ allows in practice
+            if kwargs['regex'] and value[0] in ('exchange-name', 'queue-name'):
+                kwargs['regex'] = r'^[a-zA-Z0-9-_.:@#,/+ ]*$'
 
             values.append(Domain(**kwargs))
         return values

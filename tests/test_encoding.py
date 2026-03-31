@@ -302,7 +302,7 @@ class MarshalingTests(unittest.TestCase):
         )
 
     def test_encode_by_type_none(self):
-        self.assertEqual(encode.by_type(None, 'void'), None)
+        self.assertEqual(encode.by_type(None, 'void'), b'')
 
     def test_encode_by_type_octet(self):
         self.assertEqual(encode.by_type(1, 'octet'), b'\x01')

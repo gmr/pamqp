@@ -4,6 +4,7 @@ Functions for encoding data of various types including field tables and arrays
 """
 
 import calendar
+import collections.abc
 import datetime
 import decimal as _decimal
 import logging
@@ -392,7 +393,7 @@ def encode_table_value(
     raise TypeError(f'Unknown type: {type(value)} ({value!r})')
 
 
-METHODS = {
+METHODS: dict[str, collections.abc.Callable[..., bytes]] = {
     'bytearray': byte_array,
     'double': double,
     'field_array': field_array,
@@ -404,5 +405,5 @@ METHODS = {
     'shortstr': short_string,
     'table': field_table,
     'timestamp': timestamp,
-    'void': lambda _: None,
+    'void': lambda _: b'',
 }

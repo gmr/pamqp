@@ -53,6 +53,7 @@ DOMAINS = {
     'destination': 'shortstr',
     'duration': 'longlong',
     'exchange-name': 'shortstr',
+    'message-count': 'long',
     'method-id': 'short',
     'no-ack': 'bit',
     'no-local': 'bit',
