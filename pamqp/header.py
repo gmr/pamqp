@@ -7,6 +7,7 @@ binary data into AMQP Header frames.
 """
 
 import struct
+import typing
 
 from pamqp import commands, constants, decode
 
@@ -16,7 +17,7 @@ BasicProperties = commands.Basic.Properties | None
 class ProtocolHeader:
     """Class that represents the AMQP Protocol Header"""
 
-    name: str = 'ProtocolHeader'
+    name: typing.ClassVar[str] = 'ProtocolHeader'
 
     def __init__(
         self,
@@ -73,7 +74,7 @@ class ContentHeader:
 
     """
 
-    name: str = 'ContentHeader'
+    name: typing.ClassVar[str] = 'ContentHeader'
 
     def __init__(
         self,

@@ -42,6 +42,7 @@ Documentation = "https://pamqp.readthedocs.io"
 codegen = [
     "lxml",
     "requests",
+    "yapf",
 ]
 
 [dependency-groups]
@@ -119,7 +120,6 @@ ignore = [
     "E501",     # line too long (generated code has long lines)
     "N818",     # exception class names not required to end in Error
     "RSE",      # contradicts Python Style Guide
-    "RUF012",   # mutable class defaults (used intentionally in AMQP command classes)
     "UP040",    # allow non-PEP695 type alias syntax
 ]
 flake8-quotes = {inline-quotes = "single"}
@@ -129,7 +129,7 @@ max-complexity = 15
 
 [tool.ruff.lint.per-file-ignores]
 "docs/conf.py" = ["DTZ011"]
-"pamqp/commands.py" = ["B028", "RUF023", "S105", "UP006", "UP045"]
+"pamqp/commands.py" = ["B028", "RUF023", "S105", "UP045"]
 "pamqp/constants.py" = ["S105"]
 "tests/**/*.py" = ["DTZ001", "S", "UP031"]
 "tools/**/*.py" = ["B019", "B020", "C403", "C901", "S", "T20", "UP031"]

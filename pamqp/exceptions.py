@@ -30,7 +30,6 @@ class AMQPContentTooLarge(AMQPSoftError):
     accept at the present time. The client may retry at a later time.
 
     """
-
     name = 'CONTENT-TOO-LARGE'
     value = 311
 
@@ -41,7 +40,6 @@ class AMQPNoRoute(AMQPSoftError):
     message cannot be delivered to any queue.
 
     """
-
     name = 'NO-ROUTE'
     value = 312
 
@@ -53,7 +51,6 @@ class AMQPNoConsumers(AMQPSoftError):
     consumers of the queue.
 
     """
-
     name = 'NO-CONSUMERS'
     value = 313
 
@@ -64,7 +61,6 @@ class AMQPAccessRefused(AMQPSoftError):
     due to security settings.
 
     """
-
     name = 'ACCESS-REFUSED'
     value = 403
 
@@ -74,7 +70,6 @@ class AMQPNotFound(AMQPSoftError):
     The client attempted to work with a server entity that does not exist.
 
     """
-
     name = 'NOT-FOUND'
     value = 404
 
@@ -85,7 +80,6 @@ class AMQPResourceLocked(AMQPSoftError):
     because another client is working with it.
 
     """
-
     name = 'RESOURCE-LOCKED'
     value = 405
 
@@ -96,7 +90,6 @@ class AMQPPreconditionFailed(AMQPSoftError):
     precondition failed.
 
     """
-
     name = 'PRECONDITION-FAILED'
     value = 406
 
@@ -107,7 +100,6 @@ class AMQPConnectionForced(AMQPHardError):
     may retry at some later date.
 
     """
-
     name = 'CONNECTION-FORCED'
     value = 320
 
@@ -117,7 +109,6 @@ class AMQPInvalidPath(AMQPHardError):
     The client tried to work with an unknown virtual host.
 
     """
-
     name = 'INVALID-PATH'
     value = 402
 
@@ -128,7 +119,6 @@ class AMQPFrameError(AMQPHardError):
     strongly implies a programming error in the sending peer.
 
     """
-
     name = 'FRAME-ERROR'
     value = 501
 
@@ -139,7 +129,6 @@ class AMQPSyntaxError(AMQPHardError):
     fields. This strongly implies a programming error in the sending peer.
 
     """
-
     name = 'SYNTAX-ERROR'
     value = 502
 
@@ -151,7 +140,6 @@ class AMQPCommandInvalid(AMQPHardError):
     programming error in the client.
 
     """
-
     name = 'COMMAND-INVALID'
     value = 503
 
@@ -162,7 +150,6 @@ class AMQPChannelError(AMQPHardError):
     opened. This most likely indicates a fault in the client layer.
 
     """
-
     name = 'CHANNEL-ERROR'
     value = 504
 
@@ -174,7 +161,6 @@ class AMQPUnexpectedFrame(AMQPHardError):
     content processing.
 
     """
-
     name = 'UNEXPECTED-FRAME'
     value = 505
 
@@ -186,7 +172,6 @@ class AMQPResourceError(AMQPHardError):
     entity.
 
     """
-
     name = 'RESOURCE-ERROR'
     value = 506
 
@@ -197,7 +182,6 @@ class AMQPNotAllowed(AMQPHardError):
     the server, due to security settings or by some other criteria.
 
     """
-
     name = 'NOT-ALLOWED'
     value = 530
 
@@ -208,7 +192,6 @@ class AMQPNotImplemented(AMQPHardError):
     server.
 
     """
-
     name = 'NOT-IMPLEMENTED'
     value = 540
 
@@ -220,7 +203,6 @@ class AMQPInternalError(AMQPHardError):
     operations.
 
     """
-
     name = 'INTERNAL-ERROR'
     value = 541
 
@@ -244,5 +226,5 @@ CLASS_MAPPING = {
     506: AMQPResourceError,
     530: AMQPNotAllowed,
     540: AMQPNotImplemented,
-    541: AMQPInternalError,
+    541: AMQPInternalError
 }

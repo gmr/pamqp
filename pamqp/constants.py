@@ -41,7 +41,7 @@ DATA_TYPES = [
     'short',  # 16-bit integer
     'shortstr',  # short string (max. 256 characters)
     'table',  # field table
-    'timestamp',  # 64-bit timestamp
+    'timestamp'  # 64-bit timestamp
 ]
 
 # AMQP domains
@@ -53,6 +53,7 @@ DOMAINS = {
     'destination': 'shortstr',
     'duration': 'longlong',
     'exchange-name': 'shortstr',
+    'message-count': 'long',
     'method-id': 'short',
     'no-ack': 'bit',
     'no-local': 'bit',
@@ -66,13 +67,13 @@ DOMAINS = {
     'reject-text': 'shortstr',
     'reply-code': 'short',
     'reply-text': 'shortstr',
-    'security-token': 'longstr',
+    'security-token': 'longstr'
 }
 
 # AMQP domain patterns
 DOMAIN_REGEX = {
     'exchange-name': re.compile(r'^[a-zA-Z0-9-_.:@#,/+ ]*$'),
-    'queue-name': re.compile(r'^[a-zA-Z0-9-_.:@#,/+ ]*$'),
+    'queue-name': re.compile(r'^[a-zA-Z0-9-_.:@#,/+ ]*$')
 }
 
 # Other constants

@@ -1,6 +1,7 @@
 import datetime
 import decimal
 import struct
+import typing
 import unittest
 
 from pamqp import decode
@@ -16,7 +17,7 @@ class CodecDecodeTests(unittest.TestCase):
         b'\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00\x00\x00\x00\x00'
         b'\x08'
     )
-    FIELD_ARR_VALUE = [
+    FIELD_ARR_VALUE: typing.ClassVar[list] = [
         1,
         45000,
         'Test ✈',
@@ -35,7 +36,7 @@ class CodecDecodeTests(unittest.TestCase):
         b'Test \xe2\x9c\x88\x0ctimestampvalT\x00\x00\x00\x00Ec)\x92\x04\xf0'
         b'\x9f\x90\xb0V'
     )
-    FIELD_TBL_VALUE = {
+    FIELD_TBL_VALUE: typing.ClassVar[dict] = {
         'intval': 1,
         'strval': 'Test ✈',
         'boolval': True,

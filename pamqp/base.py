@@ -6,6 +6,7 @@ Base classes for the representation of frames and data structures.
 import collections.abc
 import logging
 import struct
+import typing
 
 from pamqp import common, decode, encode
 
@@ -15,9 +16,9 @@ LOGGER = logging.getLogger(__name__)
 class _AMQData:
     """Base class for AMQ methods and properties for encoding and decoding"""
 
-    __annotations__: dict[str, type] = {}
-    __slots__: list[str] = []
-    name: str = '_AMQData'
+    __annotations__: typing.ClassVar[dict[str, type]] = {}
+    __slots__: typing.ClassVar[list[str]] = []
+    name: typing.ClassVar[str] = '_AMQData'
 
     def __contains__(self, item: str) -> bool:
         """Return if the item is in the attribute list"""
@@ -70,10 +71,10 @@ class _AMQData:
 class Frame(_AMQData):
     """Base Class for AMQ Methods for encoding and decoding"""
 
-    frame_id: int = 0
-    index: int = 0
-    synchronous: bool = False
-    valid_responses: list[str] = []
+    frame_id: typing.ClassVar[int] = 0
+    index: typing.ClassVar[int] = 0
+    synchronous: typing.ClassVar[bool] = False
+    valid_responses: typing.ClassVar[list[str]] = []
 
     def marshal(self) -> bytes:
         """Dynamically encode the frame by taking the list of attributes and
@@ -145,8 +146,8 @@ class BasicProperties(_AMQData):
 
     """
 
-    flags: dict[str, int] = {}
-    name = 'BasicProperties'
+    flags: typing.ClassVar[dict[str, int]] = {}
+    name: typing.ClassVar[str] = 'BasicProperties'
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BasicProperties):
