@@ -15,7 +15,7 @@ from pamqp import (
 __author__ = 'Gavin M. Roy'
 __email__ = 'gavinmroy@gmail.com'
 __since__ = '2011-09-23'
-__version__ = version = '3.3.0'
+__version__ = version = '4.0.0'
 
 __all__ = [
     'body',
