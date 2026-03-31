@@ -8,12 +8,11 @@ TAG_URIS = [
     'tag:sandro@w3.org,2004-05:Sandro',
     'tag:my-ids.com,2001-09-15:TimKindberg:presentations:UBath2004-05-19',
     'tag:blogger.com,1999:blog-555',
-    'tag:yaml.org,2002:int#section1'
+    'tag:yaml.org,2002:int#section1',
 ]
 
 
 class TagUriScheme(unittest.TestCase):
-
     def test_tag_uri_scheme_tag1(self):
         commands.Exchange.Declare(exchange=TAG_URIS[0])
 

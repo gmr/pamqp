@@ -1,18 +1,17 @@
-# -*- encoding: utf-8 -*-
 """
 Functions for decoding data of various types including field tables and arrays
 
 """
+
 import datetime
 import decimal as _decimal
-import typing
 
 from pamqp import common
 
 
-def by_type(value: bytes,
-            data_type: str,
-            offset: int = 0) -> typing.Tuple[int, common.FieldValue]:
+def by_type(
+    value: bytes, data_type: str, offset: int = 0
+) -> tuple[int, common.FieldValue]:
     """Decodes values using the specified type
 
     :param value: The binary value to decode
@@ -26,11 +25,11 @@ def by_type(value: bytes,
         return bit(value, offset)
     decoder = METHODS.get(data_type)
     if decoder is None:
-        raise ValueError('Unknown type: {}'.format(data_type))
+        raise ValueError(f'Unknown type: {data_type}')
     return decoder(value)
 
 
-def bit(value: bytes, position: int) -> typing.Tuple[int, bool]:
+def bit(value: bytes, position: int) -> tuple[int, bool]:
     """Decode a bit value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -42,11 +41,11 @@ def bit(value: bytes, position: int) -> typing.Tuple[int, bool]:
     bit_buffer = common.Struct.byte.unpack_from(value)[0]
     try:
         return 0, (bit_buffer & (1 << position)) != 0
-    except TypeError:
-        raise ValueError('Could not unpack bit value')
+    except TypeError as err:
+        raise ValueError('Could not unpack bit value') from err
 
 
-def boolean(value: bytes) -> typing.Tuple[int, bool]:
+def boolean(value: bytes) -> tuple[int, bool]:
     """Decode a boolean value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -56,11 +55,11 @@ def boolean(value: bytes) -> typing.Tuple[int, bool]:
     """
     try:
         return 1, bool(common.Struct.byte.unpack_from(value[0:1])[0])
-    except TypeError:
-        raise ValueError('Could not unpack boolean value')
+    except TypeError as err:
+        raise ValueError('Could not unpack boolean value') from err
 
 
-def byte_array(value: bytes) -> typing.Tuple[int, bytearray]:
+def byte_array(value: bytes) -> tuple[int, bytearray]:
     """Decode a byte_array value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -70,12 +69,12 @@ def byte_array(value: bytes) -> typing.Tuple[int, bytearray]:
     """
     try:
         length = common.Struct.integer.unpack(value[0:4])[0]
-        return length + 4, bytearray(value[4:length + 4])
-    except TypeError:
-        raise ValueError('Could not unpack byte array value')
+        return length + 4, bytearray(value[4 : length + 4])
+    except TypeError as err:
+        raise ValueError('Could not unpack byte array value') from err
 
 
-def decimal(value: bytes) -> typing.Tuple[int, _decimal.Decimal]:
+def decimal(value: bytes) -> tuple[int, _decimal.Decimal]:
     """Decode a decimal value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -86,12 +85,12 @@ def decimal(value: bytes) -> typing.Tuple[int, _decimal.Decimal]:
     try:
         decimals = common.Struct.byte.unpack(value[0:1])[0]
         raw = common.Struct.integer.unpack(value[1:5])[0]
-        return 5, _decimal.Decimal(raw) * (_decimal.Decimal(10)**-decimals)
-    except TypeError:
-        raise ValueError('Could not unpack decimal value')
+        return 5, _decimal.Decimal(raw) * (_decimal.Decimal(10) ** -decimals)
+    except TypeError as err:
+        raise ValueError('Could not unpack decimal value') from err
 
 
-def double(value: bytes) -> typing.Tuple[int, float]:
+def double(value: bytes) -> tuple[int, float]:
     """Decode a double value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -101,11 +100,11 @@ def double(value: bytes) -> typing.Tuple[int, float]:
     """
     try:
         return 8, common.Struct.double.unpack_from(value)[0]
-    except TypeError:
-        raise ValueError('Could not unpack double value')
+    except TypeError as err:
+        raise ValueError('Could not unpack double value') from err
 
 
-def floating_point(value: bytes) -> typing.Tuple[int, float]:
+def floating_point(value: bytes) -> tuple[int, float]:
     """Decode a floating point value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -115,11 +114,11 @@ def floating_point(value: bytes) -> typing.Tuple[int, float]:
     """
     try:
         return 4, common.Struct.float.unpack_from(value)[0]
-    except TypeError:
-        raise ValueError('Could not unpack floating point value')
+    except TypeError as err:
+        raise ValueError('Could not unpack floating point value') from err
 
 
-def long_int(value: bytes) -> typing.Tuple[int, int]:
+def long_int(value: bytes) -> tuple[int, int]:
     """Decode a long integer value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -129,11 +128,11 @@ def long_int(value: bytes) -> typing.Tuple[int, int]:
     """
     try:
         return 4, common.Struct.long.unpack(value[0:4])[0]
-    except TypeError:
-        raise ValueError('Could not unpack long integer value')
+    except TypeError as err:
+        raise ValueError('Could not unpack long integer value') from err
 
 
-def long_uint(value: bytes) -> typing.Tuple[int, int]:
+def long_uint(value: bytes) -> tuple[int, int]:
     """Decode an unsigned long integer value, returning bytes consumed and
     the value.
 
@@ -144,11 +143,13 @@ def long_uint(value: bytes) -> typing.Tuple[int, int]:
     """
     try:
         return 4, common.Struct.ulong.unpack(value[0:4])[0]
-    except TypeError:
-        raise ValueError('Could not unpack unsigned long integer value')
+    except TypeError as err:
+        raise ValueError(
+            'Could not unpack unsigned long integer value'
+        ) from err
 
 
-def long_long_int(value: bytes) -> typing.Tuple[int, int]:
+def long_long_int(value: bytes) -> tuple[int, int]:
     """Decode a long-long integer value, returning bytes consumed and the
     value.
 
@@ -159,11 +160,11 @@ def long_long_int(value: bytes) -> typing.Tuple[int, int]:
     """
     try:
         return 8, common.Struct.long_long_int.unpack(value[0:8])[0]
-    except TypeError:
-        raise ValueError('Could not unpack long-long integer value')
+    except TypeError as err:
+        raise ValueError('Could not unpack long-long integer value') from err
 
 
-def long_str(value: bytes) -> typing.Tuple[int, typing.Union[str, bytes]]:
+def long_str(value: bytes) -> tuple[int, str | bytes]:
     """Decode a string value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -173,14 +174,14 @@ def long_str(value: bytes) -> typing.Tuple[int, typing.Union[str, bytes]]:
     """
     try:
         length = common.Struct.integer.unpack(value[0:4])[0]
-        return length + 4, value[4:length + 4].decode('utf-8')
-    except TypeError:
-        raise ValueError('Could not unpack long string value')
+        return length + 4, value[4 : length + 4].decode('utf-8')
+    except TypeError as err:
+        raise ValueError('Could not unpack long string value') from err
     except UnicodeDecodeError:
-        return length + 4, value[4:length + 4]
+        return length + 4, value[4 : length + 4]
 
 
-def octet(value: bytes) -> typing.Tuple[int, int]:
+def octet(value: bytes) -> tuple[int, int]:
     """Decode an octet value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -190,11 +191,11 @@ def octet(value: bytes) -> typing.Tuple[int, int]:
     """
     try:
         return 1, common.Struct.byte.unpack(value[0:1])[0]
-    except TypeError:
-        raise ValueError('Could not unpack octet value')
+    except TypeError as err:
+        raise ValueError('Could not unpack octet value') from err
 
 
-def short_int(value: bytes) -> typing.Tuple[int, int]:
+def short_int(value: bytes) -> tuple[int, int]:
     """Decode a short integer value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -204,11 +205,11 @@ def short_int(value: bytes) -> typing.Tuple[int, int]:
     """
     try:
         return 2, common.Struct.short.unpack_from(value[0:2])[0]
-    except TypeError:
-        raise ValueError('Could not unpack short integer value')
+    except TypeError as err:
+        raise ValueError('Could not unpack short integer value') from err
 
 
-def short_uint(value: bytes) -> typing.Tuple[int, int]:
+def short_uint(value: bytes) -> tuple[int, int]:
     """Decode an unsigned short integer value, returning bytes consumed and
     the value.
 
@@ -219,11 +220,13 @@ def short_uint(value: bytes) -> typing.Tuple[int, int]:
     """
     try:
         return 2, common.Struct.ushort.unpack_from(value[0:2])[0]
-    except TypeError:
-        raise ValueError('Could not unpack unsigned short integer value')
+    except TypeError as err:
+        raise ValueError(
+            'Could not unpack unsigned short integer value'
+        ) from err
 
 
-def short_short_int(value: bytes) -> typing.Tuple[int, int]:
+def short_short_int(value: bytes) -> tuple[int, int]:
     """Decode a short-short integer value, returning bytes consumed and the
     value.
 
@@ -234,11 +237,11 @@ def short_short_int(value: bytes) -> typing.Tuple[int, int]:
     """
     try:
         return 1, common.Struct.short_short_int.unpack_from(value[0:1])[0]
-    except TypeError:
-        raise ValueError('Could not unpack short-short integer value')
+    except TypeError as err:
+        raise ValueError('Could not unpack short-short integer value') from err
 
 
-def short_short_uint(value: bytes) -> typing.Tuple[int, int]:
+def short_short_uint(value: bytes) -> tuple[int, int]:
     """Decode a unsigned short-short integer value, returning bytes consumed
     and the value.
 
@@ -249,11 +252,13 @@ def short_short_uint(value: bytes) -> typing.Tuple[int, int]:
     """
     try:
         return 1, common.Struct.short_short_uint.unpack_from(value[0:1])[0]
-    except TypeError:
-        raise ValueError('Could not unpack unsigned short-short integer value')
+    except TypeError as err:
+        raise ValueError(
+            'Could not unpack unsigned short-short integer value'
+        ) from err
 
 
-def short_str(value: bytes) -> typing.Tuple[int, str]:
+def short_str(value: bytes) -> tuple[int, str]:
     """Decode a string value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -263,12 +268,12 @@ def short_str(value: bytes) -> typing.Tuple[int, str]:
     """
     try:
         length = common.Struct.byte.unpack(value[0:1])[0]
-        return length + 1, value[1:length + 1].decode('utf-8')
-    except TypeError:
-        raise ValueError('Could not unpack short string value')
+        return length + 1, value[1 : length + 1].decode('utf-8')
+    except TypeError as err:
+        raise ValueError('Could not unpack short string value') from err
 
 
-def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
+def timestamp(value: bytes) -> tuple[int, datetime.datetime]:
     """Decode a timestamp value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -284,13 +289,12 @@ def timestamp(value: bytes) -> typing.Tuple[int, datetime.datetime]:
         if ts_value > 0xFFFFFFFF:
             ts_value /= 1000.0
 
-        return 8, datetime.datetime.fromtimestamp(ts_value,
-                                                  tz=datetime.timezone.utc)
-    except TypeError:
-        raise ValueError('Could not unpack timestamp value')
+        return 8, datetime.datetime.fromtimestamp(ts_value, tz=datetime.UTC)
+    except TypeError as err:
+        raise ValueError('Could not unpack timestamp value') from err
 
 
-def embedded_value(value: bytes) -> typing.Tuple[int, common.FieldValue]:
+def embedded_value(value: bytes) -> tuple[int, common.FieldValue]:
     """Dynamically decode a value based upon the starting byte
 
     :param value: The binary value to decode
@@ -302,12 +306,12 @@ def embedded_value(value: bytes) -> typing.Tuple[int, common.FieldValue]:
         return 0, None
     try:
         bytes_consumed, temp = TABLE_MAPPING[value[0:1]](value[1:])
-    except KeyError:
-        raise ValueError('Unknown type: {!r}'.format(value[:1]))
+    except KeyError as err:
+        raise ValueError(f'Unknown type: {value[:1]!r}') from err
     return bytes_consumed + 1, temp
 
 
-def field_array(value: bytes) -> typing.Tuple[int, common.FieldArray]:
+def field_array(value: bytes) -> tuple[int, common.FieldArray]:
     """Decode a field array value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -325,11 +329,11 @@ def field_array(value: bytes) -> typing.Tuple[int, common.FieldArray]:
             offset += consumed
             data.append(result)
         return offset, data
-    except TypeError:
-        raise ValueError('Could not unpack data')
+    except TypeError as err:
+        raise ValueError('Could not unpack data') from err
 
 
-def field_table(value: bytes) -> typing.Tuple[int, common.FieldTable]:
+def field_table(value: bytes) -> tuple[int, common.FieldTable]:
     """Decode a field array value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
@@ -345,17 +349,17 @@ def field_table(value: bytes) -> typing.Tuple[int, common.FieldTable]:
         while offset < field_table_end:
             key_length = common.Struct.byte.unpack_from(value, offset)[0]
             offset += 1
-            key = value[offset:offset + key_length].decode('utf-8')
+            key = value[offset : offset + key_length].decode('utf-8')
             offset += key_length
             consumed, result = embedded_value(value[offset:])
             offset += consumed
             data[key] = result
         return field_table_end, data
-    except TypeError:
-        raise ValueError('Could not unpack data')
+    except TypeError as err:
+        raise ValueError('Could not unpack data') from err
 
 
-def void(_: bytes) -> typing.Tuple[int, None]:
+def void(_: bytes) -> tuple[int, None]:
     """Return a void, no data to decode
 
     :param _: The empty bytes object to ignore

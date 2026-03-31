@@ -2,6 +2,7 @@
 Base classes for the representation of frames and data structures.
 
 """
+
 import logging
 import struct
 import typing
@@ -13,8 +14,9 @@ LOGGER = logging.getLogger(__name__)
 
 class _AMQData:
     """Base class for AMQ methods and properties for encoding and decoding"""
-    __annotations__: typing.Dict = {}
-    __slots__: typing.List = []
+
+    __annotations__: dict = {}
+    __slots__: list = []
     name = '_AMQData'
 
     def __contains__(self, item: str) -> bool:
@@ -31,9 +33,9 @@ class _AMQData:
         """
         return getattr(self, item)
 
-    def __iter__(self) \
-            -> typing.Generator[typing.Tuple[str, common.FieldValue],
-                                None, None]:
+    def __iter__(
+        self,
+    ) -> typing.Generator[tuple[str, common.FieldValue], None, None]:
         """Iterate the attributes and values as key, value pairs
 
         :rtype: (:class:`str`, :const:`pamqp.common.FieldValue`)
@@ -48,7 +50,7 @@ class _AMQData:
 
     def __repr__(self) -> str:
         """Return the representation of the frame object"""
-        return '<{} object at {}>'.format(self.name, hex(id(self)))
+        return f'<{self.name} object at {hex(id(self))}>'
 
     @classmethod
     def amqp_type(cls, attr: str) -> str:
@@ -67,10 +69,11 @@ class _AMQData:
 
 class Frame(_AMQData):
     """Base Class for AMQ Methods for encoding and decoding"""
+
     frame_id = 0
     index = 0
     synchronous = False
-    valid_responses: typing.List = []
+    valid_responses: list = []
 
     def marshal(self) -> bytes:
         """Dynamically encode the frame by taking the list of attributes and
@@ -141,7 +144,8 @@ class BasicProperties(_AMQData):
     object values.
 
     """
-    flags: typing.Dict[str, int] = {}
+
+    flags: dict[str, int] = {}
     name = 'BasicProperties'
 
     def __eq__(self, other: object) -> bool:
@@ -149,7 +153,8 @@ class BasicProperties(_AMQData):
             raise NotImplementedError
         return all(
             getattr(self, k, None) == getattr(other, k, None)
-            for k in self.__slots__)
+            for k in self.__slots__
+        )
 
     def encode_property(self, name: str, value: common.FieldValue) -> bytes:
         """Encode a single property value
@@ -174,7 +179,8 @@ class BasicProperties(_AMQData):
             if property_value is not None and property_value != '':
                 flags = flags | self.flags[property_name]
                 parts.append(
-                    self.encode_property(property_name, property_value))
+                    self.encode_property(property_name, property_value)
+                )
         flag_pieces = []
         while True:
             remainder = flags >> 16
@@ -209,5 +215,6 @@ class BasicProperties(_AMQData):
         if self.cluster_id != '':
             raise ValueError('cluster_id must be empty')
         if self.delivery_mode is not None and self.delivery_mode not in [1, 2]:
-            raise ValueError('Invalid delivery_mode value: {}'.format(
-                self.delivery_mode))
+            raise ValueError(
+                f'Invalid delivery_mode value: {self.delivery_mode}'
+            )

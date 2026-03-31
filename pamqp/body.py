@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """
 The :py:mod:`pamqp.body` module contains the :py:class:`Body` class which is
 used when unmarshalling body frames. When dealing with content frames, the
@@ -14,6 +13,7 @@ class ContentBody:
     :param value: The value for the ContentBody frame
 
     """
+
     name = 'ContentBody'
 
     def __init__(self, value: bytes):
