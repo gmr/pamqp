@@ -350,26 +350,6 @@ class Codegen:
         self._add_line('"""', indent)
 
         self._add_line(
-            '__annotations__: typing.ClassVar[dict[str, object]] = {', indent
-        )
-        for offset, arg in enumerate(properties):
-            if offset == len(properties) - 1:
-                self._add_line(
-                    '{!r}: {}'.format(
-                        arg['pyname'], self._arg_annotation(arg)
-                    ),
-                    indent + 4,
-                )
-            else:
-                self._add_line(
-                    '{!r}: {},'.format(
-                        arg['pyname'], self._arg_annotation(arg)
-                    ),
-                    indent + 4,
-                )
-        self._add_line('}', indent)
-
-        self._add_line(
             '__slots__: typing.ClassVar[list[str]] = [  # AMQ Properties Attributes',
             indent,
         )
@@ -557,32 +537,11 @@ class Codegen:
         indent = 8
         self._add_documentation(label, '\n'.join(documentation), indent)
 
-        if not len(arguments):
-            self._add_line(
-                '__annotations__: typing.ClassVar[dict[str, object]] = {}',
-                indent,
-            )
-        else:
-            self._add_line(
-                '__annotations__: typing.ClassVar[dict[str, object]] = {',
-                indent,
-            )
-            for offset, arg in enumerate(arguments):
-                name = self._arg_name(arg['name'])
-                if name == 'type' and class_name == 'exchange':
-                    name = 'exchange_type'
-                arguments[offset]['pyname'] = name
-                if offset == len(method['arguments']) - 1:
-                    self._add_line(
-                        f'{name!r}: {self._arg_annotation(arg)}',
-                        indent + 4,
-                    )
-                else:
-                    self._add_line(
-                        f'{name!r}: {self._arg_annotation(arg)},',
-                        indent + 4,
-                    )
-            self._add_line('}', indent)
+        for offset, arg in enumerate(arguments):
+            name = self._arg_name(arg['name'])
+            if name == 'type' and class_name == 'exchange':
+                name = 'exchange_type'
+            arguments[offset]['pyname'] = name
         if not len(arguments):
             self._add_line(
                 '__slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes',

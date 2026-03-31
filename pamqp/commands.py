@@ -50,13 +50,6 @@ class Connection:
             - Default: ``en_US``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'version_major': int,
-            'version_minor': int,
-            'server_properties': common.FieldTable,
-            'mechanisms': str,
-            'locales': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'version_major', 'version_minor', 'server_properties',
             'mechanisms', 'locales'
@@ -106,12 +99,6 @@ class Connection:
             - Default: ``en_US``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'client_properties': common.FieldTable,
-            'mechanism': str,
-            'response': str,
-            'locale': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'client_properties', 'mechanism', 'response', 'locale'
         ]
@@ -149,9 +136,6 @@ class Connection:
         :param challenge: Security challenge data
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'challenge': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'challenge'
         ]
@@ -180,7 +164,6 @@ class Connection:
         :param response: Security response data
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {'response': str}
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'response'
         ]
@@ -212,11 +195,6 @@ class Connection:
             - Default: ``0``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'channel_max': int,
-            'frame_max': int,
-            'heartbeat': int
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'channel_max', 'frame_max', 'heartbeat'
         ]
@@ -258,11 +236,6 @@ class Connection:
             - Default: ``0``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'channel_max': int,
-            'frame_max': int,
-            'heartbeat': int
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'channel_max', 'frame_max', 'heartbeat'
         ]
@@ -305,11 +278,6 @@ class Connection:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'virtual_host': str,
-            'capabilities': str,
-            'insist': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'virtual_host', 'capabilities', 'insist'
         ]
@@ -360,9 +328,6 @@ class Connection:
             - Default: ``''``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'known_hosts': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'known_hosts'
         ]
@@ -407,12 +372,6 @@ class Connection:
         :param method_id: Failing method ID
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'reply_code': int,
-            'reply_text': str,
-            'class_id': int,
-            'method_id': int
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'reply_code', 'reply_text', 'class_id', 'method_id'
         ]
@@ -450,7 +409,6 @@ class Connection:
         close the socket.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 51  # AMQP Frame ID
@@ -469,7 +427,6 @@ class Connection:
             - Default: ``''``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {'reason': str}
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'reason'
         ]
@@ -494,7 +451,6 @@ class Connection:
         accepts publishes.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 61  # AMQP Frame ID
@@ -514,10 +470,6 @@ class Connection:
         :param reason: Reason
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'new_secret': str,
-            'reason': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'new_secret', 'reason'
         ]
@@ -549,7 +501,6 @@ class Connection:
         This method confirms the updated secret is valid.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 71  # AMQP Frame ID
@@ -580,9 +531,6 @@ class Channel:
             - Default: ``0``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'out_of_band': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'out_of_band'
         ]
@@ -622,9 +570,6 @@ class Channel:
             - Default: ``0``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'channel_id': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'channel_id'
         ]
@@ -666,7 +611,6 @@ class Channel:
         :param active: Start/stop content frames
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {'active': bool}
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'active'
         ]
@@ -694,7 +638,6 @@ class Channel:
         :param active: Current flow setting
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {'active': bool}
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'active'
         ]
@@ -728,12 +671,6 @@ class Channel:
         :param method_id: Failing method ID
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'reply_code': int,
-            'reply_text': str,
-            'class_id': int,
-            'method_id': int
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'reply_code', 'reply_text', 'class_id', 'method_id'
         ]
@@ -770,7 +707,6 @@ class Channel:
         recipient that it is safe to release resources for the channel.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 41  # AMQP Frame ID
@@ -824,17 +760,6 @@ class Exchange:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'exchange': str,
-            'exchange_type': str,
-            'passive': bool,
-            'durable': bool,
-            'auto_delete': bool,
-            'internal': bool,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'exchange', 'exchange_type', 'passive', 'durable',
             'auto_delete', 'internal', 'nowait', 'arguments'
@@ -905,7 +830,6 @@ class Exchange:
         exchange, essential for automatically-named exchanges.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID
@@ -931,12 +855,6 @@ class Exchange:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'exchange': str,
-            'if_unused': bool,
-            'nowait': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'exchange', 'if_unused', 'nowait'
         ]
@@ -988,7 +906,6 @@ class Exchange:
         This method confirms the deletion of an exchange.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 21  # AMQP Frame ID
@@ -1018,14 +935,6 @@ class Exchange:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'destination': str,
-            'source': str,
-            'routing_key': str,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'destination', 'source', 'routing_key', 'nowait',
             'arguments'
@@ -1089,7 +998,6 @@ class Exchange:
         This method confirms that the bind was successful.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 31  # AMQP Frame ID
@@ -1120,14 +1028,6 @@ class Exchange:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'destination': str,
-            'source': str,
-            'routing_key': str,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'destination', 'source', 'routing_key', 'nowait',
             'arguments'
@@ -1191,7 +1091,6 @@ class Exchange:
         This method confirms that the unbind was successful.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 51  # AMQP Frame ID
@@ -1241,16 +1140,6 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'queue': str,
-            'passive': bool,
-            'durable': bool,
-            'exclusive': bool,
-            'auto_delete': bool,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'passive', 'durable', 'exclusive',
             'auto_delete', 'nowait', 'arguments'
@@ -1322,11 +1211,6 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'queue': str,
-            'message_count': int,
-            'consumer_count': int
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'queue', 'message_count', 'consumer_count'
         ]
@@ -1389,14 +1273,6 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'queue': str,
-            'exchange': str,
-            'routing_key': str,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'exchange', 'routing_key', 'nowait', 'arguments'
         ]
@@ -1459,7 +1335,6 @@ class Queue:
         This method confirms that the bind was successful.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 21  # AMQP Frame ID
@@ -1483,11 +1358,6 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'queue': str,
-            'nowait': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'nowait'
         ]
@@ -1538,9 +1408,6 @@ class Queue:
         :param message_count: Reports the number of messages purged.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'message_count': int
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'message_count'
         ]
@@ -1578,13 +1445,6 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'queue': str,
-            'if_unused': bool,
-            'if_empty': bool,
-            'nowait': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'if_unused', 'if_empty', 'nowait'
         ]
@@ -1641,9 +1501,6 @@ class Queue:
         :param message_count: Reports the number of messages deleted.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'message_count': int
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'message_count'
         ]
@@ -1680,13 +1537,6 @@ class Queue:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'queue': str,
-            'exchange': str,
-            'routing_key': str,
-            'arguments': common.Arguments
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'exchange', 'routing_key', 'arguments'
         ]
@@ -1746,7 +1596,6 @@ class Queue:
         This method confirms that the unbind was successful.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 51  # AMQP Frame ID
@@ -1786,11 +1635,6 @@ class Basic:
             - Default: ``False``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'prefetch_size': int,
-            'prefetch_count': int,
-            'global_': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'prefetch_size', 'prefetch_count', 'global_'
         ]
@@ -1825,7 +1669,6 @@ class Basic:
         consumers until a new QoS is defined.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID
@@ -1864,16 +1707,6 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'queue': str,
-            'consumer_tag': str,
-            'no_local': bool,
-            'no_ack': bool,
-            'exclusive': bool,
-            'nowait': bool,
-            'arguments': common.Arguments
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'consumer_tag', 'no_local', 'no_ack',
             'exclusive', 'nowait', 'arguments'
@@ -1942,9 +1775,6 @@ class Basic:
             provided by the server.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'consumer_tag': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'consumer_tag'
         ]
@@ -1984,10 +1814,6 @@ class Basic:
             - Default: ``False``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'consumer_tag': str,
-            'nowait': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'consumer_tag', 'nowait'
         ]
@@ -2019,9 +1845,6 @@ class Basic:
         :param consumer_tag: Consumer tag
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'consumer_tag': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'consumer_tag'
         ]
@@ -2063,13 +1886,6 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'exchange': str,
-            'routing_key': str,
-            'mandatory': bool,
-            'immediate': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'exchange', 'routing_key', 'mandatory', 'immediate'
         ]
@@ -2135,12 +1951,6 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'reply_code': int,
-            'reply_text': str,
-            'exchange': str,
-            'routing_key': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'reply_code', 'reply_text', 'exchange', 'routing_key'
         ]
@@ -2202,13 +2012,6 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'consumer_tag': str,
-            'delivery_tag': int,
-            'redelivered': bool,
-            'exchange': str,
-            'routing_key': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'consumer_tag', 'delivery_tag', 'redelivered', 'exchange',
             'routing_key'
@@ -2270,11 +2073,6 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'ticket': int,
-            'queue': str,
-            'no_ack': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'ticket', 'queue', 'no_ack'
         ]
@@ -2338,13 +2136,6 @@ class Basic:
         :raises ValueError: when an argument fails to validate
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'delivery_tag': int,
-            'redelivered': bool,
-            'exchange': str,
-            'routing_key': str,
-            'message_count': int
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'delivery_tag', 'redelivered', 'exchange', 'routing_key',
             'message_count'
@@ -2400,9 +2191,6 @@ class Basic:
             - Default: ``''``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'cluster_id': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'cluster_id'
         ]
@@ -2447,10 +2235,6 @@ class Basic:
             - Default: ``False``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'delivery_tag': int,
-            'multiple': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'delivery_tag', 'multiple'
         ]
@@ -2484,10 +2268,6 @@ class Basic:
             - Default: ``True``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'delivery_tag': int,
-            'requeue': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'delivery_tag', 'requeue'
         ]
@@ -2522,7 +2302,6 @@ class Basic:
             - Default: ``False``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {'requeue': bool}
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'requeue'
         ]
@@ -2553,7 +2332,6 @@ class Basic:
             - Default: ``False``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {'requeue': bool}
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'requeue'
         ]
@@ -2579,7 +2357,6 @@ class Basic:
         This method acknowledges a :class:`Basic.Recover` method.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 111  # AMQP Frame ID
@@ -2606,11 +2383,6 @@ class Basic:
             - Default: ``True``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'delivery_tag': int,
-            'multiple': bool,
-            'requeue': bool
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'delivery_tag', 'multiple', 'requeue'
         ]
@@ -2659,22 +2431,6 @@ class Basic:
         :raises: ValueError
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {
-            'content_type': str,
-            'content_encoding': str,
-            'headers': common.FieldTable,
-            'delivery_mode': int,
-            'priority': int,
-            'correlation_id': str,
-            'reply_to': str,
-            'expiration': str,
-            'message_id': str,
-            'timestamp': datetime.datetime,
-            'message_type': str,
-            'user_id': str,
-            'app_id': str,
-            'cluster_id': str
-        }
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Properties Attributes
             'content_type', 'content_encoding', 'headers', 'delivery_mode',
             'priority', 'correlation_id', 'reply_to', 'expiration',
@@ -2780,7 +2536,6 @@ class Tx:
         or Rollback methods.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 10  # AMQP Frame ID
@@ -2798,7 +2553,6 @@ class Tx:
         set to use standard transactions.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID
@@ -2815,7 +2569,6 @@ class Tx:
         immediately after a commit.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 20  # AMQP Frame ID
@@ -2833,7 +2586,6 @@ class Tx:
         if a commit fails, the server raises a channel exception.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 21  # AMQP Frame ID
@@ -2852,7 +2604,6 @@ class Tx:
         recover call should be issued.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 30  # AMQP Frame ID
@@ -2870,7 +2621,6 @@ class Tx:
         that if an rollback fails, the server raises a channel exception.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 31  # AMQP Frame ID
@@ -2913,7 +2663,6 @@ class Confirm:
             - Default: ``False``
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {'nowait': bool}
         __slots__: typing.ClassVar[list[str]] = [  # AMQ Method Attributes
             'nowait'
         ]
@@ -2940,7 +2689,6 @@ class Confirm:
         set to use publisher acknowledgements.
 
         """
-        __annotations__: typing.ClassVar[dict[str, object]] = {}
         __slots__: typing.ClassVar[list[str]] = []  # AMQ Method Attributes
 
         frame_id: typing.ClassVar[int] = 11  # AMQP Frame ID

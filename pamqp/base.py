@@ -16,7 +16,6 @@ LOGGER = logging.getLogger(__name__)
 class _AMQData:
     """Base class for AMQ methods and properties for encoding and decoding"""
 
-    __annotations__: typing.ClassVar[dict[str, type]] = {}
     __slots__: typing.ClassVar[list[str]] = []
     name: typing.ClassVar[str] = '_AMQData'
 
