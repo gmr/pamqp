@@ -1,6 +1,6 @@
 # pamqp
 
-RabbitMQ focused AMQP low-level library for encoding and decoding AMQP frames.
+RabbitMQ-focused AMQP low-level library for encoding and decoding AMQP frames.
 
 ## Development
 

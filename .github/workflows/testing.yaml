@@ -2,7 +2,7 @@ name: Testing
 on:
   pull_request:
   push:
-    branches: ["*"]
+    branches: ["**"]
     paths-ignore:
       - 'docs/**'
       - '*.md'
@@ -22,9 +22,8 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
-
-      - name: Set up Python
-        run: uv python install ${{ matrix.python }}
+        with:
+          python-version: ${{ matrix.python }}
 
       - name: Install dependencies
         run: uv sync --all-groups

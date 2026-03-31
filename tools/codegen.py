@@ -390,11 +390,9 @@ class Codegen:
         )
         for arg in properties[1:-1]:
             flag_value -= 1
-            (
-                self._add_line(
-                    "'{}': {},".format(arg['pyname'], 1 << flag_value),
-                    indent + 9,
-                ),
+            self._add_line(
+                "'{}': {},".format(arg['pyname'], 1 << flag_value),
+                indent + 9,
             )
         flag_value -= 1
         self._add_line(

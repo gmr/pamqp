@@ -294,7 +294,7 @@ def field_table(value: common.FieldTable) -> bytes:
         try:
             data.append(encode_table_value(item))
         except TypeError as err:
-            raise TypeError(f'{key} error: {err}/') from err
+            raise TypeError(f'{key} error: {err}') from err
     output = b''.join(data)
     return common.Struct.integer.pack(len(output)) + output
 
