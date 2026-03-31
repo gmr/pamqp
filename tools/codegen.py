@@ -349,7 +349,9 @@ class Codegen:
         self._add_line()
         self._add_line('"""', indent)
 
-        self._add_line('__annotations__: typing.ClassVar[dict[str, object]] = {', indent)
+        self._add_line(
+            '__annotations__: typing.ClassVar[dict[str, object]] = {', indent
+        )
         for offset, arg in enumerate(properties):
             if offset == len(properties) - 1:
                 self._add_line(
@@ -399,9 +401,14 @@ class Codegen:
             indent + 9,
         )
         self._add_line()
-        self._add_line(f'frame_id: typing.ClassVar[int] = {class_id}  # AMQP Frame ID', indent)
         self._add_line(
-            'index: typing.ClassVar[int] = 0x%04X  # pamqp Mapping Index' % class_id, indent
+            f'frame_id: typing.ClassVar[int] = {class_id}  # AMQP Frame ID',
+            indent,
+        )
+        self._add_line(
+            'index: typing.ClassVar[int] = 0x%04X  # pamqp Mapping Index'
+            % class_id,
+            indent,
         )
         self._add_line(
             f"name: typing.ClassVar[str] = '{self._pep8_class_name(class_name)}.Properties'",
@@ -552,11 +559,13 @@ class Codegen:
 
         if not len(arguments):
             self._add_line(
-                '__annotations__: typing.ClassVar[dict[str, object]] = {}', indent
+                '__annotations__: typing.ClassVar[dict[str, object]] = {}',
+                indent,
             )
         else:
             self._add_line(
-                '__annotations__: typing.ClassVar[dict[str, object]] = {', indent
+                '__annotations__: typing.ClassVar[dict[str, object]] = {',
+                indent,
             )
             for offset, arg in enumerate(arguments):
                 name = self._arg_name(arg['name'])
@@ -591,10 +600,16 @@ class Codegen:
                     self._add_line('{!r},'.format(arg['pyname']), indent + 4)
             self._add_line(']', indent)
         self._add_line()
-        self._add_line('frame_id: typing.ClassVar[int] = %i  # AMQP Frame ID' % method['id'], indent)
+        self._add_line(
+            'frame_id: typing.ClassVar[int] = %i  # AMQP Frame ID'
+            % method['id'],
+            indent,
+        )
         index_value = class_id << 16 | method['id']
         self._add_line(
-            'index: typing.ClassVar[int] = 0x%08X  # pamqp Mapping Index' % index_value, indent
+            'index: typing.ClassVar[int] = 0x%08X  # pamqp Mapping Index'
+            % index_value,
+            indent,
         )
         self._add_line(
             "name: typing.ClassVar[str] = '{}.{}'".format(
@@ -626,7 +641,9 @@ class Codegen:
                         self._pep8_class_name(method['name']),
                     )
                 ]
-            line = 'valid_responses: typing.ClassVar[list[str]] = [{}]'.format(', '.join(responses))
+            line = 'valid_responses: typing.ClassVar[list[str]] = [{}]'.format(
+                ', '.join(responses)
+            )
             if len(line) <= 36:
                 self._add_line(
                     f'{line}  # Valid responses to this method', indent
@@ -823,10 +840,14 @@ class Codegen:
             if documentation:
                 self._add_documentation(label, documentation, indent)
 
-            self._add_line('__slots__: typing.ClassVar[list[str]] = []', indent)
+            self._add_line(
+                '__slots__: typing.ClassVar[list[str]] = []', indent
+            )
             self._add_line()
             self._add_line(
-                'frame_id: typing.ClassVar[int] = {}  # AMQP Frame ID'.format(definition['id']),
+                'frame_id: typing.ClassVar[int] = {}  # AMQP Frame ID'.format(
+                    definition['id']
+                ),
                 indent,
             )
             self._add_line(
@@ -1144,9 +1165,7 @@ class Codegen:
 
             # Extend the AMQP spec regex for exchange/queue names to
             # include characters that RabbitMQ allows in practice
-            if kwargs['regex'] and value[0] in (
-                'exchange-name', 'queue-name'
-            ):
+            if kwargs['regex'] and value[0] in ('exchange-name', 'queue-name'):
                 kwargs['regex'] = r'^[a-zA-Z0-9-_.:@#,/+ ]*$'
 
             values.append(Domain(**kwargs))
