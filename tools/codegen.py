@@ -648,12 +648,20 @@ class Codegen:
                 elif (
                     default is not None and not all_defaults and default != ''
                 ):
-                    self._add_line(
-                        'self.{} = {} or {}'.format(
-                            arg['pyname'], arg['pyname'], default
-                        ),
-                        indent,
-                    )
+                    if arg['type'] == 'bit':
+                        self._add_line(
+                            'self.{0} = {0} if {0} is not None else {1}'.format(
+                                arg['pyname'], default
+                            ),
+                            indent,
+                        )
+                    else:
+                        self._add_line(
+                            'self.{} = {} or {}'.format(
+                                arg['pyname'], arg['pyname'], default
+                            ),
+                            indent,
+                        )
                 else:
                     self._add_line(
                         'self.{} = {}'.format(arg['pyname'], arg['pyname']),
@@ -680,7 +688,6 @@ class Codegen:
                             'cluster_id',
                             'known_hosts',
                             'out_of_band',
-                            'internal',
                             'insist',
                             'ticket',
                         }
@@ -737,7 +744,7 @@ class Codegen:
                             arg['pyname'], '!=', "''", 'empty'
                         )
                         continue
-                    elif arg['name'] in {'internal', 'insist'}:
+                    elif arg['name'] == 'insist':
                         format_deprecated_value(
                             arg['pyname'], 'is not', 'False', 'False'
                         )

@@ -820,8 +820,6 @@ class Exchange:
             if self.exchange is not None and not constants.DOMAIN_REGEX[
                     'exchange-name'].fullmatch(self.exchange):
                 raise ValueError('Invalid value for exchange')
-            if self.internal is not None and self.internal is not False:
-                raise ValueError('internal must be False')
 
     class DeclareOk(base.Frame):
         """Confirm exchange declaration
@@ -1835,7 +1833,7 @@ class Basic:
                      nowait: bool = False) -> None:
             """Initialize the :class:`Basic.Cancel` class"""
             self.consumer_tag = consumer_tag
-            self.nowait = nowait or False
+            self.nowait = nowait if nowait is not None else False
 
     class CancelOk(base.Frame):
         """Confirm a cancelled consumer
@@ -2039,7 +2037,7 @@ class Basic:
             """Initialize the :class:`Basic.Deliver` class"""
             self.consumer_tag = consumer_tag
             self.delivery_tag = delivery_tag
-            self.redelivered = redelivered or False
+            self.redelivered = redelivered if redelivered is not None else False
             self.exchange = exchange or ''
             self.routing_key = routing_key
             self.validate()
@@ -2162,7 +2160,7 @@ class Basic:
                      message_count: int | None = None) -> None:
             """Initialize the :class:`Basic.GetOk` class"""
             self.delivery_tag = delivery_tag
-            self.redelivered = redelivered or False
+            self.redelivered = redelivered if redelivered is not None else False
             self.exchange = exchange or ''
             self.routing_key = routing_key
             self.message_count = message_count
@@ -2287,7 +2285,7 @@ class Basic:
                      requeue: bool = True) -> None:
             """Initialize the :class:`Basic.Reject` class"""
             self.delivery_tag = delivery_tag
-            self.requeue = requeue or True
+            self.requeue = requeue if requeue is not None else True
 
     class RecoverAsync(base.Frame):
         """Redeliver unacknowledged messages
