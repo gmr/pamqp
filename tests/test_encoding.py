@@ -36,6 +36,33 @@ class MarshalingTests(unittest.TestCase):
             encode.decimal(decimal.Decimal(314159)), b'\x00\x00\x04\xcb/'
         )
 
+    def test_encode_decimal_scientific_notation(self):
+        self.assertEqual(
+            encode.decimal(decimal.Decimal('1E-10')), b'\n\x00\x00\x00\x01'
+        )
+
+    def test_encode_decimal_negative(self):
+        self.assertEqual(
+            encode.decimal(decimal.Decimal('-1.5')),
+            b'\x01\xff\xff\xff\xf1',
+        )
+
+    def test_encode_decimal_positive_exponent(self):
+        self.assertEqual(
+            encode.decimal(decimal.Decimal('1E2')), b'\x00\x00\x00\x00d'
+        )
+
+    def test_encode_decimal_scale_out_of_range(self):
+        self.assertRaises(TypeError, encode.decimal, decimal.Decimal('1E-300'))
+
+    def test_encode_decimal_mantissa_out_of_range(self):
+        self.assertRaises(
+            TypeError, encode.decimal, decimal.Decimal('9999999999.9')
+        )
+
+    def test_encode_decimal_not_finite(self):
+        self.assertRaises(TypeError, encode.decimal, decimal.Decimal('NaN'))
+
     def test_encode_double_invalid_value(self):
         self.assertRaises(TypeError, encode.double, '1234')
 
@@ -90,6 +117,13 @@ class MarshalingTests(unittest.TestCase):
     def test_encode_short_error(self):
         self.assertRaises(TypeError, encode.short_int, 32768)
 
+    def test_encode_short_error_message(self):
+        with self.assertRaises(TypeError) as ctx:
+            encode.short_int(-32769)
+        self.assertEqual(
+            str(ctx.exception), 'Short integer range: -32768 to 32767'
+        )
+
     def test_encode_short_uint(self):
         self.assertEqual(encode.short_uint(65535), b'\xff\xff')
 
@@ -107,6 +141,13 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_short_string_error(self):
         self.assertRaises(TypeError, encode.short_string, 32768)
+
+    def test_encode_short_string_too_long(self):
+        self.assertRaises(TypeError, encode.short_string, 'a' * 256)
+
+    def test_encode_short_string_too_long_utf8_bytes(self):
+        # 128 multi-byte chars encode to more than 255 bytes
+        self.assertRaises(TypeError, encode.short_string, '🐰' * 128)
 
     def test_encode_short_string_utf8_python3(self):
         self.assertEqual(encode.short_string('🐰'), b'\x04\xf0\x9f\x90\xb0')
