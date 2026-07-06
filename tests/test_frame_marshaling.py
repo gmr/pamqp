@@ -2,7 +2,42 @@ import datetime
 import unittest
 import uuid
 
-from pamqp import body, commands, frame, header, heartbeat
+from pamqp import base, body, commands, frame, header, heartbeat
+
+
+class _EightBitFrame(base.Frame):
+    __slots__ = ['b0', 'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7']
+
+    _b0 = 'bit'
+    _b1 = 'bit'
+    _b2 = 'bit'
+    _b3 = 'bit'
+    _b4 = 'bit'
+    _b5 = 'bit'
+    _b6 = 'bit'
+    _b7 = 'bit'
+
+    def __init__(self, *values):
+        for name, value in zip(self.__slots__, values, strict=False):
+            setattr(self, name, value)
+
+
+class _NineBitFrame(base.Frame):
+    __slots__ = ['b0', 'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8']
+
+    _b0 = 'bit'
+    _b1 = 'bit'
+    _b2 = 'bit'
+    _b3 = 'bit'
+    _b4 = 'bit'
+    _b5 = 'bit'
+    _b6 = 'bit'
+    _b7 = 'bit'
+    _b8 = 'bit'
+
+    def __init__(self, *values):
+        for name, value in zip(self.__slots__, values, strict=False):
+            setattr(self, name, value)
 
 
 class MarshalingTests(unittest.TestCase):
@@ -112,3 +147,27 @@ class MarshalingTests(unittest.TestCase):
     def test_unknown_frame_type(self):
         with self.assertRaises(ValueError):
             frame.marshal(self, 1)
+
+    def test_eight_consecutive_bits_marshal(self):
+        obj = _EightBitFrame(*([True] * 8))
+        self.assertEqual(obj.marshal(), b'\xff')
+
+    def test_eight_consecutive_bits_round_trip(self):
+        values = [True, False, True, False, True, True, False, True]
+        obj = _EightBitFrame(*values)
+        result = _EightBitFrame()
+        result.unmarshal(obj.marshal())
+        self.assertEqual(
+            [getattr(result, name) for name in result.__slots__], values
+        )
+
+    def test_nine_consecutive_bits_round_trip(self):
+        values = [True] * 8 + [True]
+        obj = _NineBitFrame(*values)
+        marshaled = obj.marshal()
+        self.assertEqual(marshaled, b'\xff\x01')
+        result = _NineBitFrame()
+        result.unmarshal(marshaled)
+        self.assertEqual(
+            [getattr(result, name) for name in result.__slots__], values
+        )
