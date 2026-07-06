@@ -178,7 +178,7 @@ def _unmarshal_method_frame(frame_data: bytes) -> base.Frame:
         ) from err
     try:
         method.unmarshal(frame_data[bytes_used:])
-    except struct.error as error:
+    except (struct.error, ValueError) as error:
         raise exceptions.UnmarshalingException(method, error) from error
     return method
 
@@ -192,7 +192,7 @@ def _unmarshal_header_frame(frame_data: bytes) -> header.ContentHeader:
     content_header = header.ContentHeader()
     try:
         content_header.unmarshal(frame_data)
-    except struct.error as error:
+    except (struct.error, ValueError) as error:
         raise exceptions.UnmarshalingException(
             'ContentHeader', error
         ) from error
