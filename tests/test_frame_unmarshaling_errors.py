@@ -1,7 +1,7 @@
 import struct
 import unittest
 
-from pamqp import constants, exceptions, frame
+from pamqp import constants, exceptions, frame, header
 
 
 class TestCase(unittest.TestCase):
@@ -123,3 +123,9 @@ class TestCase(unittest.TestCase):
             self.assertTrue(
                 str(err).startswith('Could not unmarshal ContentHeader frame:')
             )
+
+    def test_content_header_truncated_flag_continuation(self):
+        # A single flag word with the continuation bit set but no further
+        # data must raise rather than loop forever re-reading the same bytes
+        data = struct.pack('>HHQ', 60, 0, 0) + struct.pack('>H', 1)
+        self.assertRaises(ValueError, header.ContentHeader().unmarshal, data)
