@@ -121,6 +121,8 @@ class ContentHeader:
         """Decode the flags from the data returning the bytes consumed and
         flags.
 
+        :raises: ValueError if the content header flags are truncated
+
         """
         bytes_consumed, flags, flagword_index = 0, 0, 0
         while True:
