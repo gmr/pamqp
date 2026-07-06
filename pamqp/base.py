@@ -95,10 +95,10 @@ class Frame(_AMQData):
                 else:
                     byte = encode.bit(data_value, byte, offset)
                     offset += 1
-                    if offset == 8:  # pragma: nocover
+                    if offset == 8:
                         output.append(encode.octet(byte))
                         processing_bitset = False
-                    continue  # pragma: nocover
+                    continue
             output.append(encode.by_type(data_value, data_type))
         if processing_bitset:
             output.append(encode.octet(byte))
@@ -114,13 +114,10 @@ class Frame(_AMQData):
         offset, processing_bitset = 0, False
         for argument in self.__slots__:
             data_type = self.amqp_type(argument)
-            if offset == 7 and processing_bitset:  # pragma: nocover
+            if processing_bitset and (data_type != 'bit' or offset == 8):
                 data = data[1:]
-                offset = 0
-            if processing_bitset and data_type != 'bit':
                 offset = 0
                 processing_bitset = False
-                data = data[1:]
             consumed, value = decode.by_type(data, data_type, offset)
             if data_type == 'bit':
                 offset += 1
@@ -150,7 +147,7 @@ class BasicProperties(_AMQData):
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BasicProperties):
-            raise NotImplementedError
+            return NotImplemented
         return all(
             getattr(self, k, None) == getattr(other, k, None)
             for k in self.__slots__
