@@ -316,6 +316,21 @@ class CodecDecodeTests(unittest.TestCase):
             else:
                 self.assertEqual(value[key], self.FIELD_TBL_VALUE[key])
 
+    def test_decode_field_array_length_exceeds_data(self):
+        # Declares 10 bytes of content but only supplies a 2-byte element
+        payload = struct.pack('>I', 10) + b'b\x01'
+        self.assertRaises(ValueError, decode.field_array, payload)
+
+    def test_decode_field_table_length_exceeds_data(self):
+        # Declares 10 bytes of content but supplies fewer
+        payload = struct.pack('>I', 10) + b'\x03key'
+        self.assertRaises(ValueError, decode.field_table, payload)
+
+    def test_decode_field_table_key_length_exceeds_data(self):
+        # Key claims 20 bytes but the table only holds a few
+        payload = struct.pack('>I', 4) + b'\x14key'
+        self.assertRaises(ValueError, decode.field_table, payload)
+
     def test_decode_by_type_bit_bytes_consumed(self):
         self.assertEqual(decode.by_type(b'\xff', 'bit', 4)[0], 0)
 

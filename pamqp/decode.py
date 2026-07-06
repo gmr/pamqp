@@ -326,6 +326,8 @@ def field_array(value: bytes) -> tuple[int, common.FieldArray]:
         offset = 4
         data = []
         field_array_end = offset + length
+        if field_array_end > len(value):
+            raise ValueError('Field array length exceeds available data')
         while offset < field_array_end:
             consumed, result = embedded_value(value[offset:])
             offset += consumed
@@ -348,9 +350,13 @@ def field_table(value: bytes) -> tuple[int, common.FieldTable]:
         offset = 4
         data = {}
         field_table_end = offset + length
+        if field_table_end > len(value):
+            raise ValueError('Field table length exceeds available data')
         while offset < field_table_end:
             key_length = common.Struct.byte.unpack_from(value, offset)[0]
             offset += 1
+            if offset + key_length > field_table_end:
+                raise ValueError('Field table key length exceeds data')
             key = value[offset : offset + key_length].decode('utf-8')
             offset += key_length
             consumed, result = embedded_value(value[offset:])
