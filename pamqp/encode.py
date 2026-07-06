@@ -93,13 +93,20 @@ def decimal(value: _decimal.Decimal) -> bytes:
     """
     if not isinstance(value, _decimal.Decimal):
         raise TypeError(f'decimal.Decimal required, received {type(value)}')
-    tmp = str(value)
-    if '.' in tmp:
-        decimals = len(tmp.split('.')[-1])
-        value = value.normalize()
-        raw = int(value * (_decimal.Decimal(10) ** decimals))
-        return struct.pack('>Bi', decimals, raw)
-    return struct.pack('>Bi', 0, int(value))
+    exponent = value.as_tuple().exponent
+    if not isinstance(exponent, int):  # NaN, Infinity, sNaN
+        raise TypeError(f'Cannot encode {value} as a decimal')
+    elif exponent > 0:  # scale a positive exponent up into the mantissa
+        scale = 0
+        mantissa = int(value)
+    else:  # value == mantissa * 10 ** -scale
+        scale = -exponent
+        mantissa = int(value.scaleb(scale))
+    if not (0 <= scale <= 255):
+        raise TypeError('Decimal scale range: 0 to 255')
+    elif not (-2147483648 <= mantissa <= 2147483647):
+        raise TypeError('Decimal mantissa range: -2147483648 to 2147483647')
+    return struct.pack('>Bi', scale, mantissa)
 
 
 def double(value: float) -> bytes:
@@ -207,7 +214,7 @@ def short_int(value: int) -> bytes:
     if not isinstance(value, int):
         raise TypeError(f'int required, received {type(value)}')
     elif not (-32768 <= value <= 32767):
-        raise TypeError('Short integer range: -32678 to 32767')
+        raise TypeError('Short integer range: -32768 to 32767')
     return common.Struct.short.pack(value)
 
 
@@ -288,9 +295,11 @@ def field_table(value: common.FieldTable) -> bytes:
         raise TypeError(f'dict required, received {type(value)}')
     data = []
     for key, item in sorted(value.items()):
-        if len(key) > 128:  # field names have 128 char max
+        encoded_key = key.encode('utf-8')
+        if len(encoded_key) > 128:  # field names have a 128 byte max
             LOGGER.warning('Truncating key %s to 128 bytes', key)
-            key = key[0:128]
+            # ``ignore`` drops a multi-byte character split at the boundary
+            key = encoded_key[0:128].decode('utf-8', 'ignore')
         data.append(short_string(key))
         try:
             data.append(encode_table_value(item))
@@ -355,6 +364,9 @@ def _string(encoder: struct.Struct, value: str) -> bytes:
     if not isinstance(value, str):
         raise TypeError(f'str required, received {type(value)}')
     temp = value.encode('utf-8')
+    max_length = 255 if encoder is common.Struct.byte else 4294967295
+    if len(temp) > max_length:
+        raise TypeError(f'string exceeds maximum length of {max_length} bytes')
     return encoder.pack(len(temp)) + temp
 
 
