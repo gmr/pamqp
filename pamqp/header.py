@@ -124,10 +124,13 @@ class ContentHeader:
         """
         bytes_consumed, flags, flagword_index = 0, 0, 0
         while True:
+            if len(data) < 2:
+                raise ValueError('Content header flags are truncated')
             consumed, partial_flags = decode.short_int(data)
             bytes_consumed += consumed
             flags |= partial_flags << (flagword_index * 16)
-            if not partial_flags & 1:  # pragma: nocover
+            if not partial_flags & 1:
                 break
-            flagword_index += 1  # pragma: nocover
+            data = data[consumed:]
+            flagword_index += 1
         return bytes_consumed, flags
