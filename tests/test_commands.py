@@ -1798,3 +1798,19 @@ class MethodAttributeDefaultTests(unittest.TestCase):
     def test_basic_properties_bad_delivery_mode_error(self):
         with self.assertRaises(ValueError):
             commands.Basic.Properties(delivery_mode=3)
+
+
+class FlagRegressionTests(unittest.TestCase):
+    def test_basic_reject_keeps_requeue_false(self):
+        self.assertIs(commands.Basic.Reject(1, requeue=False).requeue, False)
+
+    def test_basic_reject_requeue_false_round_trips(self):
+        frame = commands.Basic.Reject(1, requeue=False)
+        data = frame.marshal()
+        decoded = commands.Basic.Reject()
+        decoded.unmarshal(data)
+        self.assertIs(decoded.requeue, False)
+
+    def test_exchange_declare_allows_internal(self):
+        frame = commands.Exchange.Declare(exchange='foo', internal=True)
+        self.assertIs(frame.internal, True)
