@@ -1,5 +1,7 @@
 import datetime
 import decimal
+import os
+import time
 import unittest
 
 from pamqp import encode
@@ -195,6 +197,23 @@ class MarshalingTests(unittest.TestCase):
             ),
             b'\x00\x00\x00\x00Ec)\x92',
         )
+
+    @unittest.skipUnless(hasattr(time, 'tzset'), 'needs time.tzset')
+    def test_encode_timestamp_from_naive_datetime_is_utc(self):
+        old_tz = os.environ.get('TZ')
+        os.environ['TZ'] = 'America/New_York'
+        time.tzset()
+        try:
+            value = encode.timestamp(
+                datetime.datetime(2006, 11, 21, 16, 30, 10)
+            )
+        finally:
+            if old_tz is None:
+                del os.environ['TZ']
+            else:
+                os.environ['TZ'] = old_tz
+            time.tzset()
+        self.assertEqual(value, b'\x00\x00\x00\x00Ec)\x92')
 
     def test_encode_timestamp_from_struct_time(self):
         value = encode.timestamp(
