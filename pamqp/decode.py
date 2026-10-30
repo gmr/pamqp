@@ -61,17 +61,17 @@ def boolean(value: bytes) -> tuple[int, bool]:
         raise ValueError('Could not unpack boolean value') from err
 
 
-def byte_array(value: bytes) -> tuple[int, bytearray]:
+def byte_array(value: bytes) -> tuple[int, bytes]:
     """Decode a byte_array value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
-    :rtype: :class:`tuple` (:class:`int`, :class:`bytearray`)
+    :rtype: :class:`tuple` (:class:`int`, :class:`bytes`)
     :raises ValueError: when the binary data can not be unpacked
 
     """
     try:
         length = common.Struct.integer.unpack(value[0:4])[0]
-        return length + 4, bytearray(value[4 : length + 4])
+        return length + 4, bytes(value[4 : length + 4])
     except (struct.error, TypeError) as err:
         raise ValueError('Could not unpack byte array value') from err
 

@@ -87,7 +87,7 @@ class CodecDecodeTests(unittest.TestCase):
     def test_decode_byte_array(self):
         self.assertEqual(
             decode.byte_array(b'\x00\x00\x00\x03ABC'),
-            (7, bytearray([65, 66, 67])),
+            (7, b'ABC'),
         )
 
     def test_decode_byte_array_invalid_value(self):
@@ -371,15 +371,11 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_by_type_byte_array_data_type(self):
         value = b'\x00\x00\x00\t123456789'
-        self.assertIsInstance(
-            decode.by_type(value, 'byte_array')[1], bytearray
-        )
+        self.assertIsInstance(decode.by_type(value, 'byte_array')[1], bytes)
 
     def test_decode_by_type_byte_array_value(self):
         value = b'\x00\x00\x00\t123456789'
-        self.assertEqual(
-            decode.by_type(value, 'byte_array')[1], bytearray(b'123456789')
-        )
+        self.assertEqual(decode.by_type(value, 'byte_array')[1], b'123456789')
 
     def test_decode_by_type_decimal_bytes_consumed(self):
         value = b'\x05\x00\x04\xcb/'
@@ -668,13 +664,11 @@ class CodecDecodeTests(unittest.TestCase):
 
     def test_decode_embedded_value_byte_array_data(self):
         value = b'x\x00\x00\x00\x03ABC'
-        self.assertEqual(
-            decode.embedded_value(value)[1], bytearray([65, 66, 67])
-        )
+        self.assertEqual(decode.embedded_value(value)[1], b'ABC')
 
     def test_decode_embedded_value_byte_array_data_type(self):
         value = b'x\x00\x00\x00\x03ABC'
-        self.assertIsInstance(decode.embedded_value(value)[1], bytearray)
+        self.assertIsInstance(decode.embedded_value(value)[1], bytes)
 
     def test_decode_embedded_value_longstr_data_type_unicode(self):
         value = (
