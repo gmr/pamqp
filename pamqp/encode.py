@@ -72,15 +72,15 @@ def boolean(value: bool) -> bytes:
     return common.Struct.short_short_uint.pack(int(value))
 
 
-def byte_array(value: bytearray) -> bytes:
+def byte_array(value: bytes | bytearray) -> bytes:
     """Encode a byte array value
 
     :param value: Value to encode
     :raises TypeError: when the value is not the correct type
 
     """
-    if not isinstance(value, bytearray):
-        raise TypeError(f'bytearray required, received {type(value)}')
+    if not isinstance(value, (bytes, bytearray)):
+        raise TypeError(f'bytes or bytearray required, received {type(value)}')
     return common.Struct.integer.pack(len(value)) + value
 
 
@@ -398,7 +398,7 @@ def encode_table_value(
         return b'F' + field_table(value)
     elif isinstance(value, list):
         return b'A' + field_array(value)
-    elif isinstance(value, bytearray):
+    elif isinstance(value, (bytes, bytearray)):
         return b'x' + byte_array(value)
     elif value is None:
         return b'V'

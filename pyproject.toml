@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pamqp"
-version = "4.0.1"
+version = "5.0.0"
 description = "RabbitMQ Focused AMQP low-level library"
 readme = "README.md"
 requires-python = ">=3.11"

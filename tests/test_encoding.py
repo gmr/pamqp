@@ -20,8 +20,24 @@ class MarshalingTests(unittest.TestCase):
             encode.byte_array(bytearray([65, 66, 67])), b'\x00\x00\x00\x03ABC'
         )
 
+    def test_encode_byte_array_bytes(self):
+        self.assertEqual(encode.byte_array(b'ABC'), b'\x00\x00\x00\x03ABC')
+
     def test_encode_byte_array_wrong_type(self):
-        self.assertRaises(TypeError, encode.byte_array, b'ABC')
+        self.assertRaises(TypeError, encode.byte_array, 'ABC')
+
+    def test_encode_field_table_bytes_value(self):
+        # Reproduction from issue #79
+        self.assertEqual(
+            encode.field_table({'key': b'value'}),
+            b'\x00\x00\x00\x0e\x03keyx\x00\x00\x00\x05value',
+        )
+
+    def test_encode_field_array_bytes_value(self):
+        self.assertEqual(
+            encode.field_array([b'AB', bytearray(b'CD')]),
+            b'\x00\x00\x00\x0ex\x00\x00\x00\x02ABx\x00\x00\x00\x02CD',
+        )
 
     def test_encode_decimal_wrong_type(self):
         self.assertRaises(TypeError, encode.decimal, 3.141597)

@@ -842,7 +842,7 @@ wheels = [
 
 [[package]]
 name = "pamqp"
-version = "4.0.1"
+version = "5.0.0"
 source = { editable = "." }
 
 [package.optional-dependencies]

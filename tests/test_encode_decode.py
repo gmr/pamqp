@@ -35,6 +35,17 @@ class EncodeDecodeTests(unittest.TestCase):
         self.assertTrue(key.startswith(decoded_key))
         self.assertLessEqual(len(decoded_key.encode('utf-8')), 128)
 
+    def test_encode_decode_field_table_bytes_value(self):
+        encoded = encode.field_table({'key': b'value'})
+        decoded = decode.field_table(encoded)[1]
+        self.assertEqual(decoded, {'key': b'value'})
+        self.assertIsInstance(decoded['key'], bytes)
+
+    def test_encode_decode_field_array_bytes_value(self):
+        encoded = encode.field_array([b'value', 'str'])
+        decoded = decode.field_array(encoded)[1]
+        self.assertEqual(decoded, [b'value', 'str'])
+
     def test_encode_decode_decimal_scientific_notation(self):
         encoded = encode.decimal(decimal.Decimal('1E-10'))
         decoded = decode.decimal(encoded)[1]

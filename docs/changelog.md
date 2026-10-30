@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.0
+- Encode `bytes` field table and field array values as the AMQP byte array (`x`) type, the same as `bytearray` (#79)
+- **Breaking:** decode AMQP byte array (`x`) values as `bytes`, not `bytearray`. Code that changes a decoded value in place must copy it to a `bytearray` first (#79)
+
 ## 3.3.0 (2024-01-12)
 - Allow space character in exchange and queue names (#47)
 - Convert AMQP timestamp property to handle milliseconds (#48 - [david1155](https://github.com/david1155))
