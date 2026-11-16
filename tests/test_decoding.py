@@ -818,3 +818,33 @@ class CodecDecodeTests(unittest.TestCase):
         ):
             with self.subTest(decoder=name):
                 self.assertRaises(ValueError, decoder, b'')
+
+
+class NestingDepthTestCase(unittest.TestCase):
+    @staticmethod
+    def _nested(depth: int, kind: bytes) -> bytes:
+        """Return `depth` nested field tables or field arrays"""
+        key = b'\x01k' if kind == b'F' else b''
+        value = b'\x00\x00\x00\x00'
+        for _ in range(depth - 1):
+            item = key + kind + value
+            value = struct.pack('>I', len(item)) + item
+        return value
+
+    def test_max_depth_decodes(self):
+        for kind, decoder in (
+            (b'F', decode.field_table),
+            (b'A', decode.field_array),
+        ):
+            value = self._nested(decode.MAX_NESTING_DEPTH, kind)
+            consumed, _ = decoder(value)
+            self.assertEqual(consumed, len(value))
+
+    def test_over_max_depth_raises(self):
+        for kind, decoder in (
+            (b'F', decode.field_table),
+            (b'A', decode.field_array),
+        ):
+            for depth in (decode.MAX_NESTING_DEPTH + 1, 5000):
+                with self.assertRaises(ValueError):
+                    decoder(self._nested(depth, kind))
