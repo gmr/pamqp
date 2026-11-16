@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.0.0 (unreleased)
+- **Breaking:** encode `float` field-table and field-array values as a 64-bit double (`d`), not a 32-bit float (`f`). This is the same as the Java, .NET and Go clients and does not lose precision (#87)
+- **Breaking:** encode `int` field-table and field-array values as a signed 32-bit long-int (`I`) when the value fits, otherwise as a signed 64-bit long-long-int (`l`). Before, pamqp used the smallest type that held the value (`b`, `s`, `u`, `I`, `i` or `l`). `support_deprecated_rabbitmq()` and `DEPRECATED_RABBITMQ_SUPPORT` now have no effect and raise a `DeprecationWarning`. They will be removed in a future release (#87)
+- Limit field table and field array decoding to 32 nesting levels (`decode.MAX_NESTING_DEPTH`). Deeper data raises `ValueError`. Before, deeply nested data caused a `RecursionError`
+
 ## 5.0.0 (2026-10-30)
 - Encode `bytes` field table and field array values as the AMQP byte array (`x`) type, the same as `bytearray` (#79)
 - **Breaking:** decode AMQP byte array (`x`) values as `bytes`, not `bytearray`. Code that changes a decoded value in place must copy it to a `bytearray` first (#79)

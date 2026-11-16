@@ -10,6 +10,9 @@ import struct
 
 from pamqp import common
 
+MAX_NESTING_DEPTH = 32
+"""The maximum number of nested field tables and field arrays to decode."""
+
 
 def by_type(
     value: bytes, data_type: str, offset: int = 0
@@ -297,29 +300,47 @@ def timestamp(value: bytes) -> tuple[int, datetime.datetime]:
         raise ValueError('Could not unpack timestamp value') from err
 
 
-def embedded_value(value: bytes) -> tuple[int, common.FieldValue]:
+def embedded_value(
+    value: bytes, _depth: int = 0
+) -> tuple[int, common.FieldValue]:
     """Dynamically decode a value based upon the starting byte
 
     :param value: The binary value to decode
+    :param _depth: The nesting depth of the field table or array that
+        contains the value
     :rtype: :class:`tuple` (:class:`int`, :const:`pamqp.common.FieldValue`)
     :raises ValueError: when the binary data can not be unpacked
 
     """
     if not value:
         return 0, None
+    type_byte = value[0:1]
+    if type_byte == b'F' or type_byte == b'A':
+        if _depth >= MAX_NESTING_DEPTH:
+            raise ValueError(
+                f'Field table nesting exceeds {MAX_NESTING_DEPTH} levels'
+            )
+        container = field_table if type_byte == b'F' else field_array
+        consumed, nested = container(value[1:], _depth + 1)
+        return consumed + 1, nested
     try:
-        bytes_consumed, temp = TABLE_MAPPING[value[0:1]](value[1:])
+        decoder = TABLE_MAPPING[type_byte]
     except KeyError as err:
-        raise ValueError(f'Unknown type: {value[:1]!r}') from err
+        raise ValueError(f'Unknown type: {type_byte!r}') from err
+    bytes_consumed, temp = decoder(value[1:])
     return bytes_consumed + 1, temp
 
 
-def field_array(value: bytes) -> tuple[int, common.FieldArray]:
+def field_array(
+    value: bytes, _depth: int = 1
+) -> tuple[int, common.FieldArray]:
     """Decode a field array value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
+    :param _depth: The nesting depth of this field array
     :rtype: :class:`tuple` (:class:`int`, :const:`pamqp.common.FieldArray`)
-    :raises ValueError: when the binary data can not be unpacked
+    :raises ValueError: when the binary data can not be unpacked, or when
+        the nesting depth is more than :data:`MAX_NESTING_DEPTH`
 
     """
     try:
@@ -330,7 +351,7 @@ def field_array(value: bytes) -> tuple[int, common.FieldArray]:
         if field_array_end > len(value):
             raise ValueError('Field array length exceeds available data')
         while offset < field_array_end:
-            consumed, result = embedded_value(value[offset:])
+            consumed, result = embedded_value(value[offset:], _depth)
             offset += consumed
             data.append(result)
         return offset, data
@@ -338,12 +359,16 @@ def field_array(value: bytes) -> tuple[int, common.FieldArray]:
         raise ValueError('Could not unpack data') from err
 
 
-def field_table(value: bytes) -> tuple[int, common.FieldTable]:
+def field_table(
+    value: bytes, _depth: int = 1
+) -> tuple[int, common.FieldTable]:
     """Decode a field array value, returning bytes consumed and the value.
 
     :param value: The binary value to decode
+    :param _depth: The nesting depth of this field table
     :rtype: :class:`tuple` (:class:`int`, :const:`pamqp.common.FieldTable`)
-    :raises ValueError: when the binary data can not be unpacked
+    :raises ValueError: when the binary data can not be unpacked, or when
+        the nesting depth is more than :data:`MAX_NESTING_DEPTH`
 
     """
     try:
@@ -360,7 +385,7 @@ def field_table(value: bytes) -> tuple[int, common.FieldTable]:
                 raise ValueError('Field table key length exceeds data')
             key = value[offset : offset + key_length].decode('utf-8')
             offset += key_length
-            consumed, result = embedded_value(value[offset:])
+            consumed, result = embedded_value(value[offset:], _depth)
             offset += consumed
             data[key] = result
         return field_table_end, data

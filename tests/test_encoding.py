@@ -228,10 +228,8 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_field_array(self):
         expectation = (
-            b'\x00\x00\x00:b\x01u\xaf\xc8I\x02bZ\x00S\x00\x00\x00'
-            b'\x04TestT\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D'
-            b'\x02\x00\x00\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00'
-            b'\x00\x00\x00\x00\x08'
+            b'\x00\x00\x00GI\x00\x00\x00\x01I\x00\x00\xaf\xc8I\x02bZ\x00S\x00\x00\x00\x04TestT\x00\x00\x00\x00Ec)\x92I\xbb\x9a'
+            b'\xca\x00D\x02\x00\x00\x01:d@\t\x1e\xb8Q\xeb\x85\x1fl\x00\x00\x00\x00\xc4e5\xffl\x80\x00\x00\x00\x00\x00\x00\x08'
         )
         data = [
             1,
@@ -263,31 +261,34 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_field_table(self):
         expectation = (
-            b"\x00\x00\x04'\x08arrayvalA\x00\x00\x00\x06b\x01b"
-            b'\x02b\x03\x07boolvalt\x01\tbytearrayx\x00\x00\x00'
-            b'\x03AAA\x06decvalD\x02\x00\x00\x01:\x07dictvalF\x00'
-            b'\x00\x00\x0c\x03fooS\x00\x00\x00\x03bar\x08floatval'
-            b'f@H\xf5\xc3\x06intvalb\x01\x07longstrS\x00\x00\x03t'
-            b'000000000000000000000000000000000000000000000000000'
-            b'011111111111111111111111111111111111111111111111111'
-            b'112222222222222222222222222222222222222222222222222'
-            b'222111111111111111111111111111111111111111111111111'
-            b'111122222222222222222222222222222222222222222222222'
-            b'222221111111111111111111111111111111111111111111111'
-            b'111111222222222222222222222222222222222222222222222'
-            b'222222211111111111111111111111111111111111111111111'
-            b'111111112222222222222222222222222222222222222222222'
-            b'222222222111111111111111111111111111111111111111111'
-            b'111111111122222222222222222222222222222222222222222'
-            b'222222222221111111111111111111111111111111111111111'
-            b'111111111111222222222222222222222222222222222222222'
-            b'222222222222211111111111111111111111111111111111111'
-            b'111111111111112222222222222222222222222222222222222'
-            b'222222222222222111111111111111111111111111111111111'
-            b'111111111111111100000000000000000000000000000000000'
-            b'00000000000000000\x07longvalI6e&U\x04noneV\x06strva'
-            b'lS\x00\x00\x00\x04Test\x0ctimestampvalT\x00\x00\x00'
-            b'\x00Ec)\x92'
+            b'\x00\x00\x047\x08arrayvalA\x00\x00\x00\x0fI\x00\x00\x00\x01I\x00\x00\x00\x02I\x00\x00\x00\x03\x07boolva'
+            b'lt\x01\tbytearrayx\x00\x00\x00\x03AAA\x06decvalD\x02\x00\x00\x01:\x07dictv'
+            b'alF\x00\x00\x00\x0c\x03fooS\x00\x00\x00\x03bar\x08floatvald@\t\x1e\xb8Q\xeb\x85\x1f\x06in'
+            b'tvalI\x00\x00\x00\x01\x07longstrS\x00\x00\x03t000000000000000000'
+            b'0000000000000000000000000000000000111111'
+            b'1111111111111111111111111111111111111111'
+            b'1111112222222222222222222222222222222222'
+            b'2222222222222222221111111111111111111111'
+            b'1111111111111111111111111111112222222222'
+            b'2222222222222222222222222222222222222222'
+            b'2211111111111111111111111111111111111111'
+            b'1111111111111122222222222222222222222222'
+            b'2222222222222222222222222211111111111111'
+            b'1111111111111111111111111111111111111122'
+            b'2222222222222222222222222222222222222222'
+            b'2222222222111111111111111111111111111111'
+            b'1111111111111111111111222222222222222222'
+            b'2222222222222222222222222222222222111111'
+            b'1111111111111111111111111111111111111111'
+            b'1111112222222222222222222222222222222222'
+            b'2222222222222222221111111111111111111111'
+            b'1111111111111111111111111111112222222222'
+            b'2222222222222222222222222222222222222222'
+            b'2211111111111111111111111111111111111111'
+            b'1111111111111100000000000000000000000000'
+            b'00000000000000000000000000\x07longvalI6e&U\x04'
+            b'noneV\x06strvalS\x00\x00\x00\x04Test\x0ctimestampvalT\x00\x00\x00\x00E'
+            b'c)\x92'
         )
         data = {
             'intval': 1,
@@ -329,10 +330,8 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_by_type_field_array(self):
         expectation = (
-            b'\x00\x00\x008b\x01sBhu\xaf\xc8S\x00\x00\x00\x04TestT'
-            b'\x00\x00\x00\x00Ec)\x92I\xbb\x9a\xca\x00D\x02\x00'
-            b'\x00\x01:f@H\xf5\xc3i\xc4e5\xffl\x80\x00\x00\x00\x00'
-            b'\x00\x00\x08'
+            b'\x00\x00\x00GI\x00\x00\x00\x01I\x00\x00BhI\x00\x00\xaf\xc8S\x00\x00\x00\x04TestT\x00\x00\x00\x00Ec)\x92I\xbb\x9a'
+            b'\xca\x00D\x02\x00\x00\x01:d@\t\x1e\xb8Q\xeb\x85\x1fl\x00\x00\x00\x00\xc4e5\xffl\x80\x00\x00\x00\x00\x00\x00\x08'
         )
         data = [
             1,
@@ -352,7 +351,7 @@ class MarshalingTests(unittest.TestCase):
         data = {'x-priority': -1}
         result = encode.field_table(data)
         self.assertIn(b'x-priority', result)
-        self.assertIn(b'b\xff', result)
+        self.assertIn(b'I\xff\xff\xff\xff', result)
 
     def test_encode_by_type_byte_array(self):
         self.assertEqual(
@@ -405,31 +404,34 @@ class MarshalingTests(unittest.TestCase):
 
     def test_encode_by_type_field_table(self):
         expectation = (
-            b'\x00\x00\x04B\x08arrayvalA\x00\x00\x00\x08b\x01s\x10'
-            b'`u\xa4\x10\x07boolvalt\x01\x06decvalD\x02\x00\x00\x01'
-            b':\x07dictvalF\x00\x00\x00\x0c\x03fooS\x00\x00\x00\x03'
-            b'bar\x08floatvalf@H\xf5\xc3\x07longstrS\x00\x00\x03t00'
-            b'00000000000000000000000000000000000000000000000000111'
-            b'11111111111111111111111111111111111111111111111112222'
-            b'22222222222222222222222222222222222222222222222211111'
-            b'11111111111111111111111111111111111111111111111222222'
-            b'22222222222222222222222222222222222222222222221111111'
-            b'11111111111111111111111111111111111111111111122222222'
-            b'22222222222222222222222222222222222222222222111111111'
-            b'11111111111111111111111111111111111111111112222222222'
-            b'22222222222222222222222222222222222222222211111111111'
-            b'11111111111111111111111111111111111111111222222222222'
-            b'22222222222222222222222222222222222222221111111111111'
-            b'11111111111111111111111111111111111111122222222222222'
-            b'22222222222222222222222222222222222222111111111111111'
-            b'11111111111111111111111111111111111112222222222222222'
-            b'22222222222222222222222222222222222211111111111111111'
-            b'11111111111111111111111111111111111000000000000000000'
-            b'0000000000000000000000000000000000\x07longvalI6e&U'
-            b'\x06s32intI\xc4e6\x00\x06s64intl7\x82\xda\xce\x9d\x90'
-            b'\x00\x00\x06strvalS\x00\x00\x00\x04Test\x0ctimestamp'
-            b'valT\x00\x00\x00\x00Ec)\x92\x06u16ints \x00\x06u32int'
-            b'i\xeek(\x00\x05u8bitb '
+            b'\x00\x00\x04V\x08arrayvalA\x00\x00\x00\x0fI\x00\x00\x00\x01I\x00\x00\x10`I\x00\x00\xa4\x10\x07boolva'
+            b'lt\x01\x06decvalD\x02\x00\x00\x01:\x07dictvalF\x00\x00\x00\x0c\x03fooS\x00\x00\x00\x03ba'
+            b'r\x08floatvald@\t\x1e\xb8Q\xeb\x85\x1f\x07longstrS\x00\x00\x03t00000000'
+            b'0000000000000000000000000000000000000000'
+            b'0000111111111111111111111111111111111111'
+            b'1111111111111111222222222222222222222222'
+            b'2222222222222222222222222222111111111111'
+            b'1111111111111111111111111111111111111111'
+            b'2222222222222222222222222222222222222222'
+            b'2222222222221111111111111111111111111111'
+            b'1111111111111111111111112222222222222222'
+            b'2222222222222222222222222222222222221111'
+            b'1111111111111111111111111111111111111111'
+            b'1111111122222222222222222222222222222222'
+            b'2222222222222222222211111111111111111111'
+            b'1111111111111111111111111111111122222222'
+            b'2222222222222222222222222222222222222222'
+            b'2222111111111111111111111111111111111111'
+            b'1111111111111111222222222222222222222222'
+            b'2222222222222222222222222222111111111111'
+            b'1111111111111111111111111111111111111111'
+            b'2222222222222222222222222222222222222222'
+            b'2222222222221111111111111111111111111111'
+            b'1111111111111111111111110000000000000000'
+            b'000000000000000000000000000000000000\x07lon'
+            b'gvalI6e&U\x06s32intI\xc4e6\x00\x06s64intl7\x82\xda\xce\x9d\x90\x00\x00\x06st'
+            b'rvalS\x00\x00\x00\x04Test\x0ctimestampvalT\x00\x00\x00\x00Ec)\x92\x06u16i'
+            b'ntI\x00\x00 \x00\x06u32intl\x00\x00\x00\x00\xeek(\x00\x05u8bitI\x00\x00\x00 '
         )
         data = {
             'u8bit': 32,
@@ -476,26 +478,23 @@ class MarshalingTests(unittest.TestCase):
 
 
 class EncodeTableIntegerTestCase(unittest.TestCase):
-    def setUp(self):
-        encode.support_deprecated_rabbitmq(False)
-
-    def tearDown(self):
-        encode.support_deprecated_rabbitmq(False)
-
     def test_table_integer(self):
         tests = {
-            'short-short': (32, b'b '),
-            'short-short-negative': (-1, b'b\xff'),
-            'short-short-min': (-128, b'b\x80'),
-            'short': (1024, b's\x04\x00'),
-            'short-negative': (-1024, b's\xfc\x00'),
-            'short-unsigned': (32768, b'u\x80\x00'),
-            'long': (65536, b'I\x00\x01\x00\x00'),
-            'long-negative': (65536, b'I\x00\x01\x00\x00'),
-            'long-unsigned': (4294967295, b'i\xff\xff\xff\xff'),
-            'long-long': (
-                9223372036854775805,
-                b'l\x7f\xff\xff\xff\xff\xff\xff\xfd',
+            'small': (5, b'I\x00\x00\x00\x05'),
+            'negative': (-1, b'I\xff\xff\xff\xff'),
+            'int32-max': (2147483647, b'I\x7f\xff\xff\xff'),
+            'int32-min': (-2147483648, b'I\x80\x00\x00\x00'),
+            'int32-max-plus-one': (
+                2147483648,
+                b'l\x00\x00\x00\x00\x80\x00\x00\x00',
+            ),
+            'int32-min-minus-one': (
+                -2147483649,
+                b'l\xff\xff\xff\xff\x7f\xff\xff\xff',
+            ),
+            'int64-max': (
+                9223372036854775807,
+                b'l\x7f\xff\xff\xff\xff\xff\xff\xff',
             ),
         }
         for key, value in tests.items():
@@ -506,33 +505,22 @@ class EncodeTableIntegerTestCase(unittest.TestCase):
                 f'encode {key} mismatch ({result!r} != {value[1]!r})',
             )
 
-    def test_deprecated_table_integer(self):
-        self.assertFalse(encode.DEPRECATED_RABBITMQ_SUPPORT)
-        encode.support_deprecated_rabbitmq(True)
-        self.assertTrue(encode.DEPRECATED_RABBITMQ_SUPPORT)
-        tests = {
-            'short-short': (32, b'b '),
-            'short-short-negative': (-1, b'b\xff'),
-            'short-short-min': (-128, b'b\x80'),
-            'short': (1024, b's\x04\x00'),
-            'short-negative': (-1024, b's\xfc\x00'),
-            'long': (65536, b'I\x00\x01\x00\x00'),
-            'long-negative': (65536, b'I\x00\x01\x00\x00'),
-            'long-long': (2147483648, b'l\x00\x00\x00\x00\x80\x00\x00\x00'),
-        }
-        for key, value in tests.items():
-            result = encode.table_integer(value[0])
-            self.assertEqual(
-                result,
-                value[1],
-                f'encode {key} mismatch of {value[0]!r} ({result!r} != {value[1]!r})',
-            )
+    def test_table_float_is_double(self):
+        self.assertEqual(
+            encode.encode_table_value(0.1), b'd' + encode.double(0.1)
+        )
 
     def test_too_large_int(self):
-        self.assertFalse(encode.DEPRECATED_RABBITMQ_SUPPORT)
         with self.assertRaises(TypeError):
             encode.table_integer(9223372036854775809)
-        encode.support_deprecated_rabbitmq(True)
-        self.assertTrue(encode.DEPRECATED_RABBITMQ_SUPPORT)
-        with self.assertRaises(TypeError):
-            encode.table_integer(9223372036854775809)
+
+    def test_deprecated_rabbitmq_support_warns(self):
+        with self.assertWarns(DeprecationWarning):
+            encode.support_deprecated_rabbitmq(True)
+        with self.assertWarns(DeprecationWarning):
+            self.assertFalse(encode.DEPRECATED_RABBITMQ_SUPPORT)
+        self.assertEqual(encode.table_integer(5), b'I\x00\x00\x00\x05')
+
+    def test_unknown_module_attribute(self):
+        with self.assertRaises(AttributeError):
+            encode.does_not_exist  # noqa: B018
