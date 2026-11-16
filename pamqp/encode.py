@@ -22,8 +22,8 @@ DEPRECATED_RABBITMQ_SUPPORT = False
 def support_deprecated_rabbitmq(enabled: bool = True) -> None:
     """Toggle the data types available in field-tables
 
-    If called with `True`, than RabbitMQ versions, the field-table integer
-    types will not support the full AMQP spec.
+    This setting has no effect. Field-table integers are always encoded as
+    ``I`` or ``l``, which all supported RabbitMQ versions accept.
 
     :param enabled: Specify if deprecated RabbitMQ versions are supported
 
@@ -310,45 +310,15 @@ def field_table(value: common.FieldTable) -> bytes:
 
 
 def table_integer(value: int) -> bytes:
-    """Determines the best type of numeric type to encode value as, preferring
-    the smallest data size first.
+    """Encode an integer as a signed 32-bit long-int (``I``) when it fits,
+    otherwise as a signed 64-bit long-long-int (``l``). This is the same as
+    the Java, .NET and Go reference clients.
 
     :param value: Value to encode
-    :raises TypeError: when the value is not the correct type or outside the
-        acceptable range for the data type
+    :raises TypeError: when the value is outside the signed 64-bit range
 
     """
-    if DEPRECATED_RABBITMQ_SUPPORT:
-        return _deprecated_table_integer(value)
-    if -128 <= value <= 127:
-        return b'b' + common.Struct.short_short_int.pack(value)
-    elif -32768 <= value <= 32767:
-        return b's' + short_int(value)
-    elif 0 <= value <= 65535:
-        return b'u' + short_uint(value)
-    elif -2147483648 <= value <= 2147483647:
-        return b'I' + long_int(value)
-    elif 0 <= value <= 4294967295:
-        return b'i' + long_uint(value)
-    elif -9223372036854775808 <= value <= 9223372036854775807:
-        return b'l' + long_long_int(value)
-    raise TypeError(f'Unsupported numeric value: {value}')
-
-
-def _deprecated_table_integer(value: int) -> bytes:
-    """Determines the best type of numeric type to encode value as, preferring
-    the smallest data size first, supporting versions of RabbitMQ < 3.6
-
-    :param value: Value to encode
-    :raises TypeError: when the value is not the correct type or outside the
-        acceptable range for the data type
-
-    """
-    if -128 <= value <= 127:
-        return b'b' + common.Struct.short_short_int.pack(value)
-    elif -32768 <= value <= 32767:
-        return b's' + short_int(value)
-    elif -2147483648 <= value <= 2147483647:
+    if -2147483648 <= value <= 2147483647:
         return b'I' + long_int(value)
     elif -9223372036854775808 <= value <= 9223372036854775807:
         return b'l' + long_long_int(value)
@@ -389,7 +359,7 @@ def encode_table_value(
     elif isinstance(value, _decimal.Decimal):
         return b'D' + decimal(value)
     elif isinstance(value, float):
-        return b'f' + floating_point(value)
+        return b'd' + double(value)
     elif isinstance(value, str):
         return b'S' + long_string(value)
     elif isinstance(value, (datetime.datetime, time.struct_time)):
