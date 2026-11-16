@@ -10,27 +10,37 @@ import decimal as _decimal
 import logging
 import struct
 import time
+import typing
+import warnings
 
 from pamqp import common
 
 LOGGER = logging.getLogger(__name__)
 
-DEPRECATED_RABBITMQ_SUPPORT = False
-"""Toggle to support older versions of RabbitMQ."""
+_DEPRECATED_MESSAGE = (
+    'Deprecated RabbitMQ support has no effect and will be removed. '
+    'Field-table integers are always encoded as I or l.'
+)
+
+
+def __getattr__(name: str) -> typing.Any:
+    """Warn when the removed ``DEPRECATED_RABBITMQ_SUPPORT`` flag is read"""
+    if name == 'DEPRECATED_RABBITMQ_SUPPORT':
+        warnings.warn(_DEPRECATED_MESSAGE, DeprecationWarning, stacklevel=2)
+        return False
+    raise AttributeError(f'module {__name__!r} has no attribute {name!r}')
 
 
 def support_deprecated_rabbitmq(enabled: bool = True) -> None:
-    """Toggle the data types available in field-tables
+    """Deprecated. This function has no effect and will be removed.
 
-    This setting has no effect. Field-table integers are always encoded as
-    ``I`` or ``l``, which all supported RabbitMQ versions accept.
+    Field-table integers are always encoded as ``I`` or ``l``, which all
+    supported RabbitMQ versions accept.
 
-    :param enabled: Specify if deprecated RabbitMQ versions are supported
+    :param enabled: Ignored
 
     """
-    global DEPRECATED_RABBITMQ_SUPPORT
-
-    DEPRECATED_RABBITMQ_SUPPORT = enabled
+    warnings.warn(_DEPRECATED_MESSAGE, DeprecationWarning, stacklevel=2)
 
 
 def by_type(value: common.FieldValue, data_type: str) -> bytes:

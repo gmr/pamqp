@@ -459,12 +459,6 @@ class MarshalingTests(unittest.TestCase):
 
 
 class EncodeTableIntegerTestCase(unittest.TestCase):
-    def setUp(self):
-        encode.support_deprecated_rabbitmq(False)
-
-    def tearDown(self):
-        encode.support_deprecated_rabbitmq(False)
-
     def test_table_integer(self):
         tests = {
             'small': (5, b'I\x00\x00\x00\x05'),
@@ -484,15 +478,13 @@ class EncodeTableIntegerTestCase(unittest.TestCase):
                 b'l\x7f\xff\xff\xff\xff\xff\xff\xff',
             ),
         }
-        for deprecated in (False, True):
-            encode.support_deprecated_rabbitmq(deprecated)
-            for key, value in tests.items():
-                result = encode.table_integer(value[0])
-                self.assertEqual(
-                    result,
-                    value[1],
-                    f'encode {key} mismatch ({result!r} != {value[1]!r})',
-                )
+        for key, value in tests.items():
+            result = encode.table_integer(value[0])
+            self.assertEqual(
+                result,
+                value[1],
+                f'encode {key} mismatch ({result!r} != {value[1]!r})',
+            )
 
     def test_table_float_is_double(self):
         self.assertEqual(
@@ -500,10 +492,16 @@ class EncodeTableIntegerTestCase(unittest.TestCase):
         )
 
     def test_too_large_int(self):
-        self.assertFalse(encode.DEPRECATED_RABBITMQ_SUPPORT)
         with self.assertRaises(TypeError):
             encode.table_integer(9223372036854775809)
-        encode.support_deprecated_rabbitmq(True)
-        self.assertTrue(encode.DEPRECATED_RABBITMQ_SUPPORT)
-        with self.assertRaises(TypeError):
-            encode.table_integer(9223372036854775809)
+
+    def test_deprecated_rabbitmq_support_warns(self):
+        with self.assertWarns(DeprecationWarning):
+            encode.support_deprecated_rabbitmq(True)
+        with self.assertWarns(DeprecationWarning):
+            self.assertFalse(encode.DEPRECATED_RABBITMQ_SUPPORT)
+        self.assertEqual(encode.table_integer(5), b'I\x00\x00\x00\x05')
+
+    def test_unknown_module_attribute(self):
+        with self.assertRaises(AttributeError):
+            encode.does_not_exist  # noqa: B018
